@@ -40,8 +40,13 @@ namespace PoolKit
 		//lets get the radius
 		public float getRadius()
 		{
-			return sphereCollider.radius * transform.localScale.x;
+            return sphereCollider.radius * transform.localScale.x - ConstantData.BallRadiusAdjustment;//BallRadiusAdjustment is the collision adjustment, otherwise colliding can not be happen
 		}
+
+        public static float GetRadius()
+        {
+            return m_Instance.getRadius();
+        }
 
         public static Vector3 GetPosition()
         {

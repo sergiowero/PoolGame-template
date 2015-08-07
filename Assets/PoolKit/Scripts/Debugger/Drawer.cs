@@ -8,6 +8,7 @@ namespace Debugger
         private List<Vector3> m_RayDirs = new List<Vector3>();
         private List<Color> m_RayColors = new List<Color>();
         private Transform m_TargetTransform;
+        private Vector3 m_Point;
 
         void Update()
         {

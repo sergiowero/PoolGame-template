@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class BaseUIController : MonoBehaviour {
 
+    private static BaseUIController m_Instance;
+
     [SerializeField]
     private RectTransform m_SideObject;
     //private Animator m_SideObjectAnimator;
@@ -22,6 +24,13 @@ public class BaseUIController : MonoBehaviour {
 
     void Awake()
     {
+        if (m_Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        m_Instance = this;
         Button button = m_SideButton.GetComponent<Button>();
         if (button)
         {
@@ -90,5 +99,15 @@ public class BaseUIController : MonoBehaviour {
         m_Anchor.localPosition = cood;
         m_AnchorTemplate.localPosition = cood;
         PoolKit.PoolCue.Siding(cood);
+    }
+
+    public static Vector2 TableCoord2ScreenCoord(Vector3 c)
+    {
+        return Camera.main.WorldToScreenPoint(c);
+    }
+
+    public static Camera GetUICamera()
+    {
+        return m_Instance.m_UICamera;
     }
 }

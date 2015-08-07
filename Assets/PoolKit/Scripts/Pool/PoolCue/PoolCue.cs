@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Debugger;
 
 
 namespace PoolKit
@@ -8,7 +9,7 @@ namespace PoolKit
 	public class PoolCue : MonoBehaviour {
         private static PoolCue m_Instance = null;
 		//our line renderer
-		public LineRenderer lineRenderer;
+        //public LineRenderer lineRenderer;
 
 		//ref to the white ball
 		protected WhiteBall m_whiteBall;
@@ -23,7 +24,7 @@ namespace PoolKit
 		public float reflectDistance = 2f;
 
 		//our second line renderer
-		protected LineRenderer m_lr2;
+        //protected LineRenderer m_lr2;
 
 		//the angle reflect
 		public float angleReflect = 180f;
@@ -101,20 +102,20 @@ namespace PoolKit
 			//(WhiteBall) GameObject.FindObjectOfType(typeof(WhiteBall));
 			
 			
-			GameObject go = new GameObject();
-			if(go)
-			{
-				m_lr2 = go.AddComponent<LineRenderer>();
-				m_lr2.material = lineRenderer.material;
-				m_lr2.SetWidth(0.1f,0.1f);
-				m_lr2.SetColors(Color.yellow,Color.yellow);
-				m_lr2.SetVertexCount(2);
-				m_lr2.gameObject.transform.parent = poolCueGO.transform;
-				m_lr2.transform.localPosition = Vector3.zero;
-			}
-			lineRenderer.SetVertexCount(2);
-			if(lineRenderer && m_whiteBall)
-				lineRenderer.SetPosition(0,m_whiteBall.transform.position);
+            //GameObject go = new GameObject();
+            //if(go)
+            //{
+            //    m_lr2 = go.AddComponent<LineRenderer>();
+            //    m_lr2.material = lineRenderer.material;
+            //    m_lr2.SetWidth(0.1f,0.1f);
+            //    m_lr2.SetColors(Color.yellow,Color.yellow);
+            //    m_lr2.SetVertexCount(2);
+            //    m_lr2.gameObject.transform.parent = poolCueGO.transform;
+            //    m_lr2.transform.localPosition = Vector3.zero;
+            //}
+            //lineRenderer.SetVertexCount(2);
+            //if(lineRenderer && m_whiteBall)
+            //    lineRenderer.SetPosition(0,m_whiteBall.transform.position);
 			
 			//poolCueGO.SetActive(false);
 		}
@@ -157,8 +158,8 @@ namespace PoolKit
 			
 			transform.localRotation = m_initalRot;
 			transform.localPosition = m_initalPos;
-			if(lineRenderer && m_whiteBall)
-				lineRenderer.SetPosition(0,m_whiteBall.transform.position);
+            //if(lineRenderer && m_whiteBall)
+            //    lineRenderer.SetPosition(0,m_whiteBall.transform.position);
 		}
 
 		
@@ -233,7 +234,8 @@ namespace PoolKit
 			Debug.Log ("FIRE BALL" + m_whiteBall.name);
 			m_whiteBall.fireBall(transform.forward * m_powerScalar * power);
 			m_state = State.ROLL;
-			poolCueGO.SetActive(false);
+            //poolCueGO.SetActive(false);
+            Guidelines.HideAllObjects();
 			
 			transform.parent = null;
 
@@ -241,96 +243,60 @@ namespace PoolKit
 
 		public void setTarget(PoolBall ball, Vector3 p2)
 		{
-			poolCueGO.SetActive(true);
-			lineRenderer.SetColors(Color.green,Color.green);
-			m_lr2.SetColors(Color.blue,Color.blue);
-			lineRenderer.SetPosition(0,m_whiteBall.transform.position);
-			lineRenderer.SetPosition(1,ball.transform.position);
+            //poolCueGO.SetActive(true);
+            //lineRenderer.SetColors(Color.green,Color.green);
+            //m_lr2.SetColors(Color.blue,Color.blue);
+            //lineRenderer.SetPosition(0,m_whiteBall.transform.position);
+            //lineRenderer.SetPosition(1,ball.transform.position);
 
 
-			if(m_lr2)
-			{
-				m_lr2.gameObject.SetActive(true);
-				m_lr2.SetPosition(0,ball.transform.position);		
-				m_lr2.SetPosition(1,p2);
-			}
+            //if(m_lr2)
+            //{
+            //    m_lr2.gameObject.SetActive(true);
+            //    m_lr2.SetPosition(0,ball.transform.position);		
+            //    m_lr2.SetPosition(1,p2);
+            //}
 		}
 
 		public virtual bool isBallOkay(PoolBall ball)
 		{
 			return true;
 		}
+
+        //public void OnDrawGizmos()
+        //{ 
+        //    Gizmos.DrawSphere(m_targetPos, WhiteBall.GetRadius());
+        //}
+
+
 		void handleRotate()
 		{
 			if(m_whiteBall && m_whiteBall.sphereCollider)
 			{
 				poolCueGO.SetActive(true);
 				SphereCollider sc = m_whiteBall.sphereCollider;
-				Ray ray = new Ray(m_whiteBall.transform.position + new Vector3(0,sc.radius*ballScalarRadius,0),transform.forward);
+				Ray ray = new Ray(m_whiteBall.transform.position,transform.forward);
+                float r = WhiteBall.GetRadius();
+                Debug.DrawLine(m_whiteBall.transform.position, m_whiteBall.transform.position + new Vector3(r, 0, 0), Color.black, 5);
 				RaycastHit rch;
-				if(Physics.SphereCast(ray,sc.radius*ballScalarRadius,out rch,1000f,layerMask.value))
+				if(Physics.SphereCast(ray,r - Mathf.Epsilon,out rch,1000f,layerMask.value))
 				{
-
-
 					Vector3 pos = rch.point;
-					lineRenderer.SetPosition(0,m_whiteBall.transform.position);
-					float radius = sc.radius * ballScalarRadius;
+
+                    Guidelines.GuidePointerAt(rch.point, rch.transform, rch.normal);
 
 					Vector3 vec =  pos-sc.transform.position;
 
-					pos = sc.transform.position + vec.normalized * (vec.magnitude - radius);
+                    pos = sc.transform.position + vec.normalized * (vec.magnitude - r);
 
-					if(lineRenderer)
-						lineRenderer.SetPosition(1,pos);
 					Vector3 nrm = rch.normal;
 					nrm.y=0;
-					if(m_lr2)
-					{
-						m_lr2.gameObject.SetActive(false);
-					}
 					m_targetBall=null;
-
-
-					lineRenderer.SetColors(Color.yellow,Color.yellow);
-
 
 					if(rch.collider.name.Contains("Ball"))
 					{
-						m_targetBall = rch.collider.GetComponent<PoolBall>();
-						bool isOkay = isBallOkay(m_targetBall);
-
-						if(isOkay)
-						{
-							lineRenderer.SetColors(Color.green,Color.green);
-							m_lr2.SetColors(Color.blue,Color.blue);
-
-						}else{
-							lineRenderer.SetColors(Color.red,Color.red);
-							m_lr2.SetColors(Color.magenta,Color.magenta);
-
-						}
-						if(m_lr2)
-						{
-							m_lr2.gameObject.SetActive(true);
-						}
-                        //Vector3 otherBallPos = rch.point;
-
-						Vector3 incomingVec = rch.point - sc.transform.position;
-						Vector3 reflectVec = Vector3.Reflect(-incomingVec, rch.normal);
-						Debug.DrawLine(sc.transform.position, rch.point, Color.red);
-						Debug.DrawRay(rch.point, reflectVec, Color.green);
-
-
-						Vector3 dir = Vector3.Reflect ( m_whiteBall.transform.forward,nrm).normalized;
-						m_lr2.SetPosition(0,rch.point);
-
-						Vector3 mirrorPos = rch.point + Quaternion.AngleAxis(angleReflect,Vector3.up) * dir.normalized * reflectDistance;
-						m_lr2.SetPosition(1,mirrorPos);
-
-						m_targetPos = mirrorPos;
-
-						mirrorPos = pos - Quaternion.AngleAxis(angleReflect,Vector3.up) * dir.normalized * reflectDistance;
-
+                        m_targetBall = rch.transform.GetComponent<PoolBall>();
+						m_targetPos = rch.point - nrm;
 					}
 				}
 			 }

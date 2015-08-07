@@ -18,11 +18,13 @@ namespace Debugger
                     Drawer drawer = o.GetComponent<Drawer>();
                     if (drawer == null)
                         drawer = o.AddComponent<Drawer>();
+                    drawer.Clear();
                     return drawer;
                 case DebuggerType.Tracker:
                     Tracker tracker = o.GetComponent<Tracker>();
                     if (tracker == null)
                         tracker = o.AddComponent<Tracker>();
+                    tracker.Clear();
                     return tracker;
             }
             return null;
