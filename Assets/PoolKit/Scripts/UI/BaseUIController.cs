@@ -17,6 +17,8 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private RectTransform m_AnchorTemplate;
     [SerializeField]
+    private RectTransform m_BlackMask;
+    [SerializeField]
     private Camera m_UICamera;
 
     [SerializeField]
@@ -37,6 +39,12 @@ public class BaseUIController : MonoBehaviour {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnSideButtonClick);
         }
+        Button button2 = m_BlackMask.GetComponent<Button>();
+        if(button2)
+        {
+            button2.onClick.RemoveAllListeners();
+            button2.onClick.AddListener(OnSideButtonClick);
+        }
         //m_SideObjectAnimator = m_SideObject.transform.parent.GetComponent<Animator>();
     }
 
@@ -45,6 +53,7 @@ public class BaseUIController : MonoBehaviour {
         c.a = 0;
         m_SideObject.GetComponent<Image>().color = c;
         m_SideObject.gameObject.SetActive(false);
+        m_BlackMask.gameObject.SetActive(false);
 	}
 	
 	void Update () {
@@ -58,25 +67,27 @@ public class BaseUIController : MonoBehaviour {
         {
             iTween.FadeTo(m_SideObject.gameObject, 0, m_FadeTime);
             iTween.FadeTo(m_Anchor.gameObject, 0, m_FadeTime);
+            iTween.FadeTo(m_BlackMask.gameObject, 0, m_FadeTime);
             iTween.ScaleTo(m_SideObject.gameObject, Vector3.one, m_FadeTime);
             iTween.MoveTo(m_SideObject.gameObject, iTween.Hash("position", Vector3.zero, "time", m_FadeTime, "oncomplete", "OnFadeoffDown", "oncompletetarget", gameObject, "islocal", true));
         }
         else
         {
             m_SideObject.gameObject.SetActive(true);
+            m_BlackMask.gameObject.SetActive(true);
+            iTween.FadeTo(m_BlackMask.gameObject, 0.4f, m_FadeTime);
             iTween.FadeTo(m_SideObject.gameObject, 1, m_FadeTime);
             iTween.FadeTo(m_Anchor.gameObject, 1, m_FadeTime);
             iTween.MoveTo(m_SideObject.gameObject, iTween.Hash("position", Vector3.zero, "time", m_FadeTime, "islocal", false));
             iTween.ScaleTo(m_SideObject.gameObject, Vector3.one * 2, m_FadeTime);
         }
         PoolKit.WhiteBall.CueBallSiding = !PoolKit.WhiteBall.CueBallSiding;
-        //PoolKit.WhiteBall.CueBallSiding = !m_SideObjectAnimator.GetBool("CueSideIconShow");
-        //m_SideObjectAnimator.SetBool("CueSideIconShow", PoolKit.WhiteBall.CueBallSiding);
     }
 
     private void OnFadeoffDown()
     {
         m_SideObject.gameObject.SetActive(false);
+        m_BlackMask.gameObject.SetActive(false);
     }
 
     public void OnAnchorDrag(BaseEventData data)
@@ -96,9 +107,19 @@ public class BaseUIController : MonoBehaviour {
         {
             cood = newCood;
         }
-        m_Anchor.localPosition = cood;
-        m_AnchorTemplate.localPosition = cood;
-        PoolKit.PoolCue.Siding(cood);
+        _SidingAnchorOffset(cood);
+    }
+
+    public void _SidingAnchorOffset(Vector2 offset)
+    {
+        m_Anchor.localPosition = offset;
+        m_AnchorTemplate.localPosition = offset;
+        PoolKit.PoolCue.Siding(offset);
+    }
+
+    public static void SidingAnchorOffset(Vector2 offset)
+    {
+        m_Instance._SidingAnchorOffset(offset);
     }
 
     public static Vector2 TableCoord2ScreenCoord(Vector3 c)
@@ -109,5 +130,10 @@ public class BaseUIController : MonoBehaviour {
     public static Camera GetUICamera()
     {
         return m_Instance.m_UICamera;
+    }
+
+    public static Transform RootTransform()
+    {
+        return m_Instance.transform;
     }
 }

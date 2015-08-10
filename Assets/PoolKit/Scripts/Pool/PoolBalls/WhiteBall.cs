@@ -245,6 +245,8 @@ namespace PoolKit
             Debugger.Tracker tracker = Debugger.DBERP.GetComponentWithType(Debugger.DebuggerType.Tracker, gameObject) as Debugger.Tracker;
             tracker.Clear();
             tracker.SetTransform(transform);
+
+            BaseUIController.SidingAnchorOffset(Vector2.zero);
 		}
 
         public static void SetTorque(Vector3 torque)

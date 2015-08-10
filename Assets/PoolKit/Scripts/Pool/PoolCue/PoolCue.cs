@@ -62,6 +62,7 @@ namespace PoolKit
 
 		//the power scale -- between 1 and 100
 		protected float m_powerScalar = 1f;
+
 		//the minimum power we want ot use for this shot. 
 		public float minPowerScalar = 0.125f;
 
@@ -90,7 +91,6 @@ namespace PoolKit
 		{
             if (m_Instance)
             {
-                Destroy(gameObject);
                 return;
             }
 
@@ -99,53 +99,31 @@ namespace PoolKit
 			m_initalPos = transform.localPosition;
 			m_initalRot = transform.localRotation;
 			m_whiteBall =transform.parent.GetComponentInChildren<WhiteBall>();
-			//(WhiteBall) GameObject.FindObjectOfType(typeof(WhiteBall));
-			
-			
-            //GameObject go = new GameObject();
-            //if(go)
-            //{
-            //    m_lr2 = go.AddComponent<LineRenderer>();
-            //    m_lr2.material = lineRenderer.material;
-            //    m_lr2.SetWidth(0.1f,0.1f);
-            //    m_lr2.SetColors(Color.yellow,Color.yellow);
-            //    m_lr2.SetVertexCount(2);
-            //    m_lr2.gameObject.transform.parent = poolCueGO.transform;
-            //    m_lr2.transform.localPosition = Vector3.zero;
-            //}
-            //lineRenderer.SetVertexCount(2);
-            //if(lineRenderer && m_whiteBall)
-            //    lineRenderer.SetPosition(0,m_whiteBall.transform.position);
-			
-			//poolCueGO.SetActive(false);
 		}
 		public void OnEnable()
 		{
 			PoolKit.BaseGameManager.onBallStop += onBallStop;
 			PoolKit.BaseGameManager.onGameStart += onStartGame;
+            FireSlider.OnSliderValueChange += SetPowerScalar;
+            FireSlider.OnSliderRelease += requestFire;
 			//PoolKit.BaseGameManager.onBallHitBall += onBallHitBall;
 		}
 		public void OnDisable()
 		{
 			PoolKit.BaseGameManager.onBallStop -= onBallStop;
 			PoolKit.BaseGameManager.onGameStart -= onStartGame;
+            FireSlider.OnSliderValueChange -= SetPowerScalar;
+            FireSlider.OnSliderRelease -= requestFire;
 		}
-		public void setPower(float power)
+		public void setPowerAI(float power)
 		{
 			m_powerScalar = power * 0.01f;
 		}
-		public void OnGUI()
-		{
-			//if we are in the rotate state and not in the menu scene.
 
-
-			if(m_state==State.ROTATE && Application.loadedLevel>0)
-			{
-				GUI.skin = skin0;
-				m_powerScalar = GUI.HorizontalSlider(new Rect(20,Screen.height-32,400,32),m_powerScalar,minPowerScalar,1f);
-
-			}
-		}
+        public void SetPowerScalar(float value)
+        {
+            m_powerScalar = value;
+        }
 
 		public void onStartGame()
 		{
@@ -314,17 +292,17 @@ namespace PoolKit
 
         void _Siding(Vector2 sideOffset)
         {
-            //Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(sideOffset);
-            Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
-            Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
-            Vector3 v3 = Vector3.Cross(v2, v1);
-            //Debugger.Drawer drawer = Debugger.DBERP.GetComponentWithType(Debugger.DebuggerType.Drawer, gameObject) as Debugger.Drawer;
-            //drawer.Clear();
-            //drawer.SetTransform(transform);
-            //drawer.SetRays(v2, v1, v3);
-            //float c = sideOffset.sqrMagnitude * .00066f;
-            //drawer.SetLineColors(Color.yellow, Color.blue, new Color(c, c, c, 1));
-            WhiteBall.SetTorque(v3);
+            if(sideOffset != Vector2.zero)
+            {
+                Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
+                Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
+                Vector3 v3 = Vector3.Cross(v2, v1);
+                WhiteBall.SetTorque(v3);
+            }
+            else
+            {
+                WhiteBall.SetTorque(sideOffset);
+            }
             m_CurrentSideOffset = sideOffset;
         }
 
@@ -337,7 +315,5 @@ namespace PoolKit
         {
             m_Instance._Siding(m_Instance.m_CurrentSideOffset);
         }
-
-
 	}
 }
