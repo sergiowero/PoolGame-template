@@ -12,7 +12,7 @@ public class Guidelines : MonoBehaviour {
     private RectTransform m_WhiteBallDir;
     [SerializeField]
     private RectTransform m_HitBallDir;
-
+    [SerializeField]
     void Awake()
     {
         if(m_Instance)
@@ -84,5 +84,10 @@ public class Guidelines : MonoBehaviour {
     public static void HideAllObjects()
     {
         m_Instance._HideAllObjects();
+    }
+
+    public static Vector3 GetPointerDirection()
+    {
+        return -m_Instance.m_GuideLine.right;
     }
 }

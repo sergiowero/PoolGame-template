@@ -29,8 +29,8 @@ namespace PoolKit
 		{
             if(m_Instance == null)
             {
+                base.Awake();
                 m_Instance = this;
-                m_rigidbody = gameObject.GetComponent<Rigidbody>();
             }
             else
             {
@@ -51,6 +51,11 @@ namespace PoolKit
         public static Vector3 GetPosition()
         {
             return m_Instance.transform.position;
+        }
+
+        public static Vector3 GetScreenPosition()
+        {
+            return Camera.main.WorldToScreenPoint(GetPosition());
         }
 
 		public void setPoolCue(PoolCue cue)
@@ -245,8 +250,8 @@ namespace PoolKit
             Debugger.Tracker tracker = Debugger.DBERP.GetComponentWithType(Debugger.DebuggerType.Tracker, gameObject) as Debugger.Tracker;
             tracker.Clear();
             tracker.SetTransform(transform);
-
-            BaseUIController.SidingAnchorOffset(Vector2.zero);
+            ballTorque = Vector3.zero;
+            Siding.ResetAnchorOffset();
 		}
 
         public static void SetTorque(Vector3 torque)

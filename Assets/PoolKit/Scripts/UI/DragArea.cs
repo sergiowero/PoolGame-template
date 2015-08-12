@@ -9,9 +9,14 @@ public class DragArea : MonoBehaviour {
     private Vector2 m_poolBallsp;
 
     private Vector2 m_LastTouchsp;
-	void Start () {
-	
-	}
+
+
+    private bool m_Dragging = false;
+
+    public void OnAreaDragEnd(BaseEventData data)
+    {
+        m_Dragging = false;
+    }
 
     public void OnAreaDrag(BaseEventData data)
     {
@@ -36,7 +41,28 @@ public class DragArea : MonoBehaviour {
 
     public void OnAreaDragBegin(BaseEventData data)
     {
-        m_poolBallsp = Camera.main.WorldToScreenPoint(PoolKit.WhiteBall.GetPosition());
+        m_Dragging = true;
+        m_poolBallsp = PoolKit.WhiteBall.GetScreenPosition();
         m_LastTouchsp = default(Vector2);
+    }
+
+    public void OnAreaPointerClick(BaseEventData data)
+    {
+        if (m_Dragging)
+            return;
+
+        Vector3 p = ((PointerEventData)data).position,
+            vec = p - PoolKit.WhiteBall.GetScreenPosition(),
+            dir = Guidelines.GetPointerDirection();
+
+        float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
+
+        //pass too small angle
+        if (angle < 1) 
+            return;
+
+        float z = Vector3.Cross(vec, dir).z;
+        if (z < 0) PoolHuman.CueRotate(-angle);
+        else PoolHuman.CueRotate(angle);
     }
 }

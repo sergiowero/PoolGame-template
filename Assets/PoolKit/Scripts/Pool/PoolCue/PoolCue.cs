@@ -17,18 +17,6 @@ namespace PoolKit
 		//our layer mask
 		public LayerMask layerMask;
 
-		//the ball radius
-		public float ballScalarRadius = 25f;
-
-		//the reflect distance -- when we will hit a ball try to predict where it will go
-		public float reflectDistance = 2f;
-
-		//our second line renderer
-        //protected LineRenderer m_lr2;
-
-		//the angle reflect
-		public float angleReflect = 180f;
-
         //current white ball side
         private Vector2 m_CurrentSideOffset;
         [SerializeField]
@@ -96,9 +84,9 @@ namespace PoolKit
 
             m_Instance = this;
 
-			m_initalPos = transform.localPosition;
-			m_initalRot = transform.localRotation;
-			m_whiteBall =transform.parent.GetComponentInChildren<WhiteBall>();
+            m_initalPos = transform.localPosition;
+            m_initalRot = transform.localRotation;
+            m_whiteBall = transform.parent.GetComponentInChildren<WhiteBall>();
 		}
 		public void OnEnable()
 		{
@@ -166,31 +154,31 @@ namespace PoolKit
 		public  void requestFire(){
 			requestFireRPC();
 		}
-		void Update () {
-			if(m_state==State.ROTATE)
-			{
+        void Update () {
+            if(m_state==State.ROTATE)
+            {
 
-				if(poolCueGO)
-				{
-					Vector3 pos = Vector3.zero;
-					pos.z = Mathf.Lerp(-.015f,-.065f,m_powerScalar);
-					poolCueGO.transform.localPosition = pos;
-				}
+                if(poolCueGO)
+                {
+                    Vector3 pos = Vector3.zero;
+                    pos.z = Mathf.Lerp(-.015f,-.065f,m_powerScalar);
+                    poolCueGO.transform.localPosition = pos;
+                }
 
-				if(m_requestRotate)
-				{
-					handleRotate();
-					m_requestRotate=false;
-				}
-				if(m_requestFire)
-				{
-					fireBall();
-					m_requestFire=false;
-				}
+                if(m_requestRotate)
+                {
+                    handleRotate();
+                    m_requestRotate=false;
+                }
+                if(m_requestFire)
+                {
+                    fireBall();
+                    m_requestFire=false;
+                }
 
-			}
+            }
 
-		}
+        }
 
 
 		public void fireBall()
@@ -212,7 +200,7 @@ namespace PoolKit
 			Debug.Log ("FIRE BALL" + m_whiteBall.name);
 			m_whiteBall.fireBall(transform.forward * m_powerScalar * power);
 			m_state = State.ROLL;
-            //poolCueGO.SetActive(false);
+            poolCueGO.SetActive(false);
             Guidelines.HideAllObjects();
 			
 			transform.parent = null;
@@ -252,10 +240,10 @@ namespace PoolKit
 			if(m_whiteBall && m_whiteBall.sphereCollider)
 			{
 				poolCueGO.SetActive(true);
+                
 				SphereCollider sc = m_whiteBall.sphereCollider;
 				Ray ray = new Ray(m_whiteBall.transform.position,transform.forward);
                 float r = WhiteBall.GetRadius();
-                Debug.DrawLine(m_whiteBall.transform.position, m_whiteBall.transform.position + new Vector3(r, 0, 0), Color.black, 5);
 				RaycastHit rch;
 				if(Physics.SphereCast(ray,r - Mathf.Epsilon,out rch,1000f,layerMask.value))
 				{
@@ -297,13 +285,19 @@ namespace PoolKit
                 Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
                 Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
                 Vector3 v3 = Vector3.Cross(v2, v1);
-                WhiteBall.SetTorque(v3);
-            }
-            else
-            {
-                WhiteBall.SetTorque(sideOffset);
+                WhiteBall.SetTorque(v3.normalized * sideOffset.sqrMagnitude * .05f);
             }
             m_CurrentSideOffset = sideOffset;
+        }
+
+        private void _ResetSideOffset()
+        {
+            m_CurrentSideOffset = Vector2.zero;
+        }
+
+        public static void ResetSideOffset()
+        {
+            m_Instance._ResetSideOffset();
         }
 
         public static void Siding(Vector2 sideOffset)

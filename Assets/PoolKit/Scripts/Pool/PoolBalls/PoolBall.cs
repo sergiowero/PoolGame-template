@@ -24,6 +24,10 @@ namespace PoolKit
 		//the inital position
 		protected Vector3 m_initalPos;
 
+        protected Transform m_Shadow;
+        protected Transform m_ShadowRenderer;
+        protected Vector3 m_ShadowRendererLocalPosition;
+
 		//the inital rotation 
 		protected Quaternion m_initalRot;
 		public enum State
@@ -62,6 +66,13 @@ namespace PoolKit
 		public virtual void Awake()
 		{
 			m_rigidbody =gameObject.GetComponent<Rigidbody>();
+            m_Shadow = transform.FindChild("Shadow");
+            if (m_Shadow)
+            {
+                m_ShadowRenderer = m_Shadow.FindChild("Renderer");
+                m_ShadowRendererLocalPosition = m_ShadowRenderer.localPosition;
+                RenderShadow();
+            }
 		}
 		public virtual void Start()
 		{
@@ -113,7 +124,7 @@ namespace PoolKit
 		}
 		public void onFireBall()
 		{
-			m_rigidbody.isKinematic=false;
+            m_rigidbody.isKinematic = false;
 			m_state = State.ROLL;
 		}
 		public void Update()
@@ -132,6 +143,22 @@ namespace PoolKit
 			}
 		}
 
+        // LateUpdate is called every frame, if the Behaviour is enabled
+        public void LateUpdate()
+        {
+            if (m_Shadow)
+            {
+                RenderShadow();
+            }
+        }
+
+        private void RenderShadow()
+        {
+            m_Shadow.rotation = Quaternion.identity;
+            m_ShadowRendererLocalPosition.x = (transform.position.x - LightSource.Position.x) * .0015f;
+            m_ShadowRendererLocalPosition.z = (transform.position.z - LightSource.Position.z) * .0015f;
+            m_ShadowRenderer.localPosition = m_ShadowRendererLocalPosition;
+        }
 
 		void FixedUpdate()
 		{

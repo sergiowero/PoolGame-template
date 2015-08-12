@@ -43,10 +43,10 @@ namespace PoolKit
 
 		void spawnPlayer (int i) 
 		{
-			string objectToSpawn = "HumanPlayer" + i;
-			Instantiate(Resources.Load(objectToSpawn),
-			                            Vector3.zero,
-			                            Quaternion.identity);	
+            string objectToSpawn = "HumanPlayer" + i;
+            Instantiate(Resources.Load(objectToSpawn),
+                                        Vector3.zero,
+                                        Quaternion.identity);	
 		}
 		void spawnAI (int i) 
 		{

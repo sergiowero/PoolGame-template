@@ -5,6 +5,9 @@ namespace PoolKit
 	//we are either going to use a 8 ball or 9 ball gamescript depending on which game we are playing. 
 	public class PoolGameScript : MonoBehaviour 
 	{
+        
+
+
 		//the ref of pool balls
 		protected PoolBall[] m_balls;
 

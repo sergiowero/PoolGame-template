@@ -14,6 +14,9 @@ namespace PoolKit
 		//the trigger id
 		public string triggerID = "bowlingPit";
 
+        [Range(0, 1)]
+        [SerializeField]
+        private float m_Radius = 1;
 
 		void Start()
 		{
@@ -24,7 +27,8 @@ namespace PoolKit
         {
             // Draw a yellow sphere at the transform's position
             Gizmos.color = gizmoColor;
-            Gizmos.DrawCube(transform.position, transform.localScale);
+            //Gizmos.DrawCube(transform.position, transform.localScale);
+            Gizmos.DrawSphere(transform.position, m_Radius);
         }
 
 		public Vector3 getPosition()
