@@ -31,6 +31,9 @@ namespace PoolKit {
 		/// </summary>
 		public Vector2 zAxis = new Vector2(0,40);
 
+        [System.NonSerialized]
+        public float adjustment;
+
 		void OnDrawGizmos() {
 			// Draw a yellow sphere at the transform's position
 			Gizmos.color = Color.red;
@@ -51,15 +54,15 @@ namespace PoolKit {
 			Vector3 pos = transform.position;
 			if(constraintX)
 			{
-				pos.x = Mathf.Clamp(pos.x,xAxis.x,xAxis.y);
+                pos.x = Mathf.Clamp(pos.x, xAxis.x + adjustment, xAxis.y - adjustment);
 			}
 			if(constraintY)
 			{
-				pos.y = Mathf.Clamp(pos.y,yAxis.x,yAxis.y);
+                pos.y = Mathf.Clamp(pos.y, yAxis.x + adjustment, yAxis.y - adjustment);
 			}
 			if(constraintZ)
 			{
-				pos.z = Mathf.Clamp(pos.z,zAxis.x,zAxis.y);
+                pos.z = Mathf.Clamp(pos.z, zAxis.x + adjustment, zAxis.y - adjustment);
 			}
 			
 			transform.position = pos;

@@ -6,26 +6,37 @@ namespace PoolKit
 	public class PoolGameScript : MonoBehaviour 
 	{
         
-
-
 		//the ref of pool balls
 		protected PoolBall[] m_balls;
 
 		//have we fired the ball
 		protected bool m_firedBall=false;
 
+        [System.Flags]
 		public enum State
 		{
-			IDLE,
-			ROLLING,
-			DONE_ROLLING
+			IDLE = 1 << 1,
+			ROLLING = 1 << 2,
+			DONE_ROLLING = 1 << 4,
+            DRAG_WHITEBALL = 1 << 8,
+            NONE = 1 << 16
 		};
 
 		//a ref to the white ball
 		protected WhiteBall m_whiteBall;
 
 		//what state aer we in
-		protected State m_state;
+		protected State m_state = State.IDLE;
+        protected State m_PrevousState;
+        public State GlobalState 
+        {
+            set { m_PrevousState = m_state; m_state = value; }
+            get { return m_state; } 
+        }
+        public void ReturnPrevousState()
+        {
+            GlobalState = m_PrevousState;
+        }
 
 		//the currnet players turn.
 		protected int m_playerTurn = 0;
@@ -60,7 +71,7 @@ namespace PoolKit
 		protected bool m_foul=false;
 
 
-		void Start () {
+		protected virtual void Awake () {
 
 			m_balls = (PoolBall[])GameObject.FindObjectsOfType(typeof(PoolBall));
 			m_whiteBall = (WhiteBall)GameObject.FindObjectOfType(typeof(WhiteBall));
@@ -69,7 +80,6 @@ namespace PoolKit
 			{
 				m_balls[i].minSpeed = minBallSpeed;
 			}
-			onGameStart();
 		}
 		void onGameStart()
 		{
@@ -107,7 +117,8 @@ namespace PoolKit
 			PoolKit.BaseGameManager.onGameStart-= onGameStart;
 
 		}
-		public bool onIsMyTurn(int playerID)
+
+        public bool onIsMyTurn(int playerID)
 		{
 			return m_currentPlayer.playerIndex == playerID;
 		}
@@ -137,16 +148,16 @@ namespace PoolKit
 
 		void onFireBall()
 		{
-			m_state = State.ROLLING;
+			GlobalState = State.ROLLING;
 		}
 		void Update () {
 
-			if(m_state == State.DONE_ROLLING)
-			{
-				if(m_gameover==false)
-					handleWhiteInPocket();
-			}
-			if(m_state==State.ROLLING)
+            //if (GlobalState == State.DONE_ROLLING)
+            //{
+            //    if(m_gameover==false)
+            //        handleWhiteInPocket();
+            //}
+            if (GlobalState == State.ROLLING)
 			{
 				if(m_gameover==false)
 					checkDoneRolling();
@@ -241,8 +252,8 @@ namespace PoolKit
 
 
 				PoolKit.BaseGameManager.ballStopped();
-				m_state = State.DONE_ROLLING;
-
+                GlobalState = State.DONE_ROLLING;
+                handleWhiteInPocket();
 
 				//change turn!
 				if(m_ballsPocketed==0 || m_whiteEnteredPocket || m_foul)

@@ -28,6 +28,9 @@ namespace PoolKit
         protected Transform m_ShadowRenderer;
         protected Vector3 m_ShadowRendererLocalPosition;
 
+        [SerializeField]
+        protected float m_DecreaseFactor;
+
 		//the inital rotation 
 		protected Quaternion m_initalRot;
 		public enum State
@@ -142,6 +145,7 @@ namespace PoolKit
 				}
 			}
 		}
+        public float mag;
 
         // LateUpdate is called every frame, if the Behaviour is enabled
         public void LateUpdate()
@@ -164,6 +168,16 @@ namespace PoolKit
 		{
 			Speed = (transform.position - lastPosition).magnitude / Time.deltaTime * 3.6f;
 			lastPosition = transform.position;
+
+
+            Vector3 v = m_rigidbody.velocity;
+            if (v.sqrMagnitude == 0)
+                return;
+            
+            mag = v.magnitude;
+            mag -= m_DecreaseFactor * Time.deltaTime;
+            mag = Mathf.Max(0, mag);
+            m_rigidbody.velocity = v.normalized * mag;
 		}
 
 		
@@ -179,7 +193,8 @@ namespace PoolKit
 				{
 					Destroy(gameObject);
 				}else{
-					transform.position = m_initalPos;
+                    //transform.position = m_initalPos;
+                    gameObject.SetActive(false);
 				}
 			}
 		}

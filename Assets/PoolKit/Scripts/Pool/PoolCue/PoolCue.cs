@@ -63,6 +63,16 @@ namespace PoolKit
 		//the taret position
 		protected Vector3 m_targetPos;
 
+        protected float m_CurRotAngle;
+        public float CurRotAngle
+        {
+            set 
+            { 
+                m_CurRotAngle += value;
+                m_CurRotAngle = MathTools.Roll(0, 360, m_CurRotAngle);
+            }
+        }
+
 		//do we want to rotate
 		protected bool m_requestRotate = false;
 
@@ -115,15 +125,15 @@ namespace PoolKit
 
 		public void onStartGame()
 		{
-			m_whiteBall =transform.parent.GetComponentInChildren<WhiteBall>();
-			if(m_whiteBall)
-			{
-				transform.parent = m_whiteBall.transform;
-			}
-			transform.localScale = new Vector3(1,1,1);
-			
-			transform.localRotation = m_initalRot;
-			transform.localPosition = m_initalPos;
+            //m_whiteBall =transform.parent.GetComponentInChildren<WhiteBall>();
+            //if (m_whiteBall)
+            //{
+            //    transform.parent = m_whiteBall.transform;
+            //}
+            //transform.localScale = new Vector3(1, 1, 1);
+
+            //transform.localRotation = m_initalRot;
+            //transform.localPosition = m_initalPos;
             //if(lineRenderer && m_whiteBall)
             //    lineRenderer.SetPosition(0,m_whiteBall.transform.position);
 		}
@@ -228,7 +238,7 @@ namespace PoolKit
 		{
 			return true;
 		}
-
+        
         //public void OnDrawGizmos()
         //{ 
         //    Gizmos.DrawSphere(m_targetPos, WhiteBall.GetRadius());
@@ -239,6 +249,7 @@ namespace PoolKit
 		{
 			if(m_whiteBall && m_whiteBall.sphereCollider)
 			{
+                Debug.Log(1111);
 				poolCueGO.SetActive(true);
                 
 				SphereCollider sc = m_whiteBall.sphereCollider;
@@ -285,7 +296,7 @@ namespace PoolKit
                 Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
                 Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
                 Vector3 v3 = Vector3.Cross(v2, v1);
-                WhiteBall.SetTorque(v3.normalized * sideOffset.sqrMagnitude * .05f);
+                WhiteBall.SetTorque(v3.normalized * sideOffset.sqrMagnitude);
             }
             m_CurrentSideOffset = sideOffset;
         }
@@ -293,6 +304,18 @@ namespace PoolKit
         private void _ResetSideOffset()
         {
             m_CurrentSideOffset = Vector2.zero;
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+            Guidelines.HideAllObjects();
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            //Guidelines.ShowAllObjects();
         }
 
         public static void ResetSideOffset()

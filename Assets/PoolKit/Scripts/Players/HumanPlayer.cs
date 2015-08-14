@@ -121,6 +121,7 @@ namespace PoolKit
         {
             m_cue.transform.RotateAround(WhiteBall.GetPosition(), Vector3.up, angle);
             m_cue.requestRotate();
+            m_cue.CurRotAngle = angle;
             PoolCue.UpdateSiding();
         }
 

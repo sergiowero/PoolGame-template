@@ -5,6 +5,57 @@ namespace PoolKit
 
 	public class PoolGameScript8Ball : PoolGameScript 
 	{
+        private static PoolGameScript8Ball m_Instance = null;
+        public static PoolGameScript8Ball Instance { get { return m_Instance; } }
+        protected override void Awake()
+        {
+            base.Awake();
+            if (m_Instance)
+            {
+                Debug.LogError("two " + gameObject + " in then scene");
+                return;
+            }
+            m_Instance = this;
+        }
+
+        public static void Shuffle()
+        {
+            m_Instance._Shuffle();
+        }
+
+        void OnGUI()
+        {
+            GUILayout.Label("current state : " + GlobalState);
+        }
+
+        //打乱球的位置，这地方要改。这一条链都要改
+        private void _Shuffle()
+        {
+            for (int i = 0, length = m_balls.Length; i < length; i++)
+            {
+                if (m_balls[i].name.Contains("Ball9"))
+                {
+                    CueOperateArea.PointerAt(m_balls[i].transform.position);
+                    break;
+                }
+            }
+
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0, length = m_balls.Length; i < length; i++)
+                {
+                    int r = Random.Range(1, 15);
+                    string n1 = m_balls[i].name, n2 = m_balls[r].name;
+                    if (n1.Contains("Ball8") || n2.Contains("Ball8") || n1.Contains("WhiteBall") || n2.Contains("WhiteBall") || n1.CompareTo(n2) == 0)
+                        continue;
+
+                    Vector3 v = m_balls[r].transform.position;
+                    m_balls[r].transform.position = m_balls[i].transform.position;
+                    m_balls[i].transform.position = v;
+                }
+            }
+        }
+
 
 		public override void handleFirstBallHitByWhiteBall(PoolBall ball)
 		{

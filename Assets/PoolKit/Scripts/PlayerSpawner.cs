@@ -13,29 +13,31 @@ namespace PoolKit
 		//spawn the objects owned by the master client.
 		public void Start()
 		{
-			int nomHumans = PlayerPrefs.GetInt("nomHumans");
-			int nomAI = PlayerPrefs.GetInt("nomAI");
+            //int nomHumans = PlayerPrefs.GetInt("nomHumans");
+            //int nomAI = PlayerPrefs.GetInt("nomAI");
 
 			//if its the menu -- scene load use 2 ais.
-			if(Application.loadedLevel==0)
-			{
-				nomHumans=0;
-				nomAI=2;
-			}
+            //if(Application.loadedLevel==0)
+            //{
+            //    nomHumans=0;
+            //    nomAI=2;
+            //}
 			//how many humans do we want.
-			for(int i=0; i<nomHumans; i++)
-			{
-				spawnPlayer(i+1);
-			}
-			
+            //for(int i=0; i<nomHumans; i++)
+            //{
+            //    spawnPlayer(i+1);
+            //}
+
+            spawnPlayer(1);
+
 			//the ai will be owned by the master client
-			for(int i=0; i<nomAI; i++)
-			{
-				spawnAI(i);
-			}
-			
-			
-			BaseGameManager.startGame();
+            //for(int i=0; i<nomAI; i++)
+            //{
+            //    spawnAI(i);
+            //}
+
+
+            BaseGameManager.startGame();
 		}
 
 

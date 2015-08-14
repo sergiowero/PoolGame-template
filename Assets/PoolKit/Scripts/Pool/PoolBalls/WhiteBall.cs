@@ -4,6 +4,8 @@ namespace PoolKit
 {
 	public class WhiteBall : PoolBall
 	{
+        private BallDragger m_BallDragger;
+
         private static WhiteBall m_Instance = null;
 
         public static bool CueBallSiding = false;
@@ -14,7 +16,6 @@ namespace PoolKit
 		Vector3 screenPoint;
 		Vector3 offset;
 		public float dragThreshold = 20;
-		private bool m_mouseDown = false;
 		public PoolCue m_cue;
 
 		private Constraint m_constraint;
@@ -25,6 +26,8 @@ namespace PoolKit
         //private bool m_fired=false;
 		public LayerMask layermask;
 		public bool foul=true;
+
+
 		public override void Awake()
 		{
             if(m_Instance == null)
@@ -55,7 +58,9 @@ namespace PoolKit
 
         public static Vector3 GetScreenPosition()
         {
-            return Camera.main.WorldToScreenPoint(GetPosition());
+            Vector3 v = Camera.main.WorldToScreenPoint(GetPosition());
+            v.z = 0;
+            return v;
         }
 
 		public void setPoolCue(PoolCue cue)
@@ -72,62 +77,70 @@ namespace PoolKit
 		public override void Start()
 		{
 			base.Start();
+            InitBallDragger();
 			sphereCollider = gameObject.GetComponent<SphereCollider>();
 			ball = gameObject.GetComponent<PoolBall>();
 			m_constraint = gameObject.GetComponent<Constraint>();
 			m_constraint.enabled=false;
-
-			//m_cue = (PoolCue)GameObject.FindObjectOfType(typeof(PoolCue));
-			stopBall();
+            m_constraint.adjustment = getRadius();
+            m_cue = (PoolCue)GameObject.FindObjectOfType(typeof(PoolCue));
+            stopBall();
+            PoolGameScript8Ball.Shuffle();
 		}
 
+        private void InitBallDragger()
+        {
+            m_BallDragger = gameObject.GetComponent<BallDragger>();
+            if (!m_BallDragger)
+                m_BallDragger = gameObject.AddComponent<BallDragger>();
+            m_BallDragger.layermask = gameObject.layer;
+            m_BallDragger.dragBegin = OnDragBegin;
+            m_BallDragger.drag = OnDrag;
+            m_BallDragger.dragEnd = OnDragEnd;
+        }
+
 		//the mouse is down lets get the screen point and offset
-		void OnMouseDown()
+		void OnDragBegin(BallDraggerData data)
 		{
-            Debug.Log("mouse down");
-			if(foul && m_state!=State.ROLL )
+			if(foul && PoolGameScript8Ball.Instance.GlobalState != PoolGameScript.State.ROLLING )
 			{
 				m_constraint.enabled=true;
 				m_rigidbody.useGravity=false;
-				m_mouseDown=true;
 				screenPoint = Camera.main.WorldToScreenPoint(gameObject.transform.position);
-				offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+                offset = gameObject.transform.position - Camera.main.ScreenToWorldPoint(new Vector3(data.Position.x, data.Position.y, screenPoint.z));
+                PoolGameScript8Ball.Instance.GlobalState = PoolGameScript.State.DRAG_WHITEBALL;
 			}	
 		}
-		void OnMouseUp()
+
+        void OnDragEnd(BallDraggerData data)
 		{
-            Debug.Log("mouse up");
-			if(foul && m_state!=State.ROLL)
+            if (foul && PoolGameScript8Ball.Instance.GlobalState != PoolGameScript.State.ROLLING)
 			{
 				m_rigidbody.useGravity=true;
 				m_constraint.enabled=false;
-				if(m_cue)
-					m_cue.gameObject.SetActive (true);
-				m_mouseDown=false;
-				collider.enabled=true;
+                if (m_cue)
+                    m_cue.Show();
+                collider.isTrigger = false;
+                PoolGameScript8Ball.Instance.ReturnPrevousState();
 			}
 		}
-		
-		void OnMouseDrag()
-		{
-            Debug.Log("mouse drag");
-			if(foul && m_state!=State.ROLL)
-			{
-				if(m_mouseDown)
-				{
-					Vector3 curScreenPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
-					Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-					curPosition.y = transform.position.y;
 
-					Collider[] contantacts = Physics.OverlapSphere(curPosition,getRadius(),layermask.value);
-					if(contantacts.Length==0)
-					{
-						transform.position = curPosition;
-						collider.enabled=false;
-						if(m_cue)
-							m_cue.gameObject.SetActive (false);
-					}
-				}
+        void OnDrag(BallDraggerData data)
+		{
+            if (foul && PoolGameScript8Ball.Instance.GlobalState != PoolGameScript.State.ROLLING)
+			{
+                Vector3 curScreenPoint = new Vector3(data.Position.x, data.Position.y, screenPoint.z);
+                Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
+                curPosition.y = transform.position.y;
+
+                Collider[] contantacts = Physics.OverlapSphere(curPosition, getRadius(), layermask.value);
+                if (contantacts.Length == 0)
+                {
+                    transform.position = curPosition;
+                    collider.isTrigger = true;
+                    if (m_cue)
+                        m_cue.Hide();
+                }
 			}
 		}
 
@@ -175,7 +188,7 @@ namespace PoolKit
 			m_slowTime=0;
 			m_state = State.IDLE;
 
-			transform.rotation = Quaternion.identity;
+            transform.rotation = Quaternion.identity;
 			if(m_rigidbody)
 			{
 				m_rigidbody.isKinematic=false;
@@ -187,6 +200,7 @@ namespace PoolKit
 		}
 		public void reset()
 		{
+            gameObject.SetActive(true);
 			m_hitBall=false;
 			m_rigidbody.constraints = RigidbodyConstraints.None;
 			m_slowTime=0;
@@ -207,7 +221,7 @@ namespace PoolKit
 
 		public void stopBall()
 		{
-			transform.rotation = Quaternion.identity;
+            transform.rotation = Quaternion.identity;
 			if(m_rigidbody)
 			{
 				m_rigidbody.isKinematic=false;
@@ -221,7 +235,7 @@ namespace PoolKit
 		public override void onBallStop()
 		{
 			base.onBallStop();
-			transform.rotation = Quaternion.identity;
+            transform.rotation = Quaternion.identity;
 
 		}
 

@@ -59,6 +59,7 @@ public class FireSlider : MonoBehaviour {
         if (m_LastValue > .1f && OnSliderRelease != null)
         {
             OnSliderRelease();
+            m_LastValue = 0;
         }
         iTween.MoveTo(m_SliderButton.gameObject, iTween.Hash("y", 0, "time", m_FadeTime, "islocal", true));
         iTween.ColorTo(m_Background.gameObject, iTween.Hash("color",m_MinColor, "time", m_FadeTime, "includechildren", false));

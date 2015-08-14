@@ -5,6 +5,9 @@ namespace PoolKit
 	//the pocket triggers 
 	public class PocketTrigger : MonoBehaviour 
 	{
+        [SerializeField]
+        private Transform m_RefTrans;
+
 		//the color of the gizmo
 		public Color gizmoColor = new Color(1,0,0,0.5f);
 
@@ -29,6 +32,11 @@ namespace PoolKit
             Gizmos.color = gizmoColor;
             //Gizmos.DrawCube(transform.position, transform.localScale);
             Gizmos.DrawSphere(transform.position, m_Radius);
+            Gizmos.color = Color.white;
+            if(m_RefTrans)
+            {
+                Gizmos.DrawCube(m_RefTrans.position, Vector3.one * .07f);
+            }
         }
 
 		public Vector3 getPosition()
@@ -41,9 +49,9 @@ namespace PoolKit
 		{
 			PoolBall pb = col.GetComponent<PoolBall>();
 			if(col.name.Contains("Ball"))
-			{	
-				BaseGameManager.ballEnterPocket(triggerID,pb);
-				pb.enterPocket();
+			{
+                BaseGameManager.ballEnterPocket(triggerID, pb);
+                pb.enterPocket();
 			}
 		}
 	}

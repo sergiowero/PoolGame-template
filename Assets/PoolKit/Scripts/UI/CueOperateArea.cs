@@ -4,7 +4,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using PoolHuman = PoolKit.HumanPlayer;
 
-public class DragArea : MonoBehaviour {
+public class CueOperateArea : MonoBehaviour {
+
+    private static CueOperateArea m_Instance = null;
 
     private Vector2 m_poolBallsp;
 
@@ -12,6 +14,17 @@ public class DragArea : MonoBehaviour {
 
 
     private bool m_Dragging = false;
+
+    void Awake()
+    {
+        if(m_Instance)
+        {
+            Debug.Log("two dragarea in the scene");
+            return;
+        }
+        m_Instance = this;
+    }
+
 
     public void OnAreaDragEnd(BaseEventData data)
     {
@@ -30,7 +43,7 @@ public class DragArea : MonoBehaviour {
         Vector3 v1 = m_LastTouchsp - m_poolBallsp,
             v2 = ped.position - m_poolBallsp;
         float ag = Mathf.Acos(Vector3.Dot(v1.normalized, v2.normalized)) * Mathf.Rad2Deg;
-        if (float.IsNaN(ag) || float.IsInfinity(ag))
+        if (float.IsNaN(ag) || float.IsInfinity(ag) || ag == 0)
             return;
         float fag = ag * 100 / Mathf.Max(v2.magnitude,100);
         float z = Vector3.Cross(v1, v2).z;
@@ -50,15 +63,26 @@ public class DragArea : MonoBehaviour {
     {
         if (m_Dragging)
             return;
+        _PointerAt(((PointerEventData)data).position);
+    }
 
-        Vector3 p = ((PointerEventData)data).position,
-            vec = p - PoolKit.WhiteBall.GetScreenPosition(),
+    public static void PointerAt(Vector3 point)
+    {
+        Vector3 v = Camera.main.WorldToScreenPoint(point);
+        v.z = 0;
+        Debug.Log(v);
+        m_Instance._PointerAt(v);
+    }
+
+    private void _PointerAt(Vector3 point)
+    {
+           Vector3 vec = point - PoolKit.WhiteBall.GetScreenPosition(),
             dir = Guidelines.GetPointerDirection();
 
         float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
 
         //pass too small angle
-        if (angle < 1) 
+        if (float.IsNaN(angle) || float.IsInfinity(angle) || angle < 1)
             return;
 
         float z = Vector3.Cross(vec, dir).z;

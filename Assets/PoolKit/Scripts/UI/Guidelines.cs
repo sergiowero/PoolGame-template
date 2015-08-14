@@ -81,9 +81,19 @@ public class Guidelines : MonoBehaviour {
         gameObject.SetActive(false);
     }
 
+    private void _ShowAllObjects()
+    {
+        gameObject.SetActive(true);
+    }
+
     public static void HideAllObjects()
     {
         m_Instance._HideAllObjects();
+    }
+
+    public static void ShowAllObjects()
+    {
+        m_Instance._ShowAllObjects();
     }
 
     public static Vector3 GetPointerDirection()
