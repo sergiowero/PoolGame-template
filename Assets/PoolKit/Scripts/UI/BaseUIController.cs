@@ -10,6 +10,9 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private Camera m_UICamera;
 
+    [SerializeField]
+    private Text m_FoulText;
+
     void Awake()
     {
         if (m_Instance)
@@ -18,6 +21,7 @@ public class BaseUIController : MonoBehaviour {
             return;
         }
         m_Instance = this;
+        m_FoulText.gameObject.SetActive(false);
     }
 
     public static Camera GetUICamera()
@@ -28,5 +32,10 @@ public class BaseUIController : MonoBehaviour {
     public static Transform RootTransform()
     {
         return m_Instance.transform;
+    }
+
+    public static void ShowFoulText()
+    {
+        m_Instance.m_FoulText.gameObject.SetActive(true);
     }
 }

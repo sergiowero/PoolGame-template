@@ -44,19 +44,20 @@ public class FireSlider : MonoBehaviour {
         Vector3 p = m_SliderTrans.localPosition;
         p.y = Mathf.Clamp(p.y, -m_MaxPower, 0);//y position is negative
         m_SliderTrans.localPosition = p;
-        float power = p.y / -m_MaxPower;
-        m_Background.color = Color.Lerp(m_MinColor, m_MaxColor, power);
+        float percentage = p.y / -m_MaxPower;
+        float power = Mathf.Lerp(0, 3, percentage);
+        m_Background.color = Color.Lerp(m_MinColor, m_MaxColor, percentage);
 
-        if(OnSliderValueChange != null && m_LastValue != power)
+        if(OnSliderValueChange != null && m_LastValue != percentage)
         {
             OnSliderValueChange(power);
         }
-        m_LastValue = power;
+        m_LastValue = percentage;
     }
 
     public void OnFireSliderDragEnd(BaseEventData data)
     {
-        if (m_LastValue > .1f && OnSliderRelease != null)
+        if (m_LastValue > .02f && OnSliderRelease != null)
         {
             OnSliderRelease();
             m_LastValue = 0;

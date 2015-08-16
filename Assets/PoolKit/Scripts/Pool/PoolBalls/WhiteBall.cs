@@ -27,7 +27,8 @@ namespace PoolKit
 		public LayerMask layermask;
 		public bool foul=true;
 
-
+        [SerializeField]
+        private float power = 20;
 		public override void Awake()
 		{
             if(m_Instance == null)
@@ -160,7 +161,16 @@ namespace PoolKit
 		}
 		public override void OnCollisionEnter (Collision col){
             //float vel = Mathf.Max(rigidbody.velocity.x,rigidbody.velocity.z);
-			if (col.gameObject.name.Contains("Ball"))
+            string name = col.gameObject.name;
+            if(!name.Contains("surface"))
+                StartCoroutine("TouchTable", 0);
+            if (name.Contains("Rail"))
+            {
+                //we hit the wall.
+                PoolKit.BaseGameManager.ballHitWall(rigidbody.velocity);
+                hitWall = true;
+            }
+            if (name.Contains("Ball"))
 			{
 
 				PoolBall ball = col.gameObject.GetComponent<PoolBall>();
@@ -239,25 +249,23 @@ namespace PoolKit
 
 		}
 
-		public void fireBall(Vector3 vec)
+        public void fireBall(float powerScalar)
 		{
-			_fireBall(vec);
+            _fireBall(powerScalar);
 		}
 		
-		//lets fire the ball foreveryone!
-		public void fireBallRPC(Vector3 vec)
+		void _fireBall(float powerScalar)
 		{
-
-			_fireBall(vec);
-		}
-		void _fireBall(Vector3 vec)
-		{
-			Debug.Log ("_fireBall"+vec);
-
 			m_rigidbody.isKinematic=false;
+            if(powerScalar > 1)
+            {
+                m_rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
+                m_rigidbody.useGravity = false;
+                StartCoroutine("TouchTable", powerScalar * .1f);
+            }
             //m_fired=true;
 			m_slowTime=0;
-			m_rigidbody.AddForce( vec, ForceMode.Impulse);
+			m_rigidbody.AddForce(PoolCue.GetForward() * powerScalar * power , ForceMode.Impulse);
 			m_rigidbody.AddTorque(ballTorque);
 			m_state = State.ROLL;
 			PoolKit.BaseGameManager.fireBall();
@@ -267,6 +275,13 @@ namespace PoolKit
             ballTorque = Vector3.zero;
             Siding.ResetAnchorOffset();
 		}
+
+        IEnumerator TouchTable(float time)
+        {
+            yield return new WaitForSeconds(time);
+            m_rigidbody.constraints = RigidbodyConstraints.None;
+            m_rigidbody.useGravity = true;
+        }
 
         public static void SetTorque(Vector3 torque)
         {

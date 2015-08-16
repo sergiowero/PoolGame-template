@@ -44,7 +44,7 @@ namespace PoolKit
 		{
 			if(audio)
 			{
-				audio.PlayOneShot( onFoulAC,0.25f );
+                //audio.PlayOneShot( onFoulAC,0.25f );
 			}
 		}
 		
@@ -56,7 +56,8 @@ namespace PoolKit
 			float v0 = Mathf.Max(vel.x,vel.y,vel.z);
 			if(audio)
 			{
-				audio.PlayOneShot( onBallHitBallAC,v0*0.1f );
+                v0 = Mathf.Clamp(2,4,v0);
+				audio.PlayOneShot( onBallHitBallAC,v0);
 			}
 		}
 
@@ -66,7 +67,8 @@ namespace PoolKit
 
 			if(audio)
 			{
-				audio.PlayOneShot( onBallHitWallAC ,v0*0.1f);
+                v0 = Mathf.Clamp(2, 4, v0);
+				audio.PlayOneShot( onBallHitWallAC ,v0);
 			}
 		}
 
@@ -82,7 +84,7 @@ namespace PoolKit
 		{
 			if(audio)
 			{
-				audio.PlayOneShot( onBallEnterPocketAC );
+                //audio.PlayOneShot( onBallEnterPocketAC );
 			}
 		}
 

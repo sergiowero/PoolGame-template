@@ -211,7 +211,7 @@ namespace PoolKit
 				m_whiteBall.foul = m_foul;
 			}
 
-			PoolKit.BaseGameManager.showTitleCard( m_players[m_playerTurn].playerName + " turn!");
+            //PoolKit.BaseGameManager.showTitleCard( m_players[m_playerTurn].playerName + " turn!");
 			
 			PoolKit.BaseGameManager.playersTurn(m_playerTurn);
 		}
@@ -236,11 +236,11 @@ namespace PoolKit
 				   m_balls[i].gameObject.activeInHierarchy))
 				{
 					doneRolling = false;
+                    break;
 				}
 			}
 			if(doneRolling)
 			{
-				Debug.Log ("doneRolling!");
 				float waitTime=0;
 				bool fouls = handleFouls();
 				//clear the wall hit.

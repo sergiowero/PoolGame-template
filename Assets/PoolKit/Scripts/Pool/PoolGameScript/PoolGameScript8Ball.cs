@@ -23,11 +23,6 @@ namespace PoolKit
             m_Instance._Shuffle();
         }
 
-        void OnGUI()
-        {
-            GUILayout.Label("current state : " + GlobalState);
-        }
-
         //打乱球的位置，这地方要改。这一条链都要改
         private void _Shuffle()
         {
@@ -124,8 +119,8 @@ namespace PoolKit
 
 			if(m_whiteEnteredPocket)
 			{
-				PoolKit.BaseGameManager.showTitleCard("FOUL - White ball pocketed!");
-
+                //PoolKit.BaseGameManager.showTitleCard("FOUL - White ball pocketed!");
+                BaseUIController.ShowFoulText();
 				fouls=true;
 			}
 			
@@ -141,8 +136,8 @@ namespace PoolKit
 				{
 					//it was a foul ball.
 					m_break = true;
-					PoolKit.BaseGameManager.showTitleCard("FOUL - At least 4 balls must hit the wall after a break!");
-					fouls=true;
+                    //PoolKit.BaseGameManager.showTitleCard("FOUL - At least 4 balls must hit the wall after a break!");
+                    //fouls=true;
 				}else{
 					m_break=true;
 				}
@@ -150,7 +145,7 @@ namespace PoolKit
 			
 			if(wallHit==0 && m_ballsPocketed==0)
 			{
-				PoolKit.BaseGameManager.showTitleCard("FOUL - No balls hit wall, or were pocketed!");
+                //PoolKit.BaseGameManager.showTitleCard("FOUL - No balls hit wall, or were pocketed!");
 				fouls=true;
 				
 			}

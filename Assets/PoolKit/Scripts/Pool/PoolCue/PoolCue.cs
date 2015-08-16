@@ -31,9 +31,6 @@ namespace PoolKit
 		//the current state
 		protected State m_state;
 
-		//our current power
-		public float power=10f;
-
 		/// <summary>
 		/// The pool cue model
 		/// </summary>
@@ -171,7 +168,7 @@ namespace PoolKit
                 if(poolCueGO)
                 {
                     Vector3 pos = Vector3.zero;
-                    pos.z = Mathf.Lerp(-.015f,-.065f,m_powerScalar);
+                    pos.z = Mathf.Lerp(-.005f,-.065f,m_powerScalar);
                     poolCueGO.transform.localPosition = pos;
                 }
 
@@ -208,7 +205,7 @@ namespace PoolKit
 			m_whiteBall.setTarget(m_targetBall,m_targetPos);
 
 			Debug.Log ("FIRE BALL" + m_whiteBall.name);
-			m_whiteBall.fireBall(transform.forward * m_powerScalar * power);
+			m_whiteBall.fireBall(m_powerScalar);
 			m_state = State.ROLL;
             poolCueGO.SetActive(false);
             Guidelines.HideAllObjects();
@@ -249,7 +246,6 @@ namespace PoolKit
 		{
 			if(m_whiteBall && m_whiteBall.sphereCollider)
 			{
-                Debug.Log(1111);
 				poolCueGO.SetActive(true);
                 
 				SphereCollider sc = m_whiteBall.sphereCollider;
@@ -289,14 +285,20 @@ namespace PoolKit
             return m_Instance.transform;
         }
 
+        public static Vector3 GetForward()
+        {
+            return m_Instance.transform.forward;
+        }
+
         void _Siding(Vector2 sideOffset)
         {
             if(sideOffset != Vector2.zero)
             {
+                sideOffset.x *= .5f;
                 Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
                 Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
                 Vector3 v3 = Vector3.Cross(v2, v1);
-                WhiteBall.SetTorque(v3.normalized * sideOffset.sqrMagnitude);
+                WhiteBall.SetTorque(v3.normalized * sideOffset.sqrMagnitude * .375f); 
             }
             m_CurrentSideOffset = sideOffset;
         }

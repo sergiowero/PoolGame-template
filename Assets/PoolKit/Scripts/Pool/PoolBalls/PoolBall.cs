@@ -46,6 +46,8 @@ namespace PoolKit
 		//the minimum speed
 		public float minSpeed = 0.5f;
 
+        public float m_MinAngularSpeed = .1f;
+
 		//the current time the ball has to be slowed down
 		protected float m_slowTime;
 
@@ -55,8 +57,12 @@ namespace PoolKit
 		//the balls last position
 		protected Vector3 lastPosition = Vector3.zero;
 
+        protected Vector3 lastEuler = Vector3.zero;
+
 		//the balls currnet speed.
 		protected float Speed = 0;
+
+        protected float angularSpeed = 0;
 		
 		//did we hit the wall.
 		public bool hitWall=false;
@@ -101,7 +107,7 @@ namespace PoolKit
 
 
 		public virtual void OnCollisionEnter (Collision col){
-			if(col.gameObject.name.Contains("Wall"))
+            if (col.gameObject.name.Contains("Rail"))
 			{
 				//we hit the wall.
 				PoolKit.BaseGameManager.ballHitWall(rigidbody.velocity);
@@ -128,24 +134,25 @@ namespace PoolKit
 		public void onFireBall()
 		{
             m_rigidbody.isKinematic = false;
-			m_state = State.ROLL;
+            m_slowTime = 0;
 		}
 		public void Update()
 		{
-			if(m_state==State.ROLL)
-			{
-				if(Speed<minSpeed)
-				{
-					m_slowTime+=Time.deltaTime;
-					if(m_slowTime>slowTime)
-					{
-						m_state = State.DONE;
-					}
-
-				}
-			}
+                if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
+                {
+                    if(m_slowTime < slowTime)
+                        m_slowTime += Time.deltaTime;
+                    if (m_slowTime >= slowTime)
+                    {
+                        m_state = State.DONE;
+                    }
+                }
+                else
+                {
+                    m_state = State.ROLL;
+                    m_slowTime = 0;
+                }
 		}
-        public float mag;
 
         // LateUpdate is called every frame, if the Behaviour is enabled
         public void LateUpdate()
@@ -166,18 +173,6 @@ namespace PoolKit
 
 		void FixedUpdate()
 		{
-			Speed = (transform.position - lastPosition).magnitude / Time.deltaTime * 3.6f;
-			lastPosition = transform.position;
-
-
-            Vector3 v = m_rigidbody.velocity;
-            if (v.sqrMagnitude == 0)
-                return;
-            
-            mag = v.magnitude;
-            mag -= m_DecreaseFactor * Time.deltaTime;
-            mag = Mathf.Max(0, mag);
-            m_rigidbody.velocity = v.normalized * mag;
 		}
 
 		
