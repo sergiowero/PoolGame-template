@@ -26,7 +26,7 @@ namespace PoolKit
 		protected WhiteBall m_whiteBall;
 
 		//the pockets
-		protected PocketTrigger[] m_pockets;
+		protected PoolRecycler[] m_pockets;
 
 		//the target position
 		protected Vector3 m_targetPos;
@@ -50,7 +50,7 @@ namespace PoolKit
 		{
 			base.Awake();
 			m_balls = (PoolBall[])GameObject.FindObjectsOfType(typeof(PoolBall));
-			m_pockets = (PocketTrigger[])GameObject.FindObjectsOfType(typeof(PocketTrigger));
+			m_pockets = (PoolRecycler[])GameObject.FindObjectsOfType(typeof(PoolRecycler));
 
 			m_whiteBall = (WhiteBall)GameObject.FindObjectOfType(typeof(WhiteBall));
 
@@ -255,7 +255,7 @@ namespace PoolKit
 		public void findClosestAngleToBall()
 		{
 			float d0 = 1000000f;
-			PocketTrigger pt = null;
+			PoolRecycler pt = null;
 			
 			for(int j=0; j<m_pockets.Length; j++)
 			{	
