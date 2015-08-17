@@ -18,6 +18,8 @@ public class Siding : MonoBehaviour
     [SerializeField]
     private RectTransform m_BlackMask; //showing when sideballO is showing, for operator sideballO
     [SerializeField]
+    private RectTransform m_MaskDeactiveObject; //disable mask touch component
+    [SerializeField]
     private SidingAnchor m_SidingAnchor; 
 
     private bool m_SidingDrag = false;
@@ -54,6 +56,7 @@ public class Siding : MonoBehaviour
     {
         if (PoolKit.WhiteBall.CueBallSiding)
         {
+            m_MaskDeactiveObject.gameObject.SetActive(true);
             iTween.FadeTo(m_SideballO.gameObject, 0, m_FadeTime);
             iTween.FadeTo(m_AnchorO.gameObject, 0, m_FadeTime);
             iTween.FadeTo(m_BlackMask.gameObject, 0, m_FadeTime * .5f);
@@ -64,6 +67,7 @@ public class Siding : MonoBehaviour
         {
             m_SideballO.gameObject.SetActive(true);
             m_BlackMask.gameObject.SetActive(true);
+            m_MaskDeactiveObject.gameObject.SetActive(false);
             iTween.FadeTo(m_BlackMask.gameObject, 0.4f, m_FadeTime * .5f);
             iTween.FadeTo(m_SideballO.gameObject, 1, m_FadeTime);
             iTween.FadeTo(m_AnchorO.gameObject, 1, m_FadeTime);
@@ -77,6 +81,7 @@ public class Siding : MonoBehaviour
     {
         m_SideballO.gameObject.SetActive(false);
         m_BlackMask.gameObject.SetActive(false);
+        m_MaskDeactiveObject.gameObject.SetActive(false);
     }
 
     private void CalculateAnchorOffset(Vector3 position)
