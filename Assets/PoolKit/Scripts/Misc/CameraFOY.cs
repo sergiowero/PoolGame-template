@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace PoolKit {
-
 	/*
 	 *The camera FOV will change the field of view based on field of view.
 	 */
@@ -60,4 +58,3 @@ namespace PoolKit {
 		}
 
 	}
-}

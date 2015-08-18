@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace PoolKit
-	{
 	//myquality settings should be attached to the main camera...
 	public class MyQualitySettings : MonoBehaviour {
 		private int QUALITY_SETTINGS = -1;
@@ -61,4 +59,3 @@ namespace PoolKit
 
 		}
 	}
-}

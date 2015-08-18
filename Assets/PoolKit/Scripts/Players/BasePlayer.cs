@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	//the base play for our bowling characters -- wether it be human or AI
 	public class BasePlayer : MonoBehaviour 
 	{
@@ -23,17 +21,9 @@ namespace PoolKit
 		//is it my turn.
 		protected bool m_myTurn = false;
 
-		//the white ball
-		protected WhiteBall m_ball;
-
-		//the pool cue
-		protected PoolCue m_cue;
-
 		//greater then 8?
 		protected int m_greaterThen8 = 0;
 
-		//the balls
-		protected PoolBall[] m_balls;
 
 		//the name of the player
 		public string playerName = "Player 1";
@@ -41,21 +31,8 @@ namespace PoolKit
 		//do we have a foul
 		public bool foul=true;
 
-
-		public virtual void Awake()
-		{
-			m_cue = (PoolCue)GameObject.FindObjectOfType(typeof(PoolCue));
-			m_balls= (PoolBall[])GameObject.FindObjectsOfType(typeof(PoolBall));
-			m_ball =  gameObject.GetComponentInChildren<WhiteBall>();
-
-
-		}
 		public virtual void Start()
 		{
-			m_ball = (WhiteBall)GameObject.FindObjectOfType(typeof(WhiteBall));
-
-
-			//	m_cue = gameObject.GetComponentInChildren<PoolCue>();
 			m_myTurn = playerIndex==0;
 			onPlayerTurn(0);
 		}
@@ -69,7 +46,7 @@ namespace PoolKit
 		public virtual void OnEnable()
 		{
 			BaseGameManager.onGameOver 		+= onGameOver;
-			BaseGameManager.onPlayerTurn 	+= onPlayerTurn;
+			BaseGameManager.onNewRoundBegin 	+= onPlayerTurn;
 			BaseGameManager.onResetPlayer 	+= onResetPlayer;
 			BaseGameManager.onSetStripesOrSolids += onSetStripesOrSolids;
 			BaseGameManager.onGameStart 		+= onGameStart;
@@ -78,7 +55,7 @@ namespace PoolKit
 		{
 			BaseGameManager.onSetStripesOrSolids -= onSetStripesOrSolids;
 			BaseGameManager.onGameOver 		-= onGameOver;
-			BaseGameManager.onPlayerTurn 	-= onPlayerTurn;
+			BaseGameManager.onNewRoundBegin 	-= onPlayerTurn;
 			BaseGameManager.onResetPlayer 	-= onResetPlayer;
 			BaseGameManager.onGameStart 		-= onGameStart;
 
@@ -105,7 +82,7 @@ namespace PoolKit
 			}
 			if(m_greaterThen8!=0)
 			{
-				PoolBall[] balls =m_balls;
+				PoolBall[] balls =Pools.BallsArray;
 				for(int i=0; i<balls.Length; i++)
 				{
 					if(balls[i] && balls[i].pocketed==false)
@@ -135,12 +112,7 @@ namespace PoolKit
 		}
 		public virtual void onMyTurn()
 		{
-			if(m_cue)
-			{
-				m_cue.greaterThen8 = m_greaterThen8;
-				m_cue.areAllBallsDown = areAllBallsDown();
-				m_cue.gameObject.SetActive(true);
-			}
+            Pools.Cue.gameObject.SetActive(true);
 		}
 		public virtual void onPlayerTurn(int pi)
 		{
@@ -185,17 +157,5 @@ namespace PoolKit
 		public virtual void fireBall()
 		{
 		}
-		public PoolCue getCue()
-		{
-			return m_cue;
-		}
-		
-		
-		public WhiteBall getWhiteBall()
-		{
-			
-			return m_ball;
-		}
 	}		
 
-}

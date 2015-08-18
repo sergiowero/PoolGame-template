@@ -1,7 +1,5 @@
 using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 
 	public class TouchButton2 : MonoBehaviour {
 		protected GUITexture m_guiTex;	
@@ -211,7 +209,7 @@ namespace PoolKit
 		public virtual void onPress()
 		{
 
-			PoolKit.BaseGameManager.buttonPress(gameObject.name);
+			BaseGameManager.buttonPress(gameObject.name);
 		}
 
 		public virtual void checkPress(Vector2 pos)
@@ -265,4 +263,3 @@ namespace PoolKit
 
 
 	}
-}

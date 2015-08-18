@@ -1,29 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	//we are either going to use a 8 ball or 9 ball gamescript depending on which game we are playing. 
 	public class PoolGameScript : MonoBehaviour 
 	{
-        
-		//the ref of pool balls
-		protected PoolBall[] m_balls;
-
 		//have we fired the ball
 		protected bool m_firedBall=false;
 
         [System.Flags]
 		public enum State
 		{
-			IDLE = 1 << 1,
-			ROLLING = 1 << 2,
-			DONE_ROLLING = 1 << 4,
-            DRAG_WHITEBALL = 1 << 8,
-            NONE = 1 << 16
+			IDLE = 1 << 0,
+			ROLLING = 1 << 1,
+			DONE_ROLLING = 1 << 2,
+            DRAG_WHITEBALL = 1 << 3,
+            NONE = 1 << 4
 		};
-
-		//a ref to the white ball
-		protected WhiteBall m_whiteBall;
 
 		//what state aer we in
 		protected State m_state = State.IDLE;
@@ -56,7 +47,7 @@ namespace PoolKit
 		protected int m_turnCounter = 0;
 
 		//a ref to the current play
-		protected PoolKit.BasePlayer m_currentPlayer;
+		protected BasePlayer m_currentPlayer;
 
 		//the minimum ball speed before the ball is considred stopepd
 		public float minBallSpeed = 0.2f;
@@ -65,26 +56,15 @@ namespace PoolKit
 		protected bool m_gameover=false;
 
 		//a ref to the players
-		protected PoolKit.BasePlayer[] m_players;
+		protected BasePlayer[] m_players;
 
 		//do we have a foul
 		protected bool m_foul=false;
 
-
-		protected virtual void Awake () {
-
-			m_balls = (PoolBall[])GameObject.FindObjectsOfType(typeof(PoolBall));
-			m_whiteBall = (WhiteBall)GameObject.FindObjectOfType(typeof(WhiteBall));
-
-			for(int i=0; i<m_balls.Length; i++)
-			{
-				m_balls[i].minSpeed = minBallSpeed;
-			}
-		}
-		void onGameStart()
+		void OnGameStart()
 		{
-			PoolKit.BasePlayer[] players = (PoolKit.BasePlayer[])GameObject.FindObjectsOfType(typeof(PoolKit.BasePlayer));
-			m_players = new PoolKit.BasePlayer[players.Length];
+			BasePlayer[] players = (BasePlayer[])GameObject.FindObjectsOfType(typeof(BasePlayer));
+			m_players = new BasePlayer[players.Length];
 //			Debug.Log ("onGameStart " + players.Length);
 			if(m_players.Length>1)
 			{
@@ -97,143 +77,125 @@ namespace PoolKit
 			}else{
 				m_players  = players;
 			}//=
-			PoolKit.BaseGameManager.playersTurn(0);
+			BaseGameManager.NewRoundBegin(0);
 		}
 		void OnEnable()
 		{
-			PoolKit.BaseGameManager.onFireBall += onFireBall;
-			PoolKit.BaseGameManager.onBallEnterPocket	+= onEnterPocket;
-			PoolKit.BaseGameManager.onWhiteBallHitBall += onWhiteBallHitWall;
-			PoolKit.BaseGameManager.onGameStart += onGameStart;
-			BaseGameManager.onIsMyTurn += onIsMyTurn;
+			BaseGameManager.onFireBall += OnFireBall;
+			BaseGameManager.onBallEnterPocket	+= OnEnterPocket;
+			BaseGameManager.onWhiteBallHitBall += OnWhiteBallHitWall;
+			BaseGameManager.onGameStart += OnGameStart;
+			BaseGameManager.onIsMyTurn += OnIsMyTurn;
 
 		}
 		void OnDisable()
 		{
-			PoolKit.BaseGameManager.onFireBall -= onFireBall;
-			PoolKit.BaseGameManager.onBallEnterPocket	-= onEnterPocket;
-			PoolKit.BaseGameManager.onWhiteBallHitBall -= onWhiteBallHitWall;
-			BaseGameManager.onIsMyTurn -= onIsMyTurn;
-			PoolKit.BaseGameManager.onGameStart-= onGameStart;
+			BaseGameManager.onFireBall -= OnFireBall;
+			BaseGameManager.onBallEnterPocket	-= OnEnterPocket;
+			BaseGameManager.onWhiteBallHitBall -= OnWhiteBallHitWall;
+			BaseGameManager.onIsMyTurn -= OnIsMyTurn;
+			BaseGameManager.onGameStart-= OnGameStart;
 
 		}
 
-        public bool onIsMyTurn(int playerID)
+        public bool OnIsMyTurn(int playerID)
 		{
 			return m_currentPlayer.playerIndex == playerID;
 		}
 
-		void onWhiteBallHitWall(bool hitBall,PoolBall ball)
+		void OnWhiteBallHitWall(bool hitBall,PoolBall ball)
 		{
 			//its our first hit
 			if(hitBall==false)
 			{
-				handleFirstBallHitByWhiteBall(ball);
+				HandleFirstBallHitByWhiteBall(ball);
 			}
 		}
-		public virtual void handleFirstBallHitByWhiteBall(PoolBall ball)
+		public virtual void HandleFirstBallHitByWhiteBall(PoolBall ball)
 		{}
 
-		void onEnterPocket(string pocketIndex, PoolBall ball)
+		void OnEnterPocket(string pocketIndex, PoolBall ball)
 		{
-			enterPocket(ball);
+			EnterPocket(ball);
 		}
-		public virtual void enterPocket(PoolBall ball)
+		public virtual void EnterPocket(PoolBall ball)
 		{
-		}
-		public int getNomBallsPocketed()
-		{
-			return m_ballsPocketed;
 		}
 
-		void onFireBall()
+		void OnFireBall()
 		{
 			GlobalState = State.ROLLING;
 		}
 		void Update () {
-
-            //if (GlobalState == State.DONE_ROLLING)
-            //{
-            //    if(m_gameover==false)
-            //        handleWhiteInPocket();
-            //}
             if (GlobalState == State.ROLLING)
 			{
 				if(m_gameover==false)
-					checkDoneRolling();
+					CheckDoneRolling();
 			}
 		}
 
-		void handleWhiteInPocket()
+		void HandleWhiteInPocket()
 		{
 			if(m_whiteEnteredPocket)
 			{
 				m_whiteEnteredPocket=false;
-				if(m_whiteBall)
-				{
-					m_whiteBall.reset();
-				}
-
+                Pools.CueBall.reset();
 			}
 		}
+        
+        //涉及多人模式，暂略
+        public virtual void ChangeTurn(bool foul, int turn)
+        {
+            m_foul = foul;
+            m_playerTurn = turn;
+            m_currentPlayer = m_players[m_playerTurn];
 
-		public virtual void changeTurnRPC(bool foul,int turn)
-		{
-			m_foul = foul;
-			m_playerTurn = turn;
-			m_currentPlayer  = m_players[m_playerTurn];
+            m_currentPlayer.foul = m_foul;
+            WhiteBall whiteball = Pools.CueBall;
+            Vector3 oldBallPos = Vector3.zero;
+            bool hasOldBallpos = false;
+            if (whiteball != null)
+            {
+                hasOldBallpos = true;
+                oldBallPos = whiteball.transform.position;
+                whiteball.gameObject.SetActive(false);
+            }
 
-			m_currentPlayer.foul = m_foul;
+            if (whiteball)
+            {
+                whiteball.gameObject.SetActive(true);
+                if (hasOldBallpos)
+                {
+                    whiteball.transform.position = oldBallPos;
+                }
+                whiteball.clear();
+                whiteball.foul = m_foul;
+            }
 
-			Vector3 oldBallPos = Vector3.zero;
-			bool hasOldBallpos = false;
-			if(m_whiteBall!=null)
-			{
-				hasOldBallpos=true;
-				oldBallPos= m_whiteBall.transform.position;
-				Debug.Log ("disable whiteBall" + m_whiteBall.name);
-				m_whiteBall.gameObject.SetActive(false);
-			}
+            //BaseGameManager.showTitleCard( m_players[m_playerTurn].playerName + " turn!");
 
-			m_whiteBall = m_currentPlayer.getWhiteBall();
-			if(m_whiteBall)
-			{
-				m_whiteBall.gameObject.SetActive(true);
-				if(hasOldBallpos)
-				{
-					m_whiteBall.transform.position = oldBallPos;
-				}
-				Debug.Log ("enable whiteBall" + m_whiteBall.name);
-
-				m_whiteBall.clear();
-				m_whiteBall.setPoolCue(m_currentPlayer.getCue());
-
-				m_whiteBall.foul = m_foul;
-			}
-
-            //PoolKit.BaseGameManager.showTitleCard( m_players[m_playerTurn].playerName + " turn!");
-			
-			PoolKit.BaseGameManager.playersTurn(m_playerTurn);
-		}
+            BaseGameManager.NewRoundBegin(m_playerTurn);
+        }
 
 	
-		IEnumerator changeTurn(float waitTime)
+		IEnumerator ChangeTurn(float waitTime)
 		{
 			yield return new WaitForSeconds(waitTime);
 			if(m_gameover==false)
 			{
-				changeTurnRPC(m_foul,m_playerTurn);
+				ChangeTurn(m_foul,m_playerTurn);
 
 			}
 
 		}
-		void checkDoneRolling()
+		void CheckDoneRolling()
 		{
 			bool doneRolling = true;
-			for(int i=0; i<m_balls.Length; i++)
+            PoolBall[] balls = Pools.BallsArray;
+            for (int i = 0; i < balls.Length; i++)
 			{
-				if(m_balls[i] && (m_balls[i].isDoneRolling()==false &&
-				   m_balls[i].gameObject.activeInHierarchy))
+                if (balls[i] && (balls[i].IsDoneRolling() == false &&
+                   balls[i].gameObject.activeInHierarchy))
 				{
 					doneRolling = false;
                     break;
@@ -242,18 +204,18 @@ namespace PoolKit
 			if(doneRolling)
 			{
 				float waitTime=0;
-				bool fouls = handleFouls();
+				bool fouls = HandleFouls();
 				//clear the wall hit.
 				if(fouls)
 				{
-					PoolKit.BaseGameManager.foul ("");
+					BaseGameManager.foul ("");
 					waitTime=2f;
 				}
 
 
-				PoolKit.BaseGameManager.ballStopped();
+				BaseGameManager.ballStopped();
                 GlobalState = State.DONE_ROLLING;
-                handleWhiteInPocket();
+                HandleWhiteInPocket();
 
 				//change turn!
 				if(m_ballsPocketed==0 || m_whiteEnteredPocket || m_foul)
@@ -265,27 +227,27 @@ namespace PoolKit
 						m_currentPlayer = m_players[m_playerTurn];
 					}
 
-					StartCoroutine(changeTurn(waitTime));
+					StartCoroutine(ChangeTurn(waitTime));
 				}else
 				{
-					StartCoroutine(changeTurn(waitTime));
+					StartCoroutine(ChangeTurn(waitTime));
 				}
 				m_ballsPocketed=0;
 				m_turnCounter++;
 			}
 		}
-		public virtual bool handleFouls()
+		public virtual bool HandleFouls()
 		{
 			return true;
 		}
 
-		public void clearWallHit()
+		public void ClearWallHit()
 		{
-			for(int i=0; i<m_balls.Length; i++)
+            PoolBall[] balls = Pools.BallsArray;
+            for (int i = 0; i < balls.Length; i++)
 			{
-				if(m_balls[i])
-					m_balls[i].hitWall=false;
+                if (balls[i])
+                    balls[i].hitWall = false;
 			}
 		}
 	}
-}

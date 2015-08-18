@@ -74,6 +74,9 @@ public class BallDragger : MonoBehaviour {
     {
         m_DraggerData.Position = position;
         m_DraggerData.DeltaPosition = Vector2.zero;
+
+
+
         if (RayCast(position) && dragBegin != null)
         {
             dragBegin(m_DraggerData);
@@ -87,7 +90,6 @@ public class BallDragger : MonoBehaviour {
         m_DraggerData.Position = position;
         if (m_DraggerData.DeltaPosition.sqrMagnitude == 0)
             return;
-
         if (m_Drag && drag != null)
         {
             drag(m_DraggerData);
@@ -105,12 +107,20 @@ public class BallDragger : MonoBehaviour {
         }
     }
 
+    public Transform m_TestObject;
+
     private bool RayCast(Vector2 p)
     {
-        Ray ray = Camera.main.ScreenPointToRay(p);
+        Vector3 ori = Pools.SceneCamera.ScreenToWorldPoint(p);
+        Vector3 dir = Vector3.down;
+        m_TestObject.position = ori;
+        m_TestObject.forward = dir;
+        m_TestObject.GetComponent<SphereCollider>().radius = Pools.CueBall.GetRadius();
+        Ray ray = new Ray(ori, dir);
         RaycastHit hit;
-        if(Physics.Raycast(ray, out hit, float.MaxValue, 1 << layermask.value))
+        if (Physics.SphereCast(ray, Pools.CueBall.GetRadius(), out hit, 1000, 1 << layermask.value))
         {
+            Debug.Log("hit : " + hit.collider.name);
             if (hit.collider.gameObject.GetInstanceID() == gameObject.GetInstanceID())
                 return true;
         }

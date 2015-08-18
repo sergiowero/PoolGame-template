@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Guidelines : MonoBehaviour {
-    private static Guidelines m_Instance;
+public class CueAndGuidelines : MonoBehaviour {
+    private Vector3 m_Pivot;
 
     [SerializeField]
     private RectTransform m_GuideBall;
@@ -13,32 +13,28 @@ public class Guidelines : MonoBehaviour {
     [SerializeField]
     private RectTransform m_HitBallDir;
     [SerializeField]
+    private RectTransform m_Cue;
     void Awake()
     {
-        if(m_Instance)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        m_Instance = this;
         gameObject.SetActive(false);
     }
 
-    private Vector3 World2UI(Vector3 v)
+
+    public void AdjustingCue(float offset)
     {
-        Vector2 sp = Camera.main.WorldToScreenPoint(v);
-        return BaseUIController.GetUICamera().ScreenToWorldPoint(sp);
+        m_Cue.position = m_Pivot - m_Cue.right * offset * ConstantData.AdjustingCueScalar;
     }
 
-    private void _GuidePointerAt(Vector3 hitPoint, Transform hitTrans, Vector3 hitNormal)
+    public void GuidePointerAt(Vector3 hitPoint, Transform hitTrans, Vector3 hitNormal)
     {
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
 
-        Vector3 shp = World2UI(hitPoint),//hit point
-            shtp = World2UI(hitTrans.position),//hitball position
-            shwp = World2UI(hitPoint + hitNormal.normalized * PoolKit.WhiteBall.GetRadius()),//whiteball position when hit
-            swp = World2UI(PoolKit.WhiteBall.GetPosition());//whiteball current position
+        Vector3 shp = MathTools.World2UI(hitPoint),//hit point
+            shtp = MathTools.World2UI(hitTrans.position),//hitball position
+            shwp = MathTools.World2UI(hitPoint + hitNormal.normalized * Pools.CueBall.GetRadius()),//whiteball position when hit
+            swp = MathTools.World2UI(Pools.CueBall.GetPosition());//whiteball current position
+        //pivot
+        m_Pivot = swp;
         //ball
         m_GuideBall.position = shwp;
         //line
@@ -47,6 +43,9 @@ public class Guidelines : MonoBehaviour {
         Vector2 v2 = m_GuideBall.parent.worldToLocalMatrix.MultiplyPoint(swp);
         m_GuideLine.sizeDelta = new Vector2(Vector2.Distance(v1, v2), m_GuideLine.rect.height);
         m_GuideLine.right = (swp - shwp).normalized;
+        //cue
+        m_Cue.position = MathTools.World2UI(Pools.CueBall.GetPosition());
+        m_Cue.right = -m_GuideLine.right;
         if(hitTrans.name.Contains("Ball"))
         {
             m_HitBallDir.gameObject.SetActive(true);
@@ -71,33 +70,8 @@ public class Guidelines : MonoBehaviour {
         }
     }
 
-    public static void GuidePointerAt(Vector3 hitPoint, Transform hitTrans, Vector3 hitNormal)
+    public Vector3 GetPointerDirection()
     {
-        m_Instance._GuidePointerAt(hitPoint, hitTrans, hitNormal);
-    }
-
-    private void _HideAllObjects()
-    {
-        gameObject.SetActive(false);
-    }
-
-    private void _ShowAllObjects()
-    {
-        gameObject.SetActive(true);
-    }
-
-    public static void HideAllObjects()
-    {
-        m_Instance._HideAllObjects();
-    }
-
-    public static void ShowAllObjects()
-    {
-        m_Instance._ShowAllObjects();
-    }
-
-    public static Vector3 GetPointerDirection()
-    {
-        return -m_Instance.m_GuideLine.right;
+        return -m_GuideLine.right;
     }
 }

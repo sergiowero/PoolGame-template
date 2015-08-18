@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	//the pocket triggers 
     public class PoolRecycler : MonoBehaviour 
 	{
@@ -51,8 +49,7 @@ namespace PoolKit
 			if(col.name.Contains("Ball"))
 			{
                 BaseGameManager.ballEnterPocket(triggerID, pb);
-                pb.enterPocket();
+                pb.EnterPocket();
 			}
 		}
 	}
-}

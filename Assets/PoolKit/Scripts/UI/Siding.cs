@@ -54,7 +54,7 @@ public class Siding : MonoBehaviour
 
     public void OnToggleClick()
     {
-        if (PoolKit.WhiteBall.CueBallSiding)
+        if (WhiteBall.CueBallSiding)
         {
             m_MaskDeactiveObject.gameObject.SetActive(true);
             iTween.FadeTo(m_SideballO.gameObject, 0, m_FadeTime);
@@ -74,7 +74,7 @@ public class Siding : MonoBehaviour
             iTween.MoveTo(m_SideballO.gameObject, iTween.Hash("position", Vector3.zero, "time", m_FadeTime, "islocal", false));
             iTween.ScaleTo(m_SideballO.gameObject, Vector3.one * 2, m_FadeTime);
         }
-        PoolKit.WhiteBall.CueBallSiding = !PoolKit.WhiteBall.CueBallSiding;
+        WhiteBall.CueBallSiding = !WhiteBall.CueBallSiding;
     }
 
     private void OnFadeoffDown()
@@ -132,7 +132,7 @@ public class Siding : MonoBehaviour
 
     private void AnchorMoveDown()
     {
-        PoolKit.PoolCue.Siding(m_AnchorO.localPosition);
+        Pools.Cue.Siding(m_AnchorO.localPosition);
         if(!m_SidingDrag)
         {
             OnToggleClick();
@@ -147,6 +147,6 @@ public class Siding : MonoBehaviour
     public static void ResetAnchorOffset()
     {
         m_Instance._SidingAnchorOffset(Vector2.zero);
-        PoolKit.PoolCue.ResetSideOffset();
+        Pools.Cue.ResetSideOffset();
     }
 }

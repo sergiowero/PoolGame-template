@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-namespace PoolKit {
 /// <summary>
 /// A constraint that will constrain an object on an axis if the bool is enabled for that one.
 /// </summary>
@@ -68,4 +67,3 @@ namespace PoolKit {
 			transform.position = pos;
 		}
 	}
-}

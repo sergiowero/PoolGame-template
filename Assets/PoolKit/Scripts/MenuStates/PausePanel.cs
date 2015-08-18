@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace PoolKit
-	{
 	public class PausePanel : MonoBehaviour {
 
 		//the pause panel
@@ -69,4 +67,3 @@ namespace PoolKit
 		}
 
 	}
-}

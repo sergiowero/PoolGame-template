@@ -2,8 +2,6 @@
 using System.Collections;
 
 
-namespace PoolKit
-{
 	public class ResultsState : MonoBehaviour {
 
 		//the game over panel
@@ -64,4 +62,3 @@ namespace PoolKit
 	
 	
 	}
-}

@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	public class AudioHelper : MonoBehaviour {
 
 		//called when the ball enters a pocket.
@@ -90,4 +88,3 @@ namespace PoolKit
 
 
 	}
-}

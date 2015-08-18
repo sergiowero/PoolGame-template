@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	public class MainMenuState : MonoBehaviour {
 		//graphics quality button
 		public TouchButton2 graphicsQuality;
@@ -183,4 +181,3 @@ namespace PoolKit
 		}
 	}
 
-}

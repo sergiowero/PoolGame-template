@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-namespace PoolKit
-{
 	public class BaseGameManager
 	{
 		//an event that listens for when its your turn
@@ -146,13 +144,13 @@ namespace PoolKit
 		}
 
 		//called when the turn changes.
-		public delegate void OnPlayerTurn(int playerIndex);
-		public static event OnPlayerTurn onPlayerTurn;
-		public static void playersTurn(int playerIndex)
+		public delegate void OnNewRoundBegin(int playerIndex);
+		public static event OnNewRoundBegin onNewRoundBegin;
+		public static void NewRoundBegin(int playerIndex)
 		{
-			if(onPlayerTurn!=null)
+			if(onNewRoundBegin!=null)
 			{
-				onPlayerTurn(playerIndex);	
+				onNewRoundBegin(playerIndex);	
 			}
 		}
 
@@ -235,4 +233,3 @@ namespace PoolKit
 			}
 		}
 	}
-}

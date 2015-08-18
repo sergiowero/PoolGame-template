@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace PoolKit
-{
 	public class Jukebox : MonoBehaviour {
 		private ListPicker m_listPicker;
 		public AudioClip[] songs;
@@ -32,4 +30,3 @@ namespace PoolKit
 			audio.Play();
 		}
 	}
-}

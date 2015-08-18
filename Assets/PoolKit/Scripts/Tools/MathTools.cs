@@ -20,4 +20,16 @@ public class MathTools
         else if (value < min) value += f;
         return Roll(min, max, value);
     }
+
+    /// <summary>
+    /// siwtch coordinate form world space to ui space
+    /// </summary>
+    /// <param name="v"></param>
+    /// <returns></returns>
+    public static Vector3 World2UI(Vector3 v)
+    {
+        Vector2 sp = Pools.SceneCamera.WorldToScreenPoint(v);
+        return BaseUIController.GetUICamera().ScreenToWorldPoint(sp);
+    }
+
 }

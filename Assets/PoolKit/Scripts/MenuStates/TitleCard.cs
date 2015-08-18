@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-namespace PoolKit
-{
 	//The title card will display when you want to show the players score.
 	public class TitleCard : MonoBehaviour 
 	{
@@ -42,4 +40,3 @@ namespace PoolKit
 
 
 	}
-}

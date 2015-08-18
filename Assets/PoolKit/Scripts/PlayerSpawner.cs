@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
 	//the player spawner -- will spawn the various players.
 	public class PlayerSpawner : MonoBehaviour 
 	{
@@ -62,4 +60,3 @@ namespace PoolKit
 
 
 	}
-}

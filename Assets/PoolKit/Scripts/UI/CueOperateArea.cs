@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using PoolHuman = PoolKit.HumanPlayer;
 
 public class CueOperateArea : MonoBehaviour {
 
@@ -19,10 +18,23 @@ public class CueOperateArea : MonoBehaviour {
     {
         if(m_Instance)
         {
-            Debug.Log("two dragarea in the scene");
+            Debug.LogError("two dragarea in the scene");
             return;
         }
         m_Instance = this;
+        BaseGameManager.onNewRoundBegin += RoundBegin;
+    }
+
+    void OnDestroy()
+    {
+        BaseGameManager.onNewRoundBegin -= RoundBegin;
+    }
+
+    //这里需要判断是否是游戏开始， 游戏开始指向9号球 不然保持之前的角度不变
+    private void RoundBegin(int playerID)
+    {
+        BaseUIController.cueAndLines.gameObject.SetActive(true);
+        PointAtWorld(Pools.Balls[9].transform.position);
     }
 
 
@@ -47,15 +59,15 @@ public class CueOperateArea : MonoBehaviour {
             return;
         float fag = ag * 100 / Mathf.Max(v2.magnitude,100);
         float z = Vector3.Cross(v1, v2).z;
-        if (z < 0) PoolHuman.CueRotate(fag);
-        else PoolHuman.CueRotate(-fag);
+        if (z < 0) Pools.Cue.Rotate(fag);
+        else Pools.Cue.Rotate(-fag);
         m_LastTouchsp = ped.position;
     }
 
     public void OnAreaDragBegin(BaseEventData data)
     {
         m_Dragging = true;
-        m_poolBallsp = PoolKit.WhiteBall.GetScreenPosition();
+        m_poolBallsp = Pools.CueBall.GetScreenPosition();
         m_LastTouchsp = default(Vector2);
     }
 
@@ -63,21 +75,19 @@ public class CueOperateArea : MonoBehaviour {
     {
         if (m_Dragging)
             return;
-        _PointerAt(((PointerEventData)data).position);
+        PointerAt(((PointerEventData)data).position);
     }
 
-    public static void PointerAt(Vector3 point)
+    public void PointAtWorld(Vector3 point)
     {
-        Vector3 v = Camera.main.WorldToScreenPoint(point);
-        v.z = 0;
-        Debug.Log(v);
-        m_Instance._PointerAt(v);
+        Vector3 v = Pools.SceneCamera.WorldToScreenPoint(point);
+        PointerAt(v);
     }
-
-    private void _PointerAt(Vector3 point)
+    
+    public void PointerAt(Vector3 point)
     {
-           Vector3 vec = point - PoolKit.WhiteBall.GetScreenPosition(),
-            dir = Guidelines.GetPointerDirection();
+        Vector3 vec = point - Pools.CueBall.GetScreenPosition(),
+            dir = BaseUIController.cueAndLines.GetPointerDirection();
 
         float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
 
@@ -86,7 +96,7 @@ public class CueOperateArea : MonoBehaviour {
             return;
 
         float z = Vector3.Cross(vec, dir).z;
-        if (z < 0) PoolHuman.CueRotate(-angle);
-        else PoolHuman.CueRotate(angle);
+        if (z < 0) Pools.Cue.Rotate(-angle);
+        else Pools.Cue.Rotate(angle);
     }
 }

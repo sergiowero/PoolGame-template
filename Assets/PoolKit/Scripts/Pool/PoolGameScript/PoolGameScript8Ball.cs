@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
-namespace PoolKit
-{
+using System.Collections.Generic;
 
 	public class PoolGameScript8Ball : PoolGameScript 
 	{
         private static PoolGameScript8Ball m_Instance = null;
         public static PoolGameScript8Ball Instance { get { return m_Instance; } }
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             if (m_Instance)
             {
                 Debug.LogError("two " + gameObject + " in then scene");
@@ -18,45 +16,39 @@ namespace PoolKit
             m_Instance = this;
         }
 
-        public static void Shuffle()
+        void Start()
         {
-            m_Instance._Shuffle();
+            Shuffle();
         }
 
-        //打乱球的位置，这地方要改。这一条链都要改
-        private void _Shuffle()
+        private void Shuffle()
         {
-            for (int i = 0, length = m_balls.Length; i < length; i++)
+            Dictionary<int, PoolBall> d = Pools.Balls;
+            PoolBall[] balls = Pools.BallsArray;
+            
+            for (int j = 0; j < 3; j++)//we shuffle 3 times
             {
-                if (m_balls[i].name.Contains("Ball9"))
+                for (int i = 1, length = balls.Length; i < length; i++)
                 {
-                    CueOperateArea.PointerAt(m_balls[i].transform.position);
-                    break;
-                }
-            }
-
-            for (int j = 0; j < 3; j++)
-            {
-                for (int i = 0, length = m_balls.Length; i < length; i++)
-                {
-                    int r = Random.Range(1, 15);
-                    string n1 = m_balls[i].name, n2 = m_balls[r].name;
-                    if (n1.Contains("Ball8") || n2.Contains("Ball8") || n1.Contains("WhiteBall") || n2.Contains("WhiteBall") || n1.CompareTo(n2) == 0)
+                    if (i == 8) //black 8 continue
                         continue;
+                    int r = Random.Range(1, 15);
+                    while (r == 8)
+                        r = Random.Range(1, 15);
 
-                    Vector3 v = m_balls[r].transform.position;
-                    m_balls[r].transform.position = m_balls[i].transform.position;
-                    m_balls[i].transform.position = v;
+                    Vector3 v = d[r].transform.position;
+                    d[r].transform.position = d[i].transform.position;
+                    d[i].transform.position = v;
                 }
             }
         }
 
 
-		public override void handleFirstBallHitByWhiteBall(PoolBall ball)
+		public override void HandleFirstBallHitByWhiteBall(PoolBall ball)
 		{
 			m_foul = false;
 		}
-		public override  void enterPocket(PoolBall ball)
+		public override  void EnterPocket(PoolBall ball)
 		{
 			enterPocketRPC(ball.name,m_playerTurn);
 		}
@@ -80,13 +72,13 @@ namespace PoolKit
 				//we got all the balls down.
 				if(m_players[m_playerTurn].areAllBallsDown()==false)
 				{	
-					PoolKit.BaseGameManager.gameover(m_players[m_playerTurn].playerName + " Loses!");
+					BaseGameManager.gameover(m_players[m_playerTurn].playerName + " Loses!");
 				}else{
-					PoolKit.BaseGameManager.gameover( m_players[m_playerTurn].playerName + " Wins!");
+					BaseGameManager.gameover( m_players[m_playerTurn].playerName + " Wins!");
 				}
 			}
 
-			if(ball && ball == m_whiteBall)
+			if(ball && ball == Pools.CueBall)
 			{
 				m_whiteEnteredPocket = true;
 			}else if(ball && ball.pocketed==false)
@@ -95,21 +87,22 @@ namespace PoolKit
 			}
 		}
 
-		public override void changeTurnRPC(bool foul,
+		public override void ChangeTurn(bool foul,
 		                                   int turn)
 		{
-			base.changeTurnRPC(foul,turn);
+			base.ChangeTurn(foul,turn);
 		}
 
 
 		//handle the fouls for 8-ball.
-		public override bool handleFouls()
+		public override bool HandleFouls()
 		{
 			bool fouls = false;
 			int wallHit = 0;
-			for(int i=0; i<m_balls.Length; i++)
+            PoolBall[] ball = Pools.BallsArray;
+            for (int i = 0; i < ball.Length; i++)
 			{
-				if(m_balls[i] && m_balls[i].pocketed==false && m_balls[i].hitWall)
+                if (ball[i] && ball[i].pocketed == false && ball[i].hitWall)
 				{
 					wallHit++;
 				}
@@ -119,14 +112,14 @@ namespace PoolKit
 
 			if(m_whiteEnteredPocket)
 			{
-                //PoolKit.BaseGameManager.showTitleCard("FOUL - White ball pocketed!");
-                BaseUIController.ShowFoulText();
+                //BaseGameManager.showTitleCard("FOUL - White ball pocketed!");
+                BaseUIController.foulText.gameObject.SetActive(true);
 				fouls=true;
 			}
 			
 			if(m_foul)
 			{
-				PoolKit.BaseGameManager.showTitleCard(m_foulSTR);
+				BaseGameManager.showTitleCard(m_foulSTR);
 				
 			}
 
@@ -136,7 +129,7 @@ namespace PoolKit
 				{
 					//it was a foul ball.
 					m_break = true;
-                    //PoolKit.BaseGameManager.showTitleCard("FOUL - At least 4 balls must hit the wall after a break!");
+                    //BaseGameManager.showTitleCard("FOUL - At least 4 balls must hit the wall after a break!");
                     //fouls=true;
 				}else{
 					m_break=true;
@@ -145,15 +138,14 @@ namespace PoolKit
 			
 			if(wallHit==0 && m_ballsPocketed==0)
 			{
-                //PoolKit.BaseGameManager.showTitleCard("FOUL - No balls hit wall, or were pocketed!");
+                //BaseGameManager.showTitleCard("FOUL - No balls hit wall, or were pocketed!");
 				fouls=true;
 				
 			}
 			m_foul = fouls;
 			
 			
-			clearWallHit();
+			ClearWallHit();
 			return fouls;
 		}
 	}
-}
