@@ -93,6 +93,7 @@ using System.Collections;
 		{
 			BaseGameManager.onBallStop += OnBallStop;
 			BaseGameManager.onFireBall	+= OnFireBall;
+            OpenRenderer();
 		}
 		public void OnDisable()
 		{
@@ -150,4 +151,14 @@ using System.Collections;
 		{
 			return m_state == State.DONE;
 		}
+
+        public void CloseRenderer()
+        {
+            if(m_ShadowRenderer) m_ShadowRenderer.Close();
+        }
+
+        public void OpenRenderer()
+        {
+            if(m_ShadowRenderer) m_ShadowRenderer.Open();
+        }
 	}

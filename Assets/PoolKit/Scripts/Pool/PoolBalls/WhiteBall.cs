@@ -116,7 +116,7 @@ using System.Collections;
 		}
 		public override void OnCollisionEnter (Collision col){
             string name = col.gameObject.name;
-            if(!name.Contains("surface"))
+            if(!name.Contains("surface") && gameObject.activeInHierarchy)
                 StartCoroutine("TouchTable", 0);
             if (name.Contains("Rail"))
             {
@@ -186,7 +186,6 @@ using System.Collections;
             }
             BaseGameManager.fireBall();
             m_slowTime = 0;
-            Debug.Log("add force : " + ConstantData.GetPoolDatas().MaxImpulse);
             m_rigidbody.AddForce(Pools.Cue.transform.forward * powerScalar * ConstantData.GetPoolDatas().MaxImpulse, ForceMode.Impulse);
             m_rigidbody.AddTorque(ballTorque);
             m_state = State.ROLL;

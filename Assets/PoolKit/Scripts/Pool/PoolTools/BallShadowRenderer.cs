@@ -16,6 +16,16 @@ public class BallShadowRenderer : MonoBehaviour {
         }
     }
 
+    public void Close()
+    {
+        if(m_Shadow) m_Shadow.gameObject.SetActive(false);
+    }
+
+    public void Open()
+    {
+        if(m_Shadow) m_Shadow.gameObject.SetActive(true);
+    }
+
 	void LateUpdate () 
     {
         if (m_Shadow)
