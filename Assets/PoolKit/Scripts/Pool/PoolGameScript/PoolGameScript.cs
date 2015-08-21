@@ -168,7 +168,7 @@ using System.Collections;
                 {
                     whiteball.transform.position = oldBallPos;
                 }
-                whiteball.clear();
+                //whiteball.clear();
                 whiteball.foul = m_foul;
             }
 

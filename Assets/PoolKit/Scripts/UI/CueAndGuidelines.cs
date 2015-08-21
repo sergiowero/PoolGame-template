@@ -17,6 +17,7 @@ public class CueAndGuidelines : MonoBehaviour {
     void Awake()
     {
         gameObject.SetActive(false);
+        m_GuideLine.right = Vector3.down;
     }
 
 

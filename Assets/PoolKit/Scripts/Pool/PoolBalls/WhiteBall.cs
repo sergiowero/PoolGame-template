@@ -20,9 +20,6 @@ using System.Collections;
 		public LayerMask layermask;
 		public bool foul=true;
 
-        [SerializeField]
-        private float power = 20;
-
 		public float GetRadius()
 		{
             return sphereCollider.radius * transform.localScale.x - ConstantData.BallRadiusAdjustment;//BallRadiusAdjustment is the collision adjustment, otherwise colliding can not be happen
@@ -129,7 +126,6 @@ using System.Collections;
             if (name.Contains("Ball"))
 			{
 				PoolBall ball = col.gameObject.GetComponent<PoolBall>();
-                m_ShadowRenderer.enabled = true;
 				if(ball && m_hitBall==false)
 				{
 					BaseGameManager.whiteBallHitBall(m_hitBall,ball);
@@ -177,32 +173,27 @@ using System.Collections;
 		public override void OnBallStop()
 		{
 			base.OnBallStop();
-            transform.rotation = Quaternion.identity;
+            //transform.rotation = Quaternion.identity;
 		}
 
         public void fireBall(float powerScalar)
 		{
-            _fireBall(powerScalar);
-		}
-		
-		void _fireBall(float powerScalar)
-		{
-            enabled = true;
-            if(powerScalar > 1)
+            if (powerScalar > .3f)
             {
                 m_rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
                 m_rigidbody.useGravity = false;
-                StartCoroutine("TouchTable", powerScalar * .1f);
+                StartCoroutine("TouchTable", powerScalar * .5f);
             }
-			BaseGameManager.fireBall();
-			m_slowTime=0;
-			m_rigidbody.AddForce(Pools.Cue.transform.forward * powerScalar * power , ForceMode.Impulse);
-			m_rigidbody.AddTorque(ballTorque);
-			m_state = State.ROLL;
+            BaseGameManager.fireBall();
+            m_slowTime = 0;
+            Debug.Log("add force : " + ConstantData.GetPoolDatas().MaxImpulse);
+            m_rigidbody.AddForce(Pools.Cue.transform.forward * powerScalar * ConstantData.GetPoolDatas().MaxImpulse, ForceMode.Impulse);
+            m_rigidbody.AddTorque(ballTorque);
+            m_state = State.ROLL;
             ballTorque = Vector3.zero;
             Siding.ResetAnchorOffset();
 		}
-
+		
         IEnumerator TouchTable(float time)
         {
             yield return new WaitForSeconds(time);

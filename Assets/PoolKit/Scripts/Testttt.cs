@@ -2,31 +2,23 @@
 using System.Collections;
 
 public class Testttt : MonoBehaviour {
+    string filePath;
+    [SerializeField]
+    GUIStyle style;
+    float f = 0;
+    void Start()
+    {
+        filePath = Application.dataPath + "/AssetData/PoolEnvironmentData/PoolPhysical.asset";
+    }
 
-    PoolGameScript8Ball.State m_state;
 
     void OnGUI()
     {
-        if(GUILayout.Button("Rolling"))
+        if (GUILayout.Button("Read"))
         {
-            m_state = PoolGameScript.State.ROLLING;
+            Debug.Log(StreamTools.DeserializeObject<PoolDataAsset>(filePath));
         }
-        if(GUILayout.Button("Done rolling"))
-        {
-            m_state = PoolGameScript.State.DONE_ROLLING;
-        }
-        if(GUILayout.Button("Drag white ball"))
-        {
-            m_state = PoolGameScript.State.DRAG_WHITEBALL;
-        }
-        if(GUILayout.Button("Idle"))
-        {
-            m_state = PoolGameScript.State.IDLE;
-        }
-
-        GUILayout.Label("Rolling & Done rolling: " + ((m_state & (PoolGameScript.State.ROLLING | PoolGameScript.State.DONE_ROLLING)) != 0));
-        //GUILayout.Label("Done rolling : " + ((m_state & PoolGameScript.State.DONE_ROLLING) != 0));
-        GUILayout.Label("Drag white ball & Idle : " + ((m_state & (PoolGameScript.State.DRAG_WHITEBALL | PoolGameScript.State.IDLE)) != 0));
-        //GUILayout.Label("Idle : " + ((m_state & PoolGameScript.State.IDLE) != 0));
+        GUI.Box(new Rect(0, 0, 100, 100), "Test box", style);
+        f =  GUI.HorizontalSlider(new Rect(180, 5, 100, 10), f, 0, 1);
     }
 }

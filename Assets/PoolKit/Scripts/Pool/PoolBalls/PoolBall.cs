@@ -53,7 +53,7 @@ using System.Collections;
 			m_rigidbody =gameObject.GetComponent<Rigidbody>();
             m_ShadowRenderer = GetComponent<BallShadowRenderer>();
 		}
-		public virtual void Start()
+		public virtual void Start() 
 		{
 			m_initalPos = transform.position;
 			m_initalRot = transform.rotation;
@@ -116,7 +116,7 @@ using System.Collections;
                     if (m_slowTime >= slowTime)
                     {
                         m_state = State.DONE;
-                        m_ShadowRenderer.enabled = false;
+                        if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = false;
                     }
                 }
             }

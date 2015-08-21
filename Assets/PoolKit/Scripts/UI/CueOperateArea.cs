@@ -3,6 +3,10 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+
+/// <summary>
+/// need initializtion
+/// </summary>
 public class CueOperateArea : MonoBehaviour {
 
     private static CueOperateArea m_Instance = null;
@@ -13,6 +17,7 @@ public class CueOperateArea : MonoBehaviour {
 
 
     private bool m_Dragging = false;
+
 
     void Awake()
     {
@@ -30,13 +35,26 @@ public class CueOperateArea : MonoBehaviour {
         BaseGameManager.onNewRoundBegin -= RoundBegin;
     }
 
-    //这里需要判断是否是游戏开始， 游戏开始指向9号球 不然保持之前的角度不变
     private void RoundBegin(int playerID)
     {
         BaseUIController.cueAndLines.gameObject.SetActive(true);
-        PointAtWorld(Pools.Balls[9].transform.position);
+        PoolBall ball9 = Pools.Balls[9];
+        if (ball9 != null && ball9.gameObject.activeInHierarchy)
+            PointerAtWorld(Pools.Balls[9].transform.position);
+        else
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                if (i == 8) continue;
+                PoolBall ball = Pools.Balls[i];
+                if (ball != null && ball.gameObject.activeInHierarchy)
+                {
+                    PointerAtWorld(ball.transform.position);
+                    break;
+                }
+            }
+        }
     }
-
 
     public void OnAreaDragEnd(BaseEventData data)
     {
@@ -78,7 +96,7 @@ public class CueOperateArea : MonoBehaviour {
         PointerAt(((PointerEventData)data).position);
     }
 
-    public void PointAtWorld(Vector3 point)
+    public void PointerAtWorld(Vector3 point)
     {
         Vector3 v = Pools.SceneCamera.WorldToScreenPoint(point);
         PointerAt(v);
@@ -88,7 +106,6 @@ public class CueOperateArea : MonoBehaviour {
     {
         Vector3 vec = point - Pools.CueBall.GetScreenPosition(),
             dir = BaseUIController.cueAndLines.GetPointerDirection();
-
         float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
 
         //pass too small angle

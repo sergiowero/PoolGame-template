@@ -148,7 +148,7 @@ using System.Collections;
 		public static event OnNewRoundBegin onNewRoundBegin;
 		public static void NewRoundBegin(int playerIndex)
 		{
-			if(onNewRoundBegin!=null)
+            if (onNewRoundBegin != null)
 			{
 				onNewRoundBegin(playerIndex);	
 			}
@@ -171,7 +171,7 @@ using System.Collections;
 		public static event OnGameStart onGameStart;
 		public static void startGame()
 		{
-			if(onGameStart!=null)
+            if (onGameStart != null)
 			{
 				onGameStart();	
 			}

@@ -6,12 +6,6 @@ public class BallPhysicalDrag : MonoBehaviour {
     private Rigidbody m_Rigidbody;
 
     [SerializeField]
-    private float m_Drag;
-
-    [SerializeField]
-    private float m_AngularDrag;
-
-    [SerializeField]
     private Vector3 m_Velocity;
     [SerializeField]
     private Vector3 m_AngularVelocity;
@@ -52,7 +46,7 @@ public class BallPhysicalDrag : MonoBehaviour {
     private void VelocityDrag()
     {
         m_Velocity = m_Rigidbody.velocity;
-        float f = m_Velocity.magnitude - m_Drag * Time.fixedDeltaTime;
+        float f = m_Velocity.magnitude - ConstantData.GetPoolDatas().BallDrag * Time.fixedDeltaTime;
         if(f <= 0)
         {
             m_Rigidbody.velocity = Vector3.zero;
@@ -66,7 +60,7 @@ public class BallPhysicalDrag : MonoBehaviour {
     private void AngularVelocityDrag()
     {
         m_AngularVelocity = m_Rigidbody.angularVelocity;
-        float f = m_AngularVelocity.magnitude - m_AngularDrag * Time.fixedDeltaTime;
+        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * Time.fixedDeltaTime;
         if(f <= 0)
         {
             m_Rigidbody.angularVelocity = Vector3.zero;

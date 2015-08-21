@@ -5,7 +5,6 @@ using Debugger;
 
 	//the pool cues that you should use should depend on which game you are using -- 8 ball or 9 ball the only real difference is it will check if the ball is okay or not.
 	public class PoolCue : MonoBehaviour {
-        private static PoolCue m_Instance = null;
 		//our line renderer
         //public LineRenderer lineRenderer;
 
@@ -38,9 +37,6 @@ using Debugger;
 		//the power scale -- between 1 and 100
 		protected float m_powerScalar = 1f;
 
-		//the minimum power we want ot use for this shot. 
-		public float minPowerScalar = 0.125f;
-
 		//the target ball
 		protected PoolBall m_targetBall;
 
@@ -71,13 +67,6 @@ using Debugger;
 
         public void Awake()
 		{
-            if (m_Instance)
-            {
-                return;
-            }
-
-            m_Instance = this;
-
             m_initalPos = transform.localPosition;
             m_initalRot = transform.localRotation;
             m_CurRotAngle = 0;
@@ -105,10 +94,10 @@ using Debugger;
 		void OnBallStop()
 		{
             m_state = State.ROTATE;
-            transform.parent = Pools.CueBall.transform;
-            transform.localScale = new Vector3(1, 1, 1);
-            transform.localRotation = m_initalRot;
-            transform.localPosition = m_initalPos;
+            //transform.parent = Pools.CueBall.transform;
+            //transform.localScale = new Vector3(1, 1, 1);
+            //transform.localRotation = m_initalRot;
+            //transform.localPosition = m_initalPos;
 		}
 
 		public void Fire()
@@ -171,7 +160,8 @@ using Debugger;
         {
             if(sideOffset != Vector2.zero)
             {
-                sideOffset.x *= .5f;
+                sideOffset.x *= ConstantData.GetPoolDatas().HorizontalSidingStrength;
+                sideOffset.y *= ConstantData.GetPoolDatas().VerticalSidingStrength;
                 Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
                 Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
                 Vector3 v3 = Vector3.Cross(v2, v1);

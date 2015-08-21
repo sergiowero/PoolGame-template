@@ -45,12 +45,13 @@ public class FireSlider : MonoBehaviour {
         p.y = Mathf.Clamp(p.y, -m_MaxPower, 0);//y position is negative
         m_SliderTrans.localPosition = p;
         float percentage = p.y / -m_MaxPower;
-        float power = Mathf.Lerp(0, 3, percentage);
+        //float power = Mathf.Lerp(0, 1, percentage);
+        //Debug.Log("power : " + power);
         m_Background.color = Color.Lerp(m_MinColor, m_MaxColor, percentage);
 
         if(OnSliderValueChange != null && m_LastValue != percentage)
         {
-            OnSliderValueChange(power);
+            OnSliderValueChange(percentage);
         }
         m_LastValue = percentage;
     }
