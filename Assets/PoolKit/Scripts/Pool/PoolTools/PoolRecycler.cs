@@ -49,7 +49,8 @@ using System.Collections;
 			if(col.name.Contains("Ball"))
 			{
                 BaseGameManager.ballEnterPocket(triggerID, pb);
-                pb.EnterPocket();
+                //pb.EnterPocket();
+                Pools.StorageRack.Add(col.rigidbody);
 			}
 		}
 	}

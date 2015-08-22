@@ -46,9 +46,15 @@ using System.Collections;
 			m_constraint = gameObject.GetComponent<Constraint>();
 			m_constraint.enabled=false;
             m_constraint.adjustment = GetRadius();
-            reset();
+            Reset();
 		}
 
+
+        void OnGUI()
+        {
+            GUILayout.Label("State : " + m_state);
+            GUILayout.Label("Velocity : " + m_rigidbody.velocity + " ; " + m_rigidbody.angularVelocity);
+        }
 
         #region ball darg event--------------------------------------
         private void InitBallDragger()
@@ -145,7 +151,7 @@ using System.Collections;
 			m_hitBall=false;
 			m_rigidbody.constraints = RigidbodyConstraints.None;
 			m_slowTime=0;
-			m_state = State.IDLE;
+            m_state = State.IDLE;
 
             transform.rotation = Quaternion.identity;
 			if(m_rigidbody)
@@ -154,21 +160,12 @@ using System.Collections;
 				m_rigidbody.velocity = Vector3.zero;
 			}
 		}
-		public void reset()
-		{
-            gameObject.SetActive(true);
-			m_hitBall=false;
-			m_rigidbody.constraints = RigidbodyConstraints.None;
-			m_slowTime=0;
-			m_state = State.IDLE;
-			transform.position = m_initalPos;
-			transform.rotation = Quaternion.identity;
-			if(m_rigidbody)
-			{
-				m_rigidbody.angularVelocity = Vector3.zero;
-				m_rigidbody.velocity = Vector3.zero;
-			}
-		}
+
+        public override void Reset()
+        {
+            base.Reset();
+            m_hitBall = false;
+        }
 
 		public override void OnBallStop()
 		{
@@ -189,6 +186,8 @@ using System.Collections;
             m_rigidbody.AddForce(Pools.Cue.transform.forward * powerScalar * ConstantData.GetPoolDatas().MaxImpulse, ForceMode.Impulse);
             m_rigidbody.AddTorque(ballTorque);
             m_state = State.ROLL;
+            //m_BallPhysicalDrag.enabled = true;
+            OpenDrag();
             ballTorque = Vector3.zero;
             Siding.ResetAnchorOffset();
 		}

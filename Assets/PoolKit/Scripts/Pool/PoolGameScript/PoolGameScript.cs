@@ -139,7 +139,7 @@ using System.Collections;
 			if(m_whiteEnteredPocket)
 			{
 				m_whiteEnteredPocket=false;
-                Pools.CueBall.reset();
+                Pools.CueBall.Reset();
 			}
 		}
         

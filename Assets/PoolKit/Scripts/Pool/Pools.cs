@@ -11,6 +11,7 @@ public class Pools : MonoBehaviour
     private Dictionary<int, PoolBall> m_Balls;
     private PoolCue m_Cue;
     private Camera m_SceneCamera;
+    private BallStorageRack m_BallStorageRack;
     #endregion
 
     #region Static fields--------------------------------------------------------
@@ -19,6 +20,7 @@ public class Pools : MonoBehaviour
     public static PoolCue Cue { get { return m_Instance.m_Cue; } }
     public static WhiteBall CueBall { get { return m_Instance.m_Balls[0] as WhiteBall; } }
     public static Camera SceneCamera { get { return m_Instance.m_SceneCamera; } }
+    public static BallStorageRack StorageRack { get { return m_Instance.m_BallStorageRack; } }
     #endregion
 
     void Awake()
@@ -54,6 +56,8 @@ public class Pools : MonoBehaviour
         }
 
         m_SceneCamera = Camera.main;
+
+        m_BallStorageRack = FindObjectOfType<BallStorageRack>();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));

@@ -44,7 +44,6 @@ public class StreamTools
     {
         T t = new T();
         string file = GetStreamingAssetsPath() + fileName;
-        Debug.Log("Load file : " + file);
         try
         {
             using (FileStream fs = new FileStream(file, FileMode.Open))

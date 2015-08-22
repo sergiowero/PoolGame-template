@@ -26,9 +26,8 @@ using System.Collections;
 		protected Quaternion m_initalRot;
 		public enum State
 		{
-			IDLE,
 			ROLL,
-			DONE
+			IDLE
 		};
 
 		//what state is the ball in
@@ -48,10 +47,16 @@ using System.Collections;
 
         protected BallShadowRenderer m_ShadowRenderer;
 
+        protected BallPhysicalDrag m_BallPhysicalDrag;
+
+        protected PhysicMaterial m_PhysicMaterial;
+
 		public virtual void Awake()
 		{
 			m_rigidbody =gameObject.GetComponent<Rigidbody>();
             m_ShadowRenderer = GetComponent<BallShadowRenderer>();
+            m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
+            m_PhysicMaterial = collider.sharedMaterial;
 		}
 		public virtual void Start() 
 		{
@@ -85,7 +90,7 @@ using System.Collections;
 			if (col.gameObject.name.Contains("Ball"))
 			{
 				BaseGameManager.ballHitBall(rigidbody.velocity);
-                m_ShadowRenderer.enabled = true;
+                //m_ShadowRenderer.enabled = true;
 			}
 		}
 
@@ -95,6 +100,8 @@ using System.Collections;
 			BaseGameManager.onFireBall	+= OnFireBall;
             OpenRenderer();
 		}
+
+
 		public void OnDisable()
 		{
 			BaseGameManager.onBallStop -= OnBallStop;
@@ -107,17 +114,18 @@ using System.Collections;
 		}
 
 		public void Update()
-		{
+        {
             if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
             {
-                if(m_state != State.DONE)
+                if (m_state == State.ROLL)
                 {
                     if (m_slowTime < slowTime)
                         m_slowTime += Time.deltaTime;
                     if (m_slowTime >= slowTime)
                     {
-                        m_state = State.DONE;
+                        m_state = State.IDLE;
                         if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = false;
+                        CloseDrag();
                     }
                 }
             }
@@ -125,6 +133,8 @@ using System.Collections;
             {
                 if(m_state != State.ROLL)
                 {
+                    OpenDrag();
+                    if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = true;
                     m_state = State.ROLL;
                     m_slowTime = 0;
                 }
@@ -136,11 +146,31 @@ using System.Collections;
 			if(m_rigidbody)
 			{
 				pocketed=true;
-				m_rigidbody.velocity = Vector3.zero;		
-				m_state = State.DONE;
-                gameObject.SetActive(false);
+				m_rigidbody.velocity = Vector3.zero;
+                m_rigidbody.angularVelocity = Vector3.zero;
+				m_state = State.IDLE;
+                CloseDrag();
+                CloseRenderer();
+                enabled = false;
+                RemovePhysicalMaterial();
+                //gameObject.SetActive(false);
 			}
 		}
+
+        public virtual void Reset()
+        {
+            pocketed = false;
+            m_slowTime = 0;
+            m_state = State.IDLE;
+            transform.position = m_initalPos;
+            transform.rotation = m_initalRot;
+            m_rigidbody.constraints = RigidbodyConstraints.None;
+            m_rigidbody.angularVelocity = Vector3.zero;
+            m_rigidbody.velocity = Vector3.zero;
+            OpenRenderer();
+            enabled = true;
+        }
+
 		public virtual void OnBallStop()
 		{
 			m_rigidbody.angularVelocity = Vector3.zero;
@@ -149,7 +179,7 @@ using System.Collections;
 
 		public bool IsDoneRolling()
 		{
-			return m_state == State.DONE;
+			return m_state == State.IDLE;
 		}
 
         public void CloseRenderer()
@@ -160,5 +190,25 @@ using System.Collections;
         public void OpenRenderer()
         {
             if(m_ShadowRenderer) m_ShadowRenderer.Open();
+        }
+
+        public void CloseDrag()
+        {
+            m_BallPhysicalDrag.enabled = false;
+        }
+
+        public void OpenDrag()
+        {
+            m_BallPhysicalDrag.enabled = true;
+        }
+
+        public void RemovePhysicalMaterial()
+        {
+            collider.sharedMaterial = null;
+        }
+
+        public void ReversePhysicalMaterial()
+        {
+            collider.sharedMaterial = m_PhysicMaterial;
         }
 	}
