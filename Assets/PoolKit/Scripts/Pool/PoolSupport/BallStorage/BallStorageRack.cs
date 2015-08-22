@@ -35,6 +35,8 @@ public class BallStorageRack : MonoBehaviour {
         ball.position = m_InitTrans.position;
         ball.velocity = m_Force;
         Balls.Add(pBall.GetBallID(), ball);
+
+        PhysicalSupportTools.MaxSpeedLimitTo(ball.gameObject, m_BallMaxSpeed);
     }
 
     public PoolBall Remove(int ballID)
@@ -44,6 +46,8 @@ public class BallStorageRack : MonoBehaviour {
             PoolBall ball = Balls[ballID].GetComponent<PoolBall>();
             ball.Reset();
             Balls.Remove(ballID);
+
+            PhysicalSupportTools.Remove(ball.gameObject, PhysicalSupportType.MaxSpeedLimit);
             return ball;
         }
         return null;
