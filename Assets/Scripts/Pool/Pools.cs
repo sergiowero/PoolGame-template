@@ -80,6 +80,7 @@ public class Pools : MonoBehaviour
         yield return www;
         if(string.IsNullOrEmpty(www.error))
         {
+            Debug.Log("load file success");
             onloaded(StreamTools.DeserializeObject<PoolDataAsset>(www.bytes));
         }
         else

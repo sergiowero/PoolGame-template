@@ -7,13 +7,19 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //BaseUIController.topMenu = SupportTools.AddChild<TopMenuStandard>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuStandard");
-        //Rules = gameObject.AddComponent<PoolRulesStandard>();
-        //Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
-
-        BaseUIController.topMenu = SupportTools.AddChild<TopMenuQuickFire>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuQuickFire");
-        Rules = gameObject.AddComponent<PoolRulesQuickFire>();
-        Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
-        Rules.Initialize();
+        if(Testttt.num == 1)
+        {
+            BaseUIController.topMenu = SupportTools.AddChild<TopMenuStandard>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuStandard");
+            Rules = gameObject.AddComponent<PoolRulesStandard>();
+            Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
+            Rules.Initialize();
+        }
+        else if (Testttt.num == 2)
+        {
+            BaseUIController.topMenu = SupportTools.AddChild<TopMenuQuickFire>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuQuickFire");
+            Rules = gameObject.AddComponent<PoolRulesQuickFire>();
+            Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
+            Rules.Initialize();
+        }
     }
 }
