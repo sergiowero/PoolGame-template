@@ -45,8 +45,8 @@ public class PoolEnvironmentEditor : EditorWindow
         m_DataAsset = ConstantData.GetPoolDatas();
         m_DataAssetTemp = StreamTools.Clone<PoolDataAsset>(m_DataAsset);
 
-        m_Railpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PoolKit/PhysXMaterial/Wall.physicMaterial");
-        m_Ballpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PoolKit/PhysXMaterial/Ball.physicMaterial");
+        m_Railpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Wall.physicMaterial");
+        m_Ballpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Ball.physicMaterial");
         if (m_Railpm == null || m_Ballpm == null)
         {
             Debug.LogError("Physic material is null");
