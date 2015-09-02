@@ -75,6 +75,15 @@ public class PoolRulesQuickFire : PoolRulesBase
         base.OnBallFired();
     }
 
+    void OnGUI()
+    {
+        if(GUILayout.Button("Reset all balls"))
+        {
+            Pools.ResetAllBalls(false, true);
+            Pools.CueBall.Reset();
+        }
+    }
+
     protected override void TurnBegin()
     {
         if(m_WhiteBallPotted)
@@ -84,7 +93,7 @@ public class PoolRulesQuickFire : PoolRulesBase
         base.TurnBegin();
         if(m_PottedBallList.Count == 14)
         {
-            Pools.ResetAllBalls();
+            Pools.ResetAllBalls(true, true);
         }
     }
 

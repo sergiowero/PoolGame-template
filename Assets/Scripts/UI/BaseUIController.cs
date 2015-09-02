@@ -83,4 +83,9 @@ public class BaseUIController : MonoBehaviour {
     {
         return m_Instance.transform;
     }
+
+    public void Back2MainScene()
+    {
+        Application.LoadLevel(0);
+    }
 }

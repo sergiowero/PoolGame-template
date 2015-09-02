@@ -155,6 +155,7 @@ using System.Collections;
         public override void Reset()
         {
             base.Reset();
+            transform.position = m_initalPos;
         }
 
         public void fireBall(float powerScalar)

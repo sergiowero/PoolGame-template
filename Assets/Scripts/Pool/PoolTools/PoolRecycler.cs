@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿//#define USE_GIZMOS
+
+using UnityEngine;
 using System.Collections;
 //the pocket triggers 
 public class PoolRecycler : MonoBehaviour
@@ -16,15 +18,17 @@ public class PoolRecycler : MonoBehaviour
     [SerializeField]
     private PocketIndexes m_PocketIndex;
 
+#if USE_GIZMOS
     [Range(0, 1)]
     [SerializeField]
     private float m_Radius = 1;
-
+#endif
     void Start()
     {
         m_boxCollider = gameObject.GetComponent<BoxCollider>();
     }
 
+#if USE_GIZMOS
     void OnDrawGizmos()
     {
         // Draw a yellow sphere at the transform's position
@@ -37,7 +41,7 @@ public class PoolRecycler : MonoBehaviour
             Gizmos.DrawCube(m_RefTrans.position, Vector3.one * .07f);
         }
     }
-
+#endif
     public Vector3 getPosition()
     {
         return m_boxCollider.center;

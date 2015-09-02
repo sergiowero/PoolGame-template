@@ -50,4 +50,17 @@ public class MathTools
         return BaseUIController.GetUICamera().ScreenToWorldPoint(sp);
     }
 
+    /// <summary>
+    /// Get Multiplicative of n nearest x
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    public static int Round2Number(int x, int n)
+    {
+        if (x % n > n / 2)
+            return x + (n - x % n);
+        else
+            return x - x % n;
+    }
 }

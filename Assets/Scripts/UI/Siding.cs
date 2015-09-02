@@ -72,7 +72,7 @@ public class Siding : MonoBehaviour
             iTween.FadeTo(m_SideballO.gameObject, 1, m_FadeTime);
             iTween.FadeTo(m_AnchorO.gameObject, 1, m_FadeTime);
             iTween.MoveTo(m_SideballO.gameObject, iTween.Hash("position", Vector3.zero, "time", m_FadeTime, "islocal", false));
-            iTween.ScaleTo(m_SideballO.gameObject, Vector3.one * 2, m_FadeTime);
+            iTween.ScaleTo(m_SideballO.gameObject, Vector3.one * 3, m_FadeTime);
         }
         WhiteBall.CueBallSiding = !WhiteBall.CueBallSiding;
     }
@@ -122,6 +122,7 @@ public class Siding : MonoBehaviour
             PointerEventData ped = data as PointerEventData;
             CalculateAnchorOffset(ped.position);
         }
+        m_TouchWhiteArea = false;
     }
 
     public void BlackMaskDrag(BaseEventData data)

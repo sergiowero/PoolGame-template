@@ -33,7 +33,6 @@ public class ConstantData
             }
         }
 #endif
-        if (PoolDatas == null) PoolDatas = new PoolDataAsset();
         return PoolDatas;
     }
 
@@ -41,7 +40,6 @@ public class ConstantData
     public static void SetPoolDatas(PoolDataAsset data)
     {
         PoolDatas = data;
-        UnityEngine.Debug.Log("set pool data : " + data.ToString());
     }
 #endif
 }
@@ -53,11 +51,11 @@ public class PoolDataAsset
     {
         MaxImpulse = 60;
         BallAngularDrag = 6;
-        BallDrag = .3f;
-        BallBounciness = 1f;
-        RailBounciness = .75f;
-        HorizontalSidingStrength = .3f;
-        VerticalSidingStrength = .8f;
+        BallDrag = .5f;
+        BallBounciness = .95f;
+        RailBounciness = .8f;
+        HorizontalSidingStrength = .5f;
+        VerticalSidingStrength = 1;
     }
 
     public float MaxImpulse;

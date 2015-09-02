@@ -3,6 +3,14 @@ using System.Collections;
 
 public class SupportTools
 {
+    [System.Flags]
+    public enum AxisIgnore
+    {
+        IgnoreX = 1 <<0,
+        IgnoreY = 1 << 1,
+        IgnoreZ = 1 << 2
+    }
+
     public static GameObject AddChild(Transform parent, Transform child)
     {
         child.SetParent(parent);
@@ -30,5 +38,23 @@ public class SupportTools
         T t = o.AddComponent<T>();
         AddChild(parent.transform, o.transform);
         return t;
+    }
+
+    public static void SetPosition(GameObject o, Vector3 position, SupportTools.AxisIgnore ignore)
+    {
+        Vector3 v = o.transform.position;
+        if((ignore & AxisIgnore.IgnoreX) == 0)
+        {
+            v.x = position.x;
+        }
+        if((ignore & AxisIgnore.IgnoreY) == 0)
+        {
+            v.y = position.y;
+        }
+        if((ignore & AxisIgnore.IgnoreZ) == 0)
+        {
+            v.z = position.z;
+        }
+        o.transform.position = v;
     }
 }

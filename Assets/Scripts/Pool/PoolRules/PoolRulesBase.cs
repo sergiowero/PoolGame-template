@@ -78,6 +78,7 @@ public abstract class PoolRulesBase : MonoBehaviour
 
     void Start()
     {
+        Pools.ResetAllBalls(false, true);
         TurnBegin();
     }
 

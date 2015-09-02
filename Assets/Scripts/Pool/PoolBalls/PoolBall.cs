@@ -54,14 +54,14 @@ public class PoolBall : MonoBehaviour
 			m_rigidbody =gameObject.GetComponent<Rigidbody>();
             m_ShadowRenderer = GetComponent<BallShadowRenderer>();
             //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
+            m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
             m_PhysicMaterial = collider.sharedMaterial;
 		}
 		public virtual void Start() 
 		{
 			m_initalPos = transform.position;
 			m_initalRot = transform.rotation;
-            m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
-            m_rigidbody.useConeFriction = true;
+			m_rigidbody.useConeFriction=true;
 		}
 
         IEnumerator RecordYValue()
@@ -188,7 +188,6 @@ public class PoolBall : MonoBehaviour
             pocketed = false;
             m_slowTime = 0;
             m_state = State.IDLE;
-            transform.position = m_initalPos;
             transform.rotation = m_initalRot;
             m_rigidbody.constraints = RigidbodyConstraints.None;
             m_rigidbody.angularVelocity = Vector3.zero;

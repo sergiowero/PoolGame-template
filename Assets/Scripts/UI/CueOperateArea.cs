@@ -38,9 +38,8 @@ public class CueOperateArea : MonoBehaviour {
     private void RoundBegin(int playerID)
     {
         BaseUIController.cueAndLines.gameObject.SetActive(true);
-        PoolBall ball9 = Pools.Balls[9];
-        if (ball9 != null && ball9.gameObject.activeInHierarchy)
-            PointerAtWorld(Pools.Balls[9].transform.position);
+        if (GameManager.Rules.FirstRound)
+            Pools.Cue.Reset();
         else
         {
             for (int i = 0; i < 16; i++)

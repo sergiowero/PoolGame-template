@@ -258,6 +258,7 @@ public class PoolEnvironmentEditor : EditorWindow
             if (m_Ballpm) m_Ballpm.bounciness = m_DataAssetTemp.BallBounciness;
         }
         GUI.EndGroup();
+        GUI.skin = null;
     }
 
     private void SerPool()

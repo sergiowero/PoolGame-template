@@ -125,6 +125,13 @@ using Debugger;
             UpdateSiding();
         }
 
+        public void Reset()
+        {
+            transform.localEulerAngles = new Vector3(0, 90, 0);
+            HandleRotate();
+            UpdateSiding();
+        }
+
 		void HandleRotate()
 		{
             if (Pools.CueBall && Pools.CueBall.sphereCollider)
