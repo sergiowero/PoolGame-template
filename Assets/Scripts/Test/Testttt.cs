@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Testttt : MonoBehaviour
 {
     public static int num = 0;
 
-    public GUIStyle style;
-
-    public Texture2D texture;
-
-    public Color c;
+    [SerializeField]
+    public float nummm = 0;
 
     void OnGUI()
     {
+        if(GUILayout.Button("Get Value!"))
+        {
+            Debug.Log("Key : " + nummm + " Value : " + Mathf.RoundToInt(nummm));
+        }
+
     }
 
     public void LoadQuickFire()

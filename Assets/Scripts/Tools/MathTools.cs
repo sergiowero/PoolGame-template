@@ -63,4 +63,16 @@ public class MathTools
         else
             return x - x % n;
     }
+
+    /// <summary>
+    /// Get Multiplicative of n nearest x
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="n"></param>
+    /// <returns></returns>
+    public static int Round2Number(float x, int n)
+    {
+        int xx = Mathf.RoundToInt(x);
+        return Round2Number(xx, n);
+    }
 }

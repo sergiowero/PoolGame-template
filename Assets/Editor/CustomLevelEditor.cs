@@ -6,27 +6,33 @@ using System.Collections.Generic;
 
 public class CustomLevelEditor : EditorWindow
 {
-    Vector2 m_TableMin;
-    Vector2 m_TableMax;
+    public static Vector2 TableMin;
+    public static Vector2 TableMax;
 
     private float m_GridSize;
 
-    private float m_XSize;
-    private float m_YSize;
+    public static float XSize;
+    public static float YSize;
 
     private float m_xRadio;
     private float m_yRadio;
 
 
     private float m_Aspect;
-    private float m_AreaWidth;
-    private float m_AreaHeight;
+    public static float AreaWidth;
+    public static float AreaHeight;
 
     static CustomLevelEditor m_LevelEditorWindow;
 
     Texture2D m_BackImage;
 
     Dictionary<int, TouchObject> m_touchObjects = new Dictionary<int, TouchObject>();
+
+    string m_LevelName;
+
+    LevelData m_CurrentLevelData = null;
+
+    string m_PrevLevelDataFileName = null;
 
     [MenuItem("Window/关卡编辑")]
     static void Init()
@@ -68,17 +74,17 @@ public class CustomLevelEditor : EditorWindow
 
 
         Constraint c = GameObject.FindObjectOfType<WhiteBall>().GetComponent<Constraint>();
-        m_TableMin = new Vector2(c.xAxis.x, c.zAxis.x);
-        m_TableMax = new Vector2(c.xAxis.y, c.zAxis.y);
-        m_XSize = m_TableMax.x - m_TableMin.x;
-        m_YSize = m_TableMax.y - m_TableMin.y;
-        m_Aspect = m_YSize / m_XSize;
+        TableMin = new Vector2(c.xAxis.x, c.zAxis.x);
+        TableMax = new Vector2(c.xAxis.y, c.zAxis.y);
+        XSize = TableMax.x - TableMin.x;
+        YSize = TableMax.y - TableMin.y;
+        m_Aspect = YSize / XSize;
         m_GridSize = c.GetComponent<SphereCollider>().radius * c.transform.localScale.x - ConstantData.BallRadiusAdjustment;
-        m_AreaWidth = Screen.width / 2;
-        m_AreaHeight = m_AreaWidth * m_Aspect;
-        m_xRadio = m_AreaWidth / m_XSize;
-        m_yRadio = m_AreaHeight / m_YSize;
-        m_GridSize = m_GridSize * m_AreaWidth / m_XSize;
+        AreaWidth = Screen.width / 2;
+        AreaHeight = AreaWidth * m_Aspect;
+        m_xRadio = AreaWidth / XSize;
+        m_yRadio = AreaHeight / YSize;
+        m_GridSize = m_GridSize * AreaWidth / XSize;
 
         m_BackImage = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/MatchScene/QuickFire/Box.png");
 
@@ -97,6 +103,10 @@ public class CustomLevelEditor : EditorWindow
             }
         }
         m_touchObjects.Clear();
+        AreaWidth = 0;
+        AreaHeight = 0;
+        XSize = 0;
+        YSize = 0;
     }
 
     void OnGUI()
@@ -107,6 +117,8 @@ public class CustomLevelEditor : EditorWindow
 
         DrawBallObjects();
 
+        DrawOtherGUI();
+
         Repaint();
         //GUI.EndGroup();
     }
@@ -116,9 +128,7 @@ public class CustomLevelEditor : EditorWindow
         foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
         {
             Vector3 v = k.Value.transform.position;
-            int x = MathTools.Round2Number((int)((v.x - m_TableMin.x) * m_xRadio), (int)m_GridSize);
-            int y = MathTools.Round2Number((int)m_AreaHeight - (int)((v.z - m_TableMin.y) * m_yRadio), (int)m_GridSize);
-            Rect rect = new Rect(x, y, m_GridSize * 2, m_GridSize * 2);
+            Rect rect = new Rect((v.x - TableMin.x) * m_xRadio, AreaHeight - (v.z - TableMin.y) * m_yRadio, m_GridSize * 2, m_GridSize * 2);
             k.Value.rect = rect;
             k.Value.multiplicative = (int)m_GridSize;
         }
@@ -127,13 +137,10 @@ public class CustomLevelEditor : EditorWindow
 
     void DrawBackground()
     {
-        for (float x = 0; x <= m_AreaWidth; x += m_GridSize)
-        {
-            for (float y = 0; y <= m_AreaHeight; y += m_GridSize)
-            {
-                GUI.DrawTexture(new Rect(x, y, m_GridSize, m_GridSize), m_BackImage);
-            }
-        }
+        Color c = GUI.color;
+        GUI.color = Color.green;
+        GUI.Box(new Rect(0, 0, AreaWidth + 2 * m_GridSize, AreaHeight + 2 * m_GridSize), "");
+        GUI.color = c;
     }
 
     void DrawBallObjects()
@@ -141,7 +148,49 @@ public class CustomLevelEditor : EditorWindow
         foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
         {
             k.Value.Update();
-            break;
+        }
+    }
+
+    void DrawOtherGUI()
+    {
+        GUI.BeginGroup(new Rect(0, AreaHeight + 2 * m_GridSize, AreaWidth + 2 * m_GridSize + 100, 100));
+        m_CurrentLevelData = EditorGUILayout.ObjectField("关卡数据文件： ", m_CurrentLevelData, typeof(LevelData), false) as LevelData;
+        CheckDataEquals();
+        GUI.skin.label.fontSize = 20;
+        GUI.skin.textField.fontSize = 20;
+        GUI.Label(new Rect(0, 50, 120, 30), "关卡名称：");
+        m_LevelName = EditorGUI.TextField(new Rect(120, 50, 80, 30), m_LevelName);
+        if (GUI.Button(new Rect(255, 50, 100, 30), "保存") && !string.IsNullOrEmpty(m_LevelName))
+        {
+            LevelData data = ScriptableObject.CreateInstance<LevelData>();
+            foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
+            {
+                LevelData.PositionDatas d = new LevelData.PositionDatas(k.Key, k.Value.transform.position, k.Value.rect);
+                data.BallsPosition.Add(d);
+            }
+            data.FileName = m_LevelName;
+            AssetDatabase.CreateAsset(data, StreamTools.GetStreamingAssetsPathInEditor() + "LevelDatas/" + m_LevelName + ".asset");
+            m_CurrentLevelData = data;
+        }
+        GUI.skin.label.fontSize = 12;
+        GUI.skin.textField.fontSize = 12;
+
+        GUI.EndGroup();
+    }
+
+    void CheckDataEquals()
+    {
+        if(m_CurrentLevelData != null && m_CurrentLevelData.FileName != m_PrevLevelDataFileName)
+        {
+            List<LevelData.PositionDatas> ballPositions = m_CurrentLevelData.BallsPosition;
+           for(int i = 0, count = ballPositions.Count; i < count; i++)
+           {
+               int key = ballPositions[i].ID;
+               m_touchObjects[key].transform.position = ballPositions[i].Positon;
+               m_touchObjects[key].rect = ballPositions[i].pRect;
+           }
+           m_LevelName = m_CurrentLevelData.FileName;
+           m_PrevLevelDataFileName = m_LevelName;
         }
     }
 }
@@ -154,7 +203,7 @@ class TouchObject
     public Rect rect;
 
     private Vector2 m_LastPosition;
-    private Vector2 m_StartPosition;
+    private Vector2 m_PositionDelta;
 
     private bool m_Dragging;
 
@@ -177,20 +226,27 @@ class TouchObject
         else if(Event.current.type == EventType.MouseDown
             && rect.Contains(Event.current.mousePosition))
         {
-            m_LastPosition = Event.current.mousePosition;
+            m_PositionDelta = Event.current.mousePosition - rect.position;
             m_Dragging = true;
             Event.current.Use();
-            Debug.Log("Hit!");
         }
         else if (m_Dragging)
         {
-            Vector2 v = Event.current.mousePosition - m_LastPosition;
-            rect.x += v.x;
-            rect.y += v.y;
-            m_LastPosition = Event.current.mousePosition;
-            rect.x = MathTools.Round2Number((int)rect.x, multiplicative);
-            rect.y = MathTools.Round2Number((int)rect.y, multiplicative);
+            Vector2 v = Event.current.mousePosition - m_PositionDelta;
+            //v.x = MathTools.Round2Number(v.x, multiplicative);
+            //v.y = MathTools.Round2Number(v.y, multiplicative);
+
+            v.x = Mathf.Clamp(v.x, 0, CustomLevelEditor.AreaWidth);
+            v.y = Mathf.Clamp(v.y, 0, CustomLevelEditor.AreaHeight);
+
+            rect.position = v;
         }
+
+        //计算球实际的位置
+        Vector3 vv = transform.position;
+        vv.x = rect.x * CustomLevelEditor.XSize / CustomLevelEditor.AreaWidth + CustomLevelEditor.TableMin.x;
+        vv.z = (CustomLevelEditor.AreaHeight - rect.y) * CustomLevelEditor.YSize / CustomLevelEditor.AreaHeight + CustomLevelEditor.TableMin.y;
+        transform.position = vv;
     }
 
 

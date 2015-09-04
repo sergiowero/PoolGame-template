@@ -81,6 +81,11 @@ public class StreamTools
 #endif
     }
 
+    public static string GetStreamingAssetsPathInEditor()
+    {
+        return "Assets/StreamingAssets/";
+    }
+
     public static T Clone<T>(T t) where T : new()
     {
         using (MemoryStream ms = new MemoryStream())
