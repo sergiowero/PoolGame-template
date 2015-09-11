@@ -17,8 +17,17 @@ public class ConstantData
 
     public const float TimeLimitQuickFire = 60 * 2;
 
+    public const int QuickFireBallPottedScore = 100;
+
+    public const float QuickFireComboRewards = .5f;
+
+    public const int GuidelineLength = 400;
+
     private static PoolDataAsset PoolDatas = null;
     public static string PoolDataAssetsFile { get { return "PoolEnvironmentData/PoolPhysical.asset"; } }
+    public static string QuickFireGameRecordPath { get { return "GameRecords/QuickFireData"; } }
+
+    public static GameType GType = GameType.None;
 
     public static PoolDataAsset GetPoolDatas()
     {

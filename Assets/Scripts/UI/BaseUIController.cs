@@ -25,6 +25,8 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     [HideInInspector]
     private TopMenu m_TopMenu;
+    [SerializeField]
+    private Settlement m_Settlement;
 
     public static TextArea text { get { return m_Instance.m_Text; } }
     public static CueOperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
@@ -32,6 +34,7 @@ public class BaseUIController : MonoBehaviour {
     public static CueAndGuidelines cueAndLines { get { return m_Instance.m_CueAndLines; } }
     public static Siding siding { get { return m_Instance.m_Siding; } }
     public static  Transform TopMenuRoot { get { return m_Instance.m_TopMenuRoot; } }
+    public static Settlement MSettlement { get { return m_Instance.m_Settlement; } }
     public static TopMenu topMenu 
     {
         set 

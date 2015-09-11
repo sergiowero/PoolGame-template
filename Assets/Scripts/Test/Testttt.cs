@@ -15,7 +15,10 @@ public class Testttt : MonoBehaviour
         {
             Debug.Log("Key : " + nummm + " Value : " + Mathf.RoundToInt(nummm));
         }
+    }
 
+    void Start()
+    {
     }
 
     public void LoadQuickFire()

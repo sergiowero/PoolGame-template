@@ -100,19 +100,22 @@ public class CueOperateArea : MonoBehaviour {
         Vector3 v = Pools.SceneCamera.WorldToScreenPoint(point);
         PointerAt(v);
     }
-    
+
+    public void PointerAtAngle(float angle, bool b)
+    {
+        //pass too small angle
+        if (float.IsNaN(angle) || float.IsInfinity(angle) || angle < 1)
+            return;
+
+        if (b) Pools.Cue.Rotate(-angle);
+        else Pools.Cue.Rotate(angle);
+    }
+
     public void PointerAt(Vector3 point)
     {
         Vector3 vec = point - Pools.CueBall.GetScreenPosition(),
             dir = BaseUIController.cueAndLines.GetPointerDirection();
         float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
-
-        //pass too small angle
-        if (float.IsNaN(angle) || float.IsInfinity(angle) || angle < 1)
-            return;
-
-        float z = Vector3.Cross(vec, dir).z;
-        if (z < 0) Pools.Cue.Rotate(-angle);
-        else Pools.Cue.Rotate(angle);
+        PointerAtAngle(angle, Vector3.Cross(vec, dir).z < 0);
     }
 }

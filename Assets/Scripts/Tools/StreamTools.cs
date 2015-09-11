@@ -78,6 +78,8 @@ public class StreamTools
         return Application.dataPath + "/Raw/";
 #elif UNITY_ANDROID
         return "jar:file://" + Application.dataPath + "!/assets/";
+#else 
+        return Application.dataPath + "/StreamingAssets/";
 #endif
     }
 

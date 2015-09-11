@@ -124,7 +124,7 @@ public class PoolRulesStandard : PoolRulesBase
     public override bool CheckGameOver()
     {
         //black 8 not enter the pocket yet
-        if (!Pools.Balls[8].pocketed)
+        if (Pools.Balls[8].BallState != PoolBall.State.POTTED )
             return false;
 
         //black 8 enter the pocket 
@@ -134,7 +134,7 @@ public class PoolRulesStandard : PoolRulesBase
             return true;
 
         //current player has the target balls or current player hit the cueball in the pocket
-        if (CurrentPlayer.BallsList.Count > 0 || Pools.CueBall.pocketed)
+        if (CurrentPlayer.BallsList.Count > 0 || Pools.CueBall.BallState == PoolBall.State.POTTED)
         {
             //opponent win
             m_CurPlayerIndex = m_OpponentPlayerIndex;

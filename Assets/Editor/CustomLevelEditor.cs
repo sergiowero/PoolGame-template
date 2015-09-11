@@ -112,12 +112,22 @@ public class CustomLevelEditor : EditorWindow
     void OnGUI()
     {
         //GUI.BeginGroup(new Rect(0, 0, m_AreaWidth + 100, m_AreaHeight + 100));
+        if(Application.isPlaying)
+        {
+            Color c = GUI.contentColor;
+            GUI.contentColor = Color.red;
+            GUILayout.Label("编辑模式再打开这个窗口。");
+            GUI.contentColor = c;
+            return;
+        }
 
         DrawBackground();
 
         DrawBallObjects();
 
         DrawOtherGUI();
+
+        DrawBallListCheckBox();
 
         Repaint();
         //GUI.EndGroup();
@@ -130,7 +140,7 @@ public class CustomLevelEditor : EditorWindow
             Vector3 v = k.Value.transform.position;
             Rect rect = new Rect((v.x - TableMin.x) * m_xRadio, AreaHeight - (v.z - TableMin.y) * m_yRadio, m_GridSize * 2, m_GridSize * 2);
             k.Value.rect = rect;
-            k.Value.multiplicative = (int)m_GridSize;
+            k.Value.draw = k.Value.transform.GetComponent<Renderer>().enabled;
         }
     }
 
@@ -147,7 +157,7 @@ public class CustomLevelEditor : EditorWindow
     {
         foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
         {
-            k.Value.Update();
+            k.Value.Draw();
         }
     }
 
@@ -167,6 +177,8 @@ public class CustomLevelEditor : EditorWindow
             {
                 LevelData.PositionDatas d = new LevelData.PositionDatas(k.Key, k.Value.transform.position, k.Value.rect);
                 data.BallsPosition.Add(d);
+                LevelData.DisplayDatas dd = new LevelData.DisplayDatas(k.Key, k.Value.draw);
+                data.BallsDrawList.Add(dd);
             }
             data.FileName = m_LevelName;
             AssetDatabase.CreateAsset(data, StreamTools.GetStreamingAssetsPathInEditor() + "LevelDatas/" + m_LevelName + ".asset");
@@ -178,25 +190,60 @@ public class CustomLevelEditor : EditorWindow
         GUI.EndGroup();
     }
 
+    void DrawBallListCheckBox()
+    {
+        float height = AreaHeight + 2 * m_GridSize;
+        float heightDivide16 = height * 0.0625f;
+        GUI.BeginGroup(new Rect(AreaWidth + 2 * m_GridSize, 0, 100, height));
+        GUI.Box(new Rect(0, 0, 100, height), "");
+        
+        int i = 0;
+        foreach(KeyValuePair<int , TouchObject> k in m_touchObjects)
+        {
+            Color c = GUI.color;
+            GUI.color = Color.blue;
+            GUI.Box(new Rect(0, i * heightDivide16, 100, heightDivide16 - 1), "");
+            GUI.color = c;
+            k.Value.draw = GUI.Toggle(new Rect(0, i * heightDivide16, 100, heightDivide16 - 5), k.Value.draw, "Ball " + k.Key);
+            k.Value.CheckValueChanged();
+            i++;
+        }
+
+        GUI.EndGroup();
+    }
+
     void CheckDataEquals()
     {
         if(m_CurrentLevelData != null && m_CurrentLevelData.FileName != m_PrevLevelDataFileName)
         {
             List<LevelData.PositionDatas> ballPositions = m_CurrentLevelData.BallsPosition;
-           for(int i = 0, count = ballPositions.Count; i < count; i++)
-           {
-               int key = ballPositions[i].ID;
-               m_touchObjects[key].transform.position = ballPositions[i].Positon;
-               m_touchObjects[key].rect = ballPositions[i].pRect;
-           }
-           m_LevelName = m_CurrentLevelData.FileName;
-           m_PrevLevelDataFileName = m_LevelName;
+            for (int i = 0, count = ballPositions.Count; i < count; i++)
+            {
+                int key = ballPositions[i].ID;
+                m_touchObjects[key].transform.position = ballPositions[i].Positon;
+                m_touchObjects[key].rect = ballPositions[i].pRect;
+            }
+            List<LevelData.DisplayDatas> ballDisplays = m_CurrentLevelData.BallsDrawList;
+            for (int i = 0, count = ballDisplays.Count; i < count; i++)
+            {
+                m_touchObjects[ballDisplays[i].ID].draw = ballDisplays[i].Draw;
+            }
+            m_LevelName = m_CurrentLevelData.FileName;
+            m_PrevLevelDataFileName = m_LevelName;
+        }
+        else if(m_CurrentLevelData == null && m_PrevLevelDataFileName != null)
+        {
+            m_PrevLevelDataFileName = null;
         }
     }
 }
 
 class TouchObject
 {
+    public bool draw = true;
+
+    private bool prevDraw = true;
+
     public Transform transform;
     public Texture2D texture;
 
@@ -207,16 +254,37 @@ class TouchObject
 
     private bool m_Dragging;
 
-    public int multiplicative;
-
     public TouchObject()
     {
         m_Dragging = false;
     }
 
-
-    public void Update()
+    public void CheckValueChanged()
     {
+        if(prevDraw != draw)
+        {
+            if(draw)
+            {
+                transform.GetComponent<Renderer>().enabled = true;
+                transform.GetComponent<Collider>().enabled = true;
+                transform.FindChild("Shadow").gameObject.SetActive(true);
+                transform.GetComponent<BallShadowRenderer>().enabled = true;
+            }
+            else
+            {
+                transform.GetComponent<Renderer>().enabled = false;
+                transform.GetComponent<Collider>().enabled = false;
+                transform.FindChild("Shadow").gameObject.SetActive(false);
+                transform.GetComponent<BallShadowRenderer>().enabled = false;
+            }
+            prevDraw = draw;
+        }
+    }
+
+    public void Draw()
+    {
+        if (!draw) return;
+
         GUI.DrawTexture(rect, texture);
         if(Event.current.type == EventType.MouseUp)
         {
@@ -248,7 +316,4 @@ class TouchObject
         vv.z = (CustomLevelEditor.AreaHeight - rect.y) * CustomLevelEditor.YSize / CustomLevelEditor.AreaHeight + CustomLevelEditor.TableMin.y;
         transform.position = vv;
     }
-
-
-
 }

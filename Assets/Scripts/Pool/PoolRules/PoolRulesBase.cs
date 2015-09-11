@@ -38,6 +38,14 @@ public enum BallType
     WHITE = 0
 }
 
+public enum GameType
+{
+    None = 0,
+    Standard = 1,
+    QuickFire = 2,
+    Mission = 3
+}
+
 public abstract class PoolRulesBase : MonoBehaviour
 {
     public static System.Action<int> onNewTurn;
@@ -76,9 +84,10 @@ public abstract class PoolRulesBase : MonoBehaviour
     protected bool m_HandleWhiteball = true;
     public bool HandleWhiteBall { get { return m_HandleWhiteball; } }
 
-    void Start()
+    IEnumerator Start()
     {
         Pools.ResetAllBalls(false, true);
+        yield return new WaitForEndOfFrame();
         TurnBegin();
     }
 
@@ -130,12 +139,6 @@ public abstract class PoolRulesBase : MonoBehaviour
     protected virtual void TurnBegin()
     {
         m_Turn++;
-
-        if (onNewTurn != null)
-        {
-            onNewTurn(m_Turn);
-        }
-
         //
         //reset game state
         //
@@ -149,6 +152,11 @@ public abstract class PoolRulesBase : MonoBehaviour
             m_PottedBallList.Add(pb.GetBallID(), pb);
         }
         m_PottedBallListThisRound.Clear();
+
+        if (onNewTurn != null)
+        {
+            onNewTurn(m_Turn);
+        }
     }
     #endregion
 

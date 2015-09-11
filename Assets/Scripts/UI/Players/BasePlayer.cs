@@ -44,7 +44,7 @@ public class BasePlayer : MonoBehaviour, IPlayer
     {
         for (int i = min; i <= max; i++)
         {
-            if(!Pools.Balls[i].pocketed)
+            if(!Pools.Balls[i].IsBallDisable())
             {
                 m_TargetBalls.Add(Pools.Balls[i]);
                 Image o = SupportTools.AddChild<Image>(m_SlotsRoot.gameObject, "TestRes/Slot");
@@ -63,7 +63,7 @@ public class BasePlayer : MonoBehaviour, IPlayer
         {
             for (int i = 0; i < m_TargetBalls.Count; )
             {
-                if (m_TargetBalls[i].pocketed)
+                if (m_TargetBalls[i].BallState == PoolBall.State.POTTED)
                 {
                     Transform t = m_SlotsRoot.transform.FindChild(m_TargetBalls[i].GetBallID().ToString());
                     if (t) Destroy(t.gameObject);

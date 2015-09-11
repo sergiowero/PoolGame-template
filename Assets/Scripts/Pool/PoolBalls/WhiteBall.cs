@@ -6,8 +6,6 @@ using System.Collections;
 
         public static bool CueBallSiding = false;
 
-		public SphereCollider sphereCollider;
-
 		Vector3 screenPoint;
 		Vector3 offset;
 
@@ -19,10 +17,6 @@ using System.Collections;
 		public LayerMask layermask;
 		public bool Foul=true;
 
-		public float GetRadius()
-		{
-            return sphereCollider.radius * transform.localScale.x - ConstantData.BallRadiusAdjustment;//BallRadiusAdjustment is the collision adjustment, otherwise colliding can not be happen
-		}
 
         public Vector3 GetPosition()
         {
@@ -36,12 +30,10 @@ using System.Collections;
             return v;
         }
 
-
 		public override void Start()
 		{
 			base.Start();
             InitBallDragger();
-			sphereCollider = gameObject.GetComponent<SphereCollider>();
 			m_constraint = gameObject.GetComponent<Constraint>();
 			m_constraint.enabled=false;
             m_constraint.adjustment = GetRadius();
@@ -118,16 +110,15 @@ using System.Collections;
             if(!name.Contains("surface") && gameObject.activeInHierarchy)
                 StartCoroutine("TouchTable", 0);
             #region Might be useful
-            /*
-            if (name.Contains("Rail"))
-            {
-                BaseGameManager.ballHitWall(rigidbody.velocity);
-                hitWall = true;
-            }
-            */
+            //if (name.Contains("Rail"))
+            //{
+            //    AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            //    hitWall = true;
+            //}
             #endregion
             if (name.Contains("Ball"))
 			{
+                AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
 				PoolBall ball = col.gameObject.GetComponent<PoolBall>();
                 GameManager.Rules.WhiteBallHitBall(ball);
 				if(ball && ball==m_targetBall)
@@ -137,6 +128,21 @@ using System.Collections;
 				}
 			}
 		}
+
+        //void FixedUpdate()
+        //{
+        //    if (m_state == State.ROLL)
+        //    {
+        //        Vector3 direction = m_rigidbody.position - m_LastPosition;
+        //        RaycastHit hit;
+        //        if (Physics.SphereCast(m_LastPosition, m_Radius, direction, out hit, direction.magnitude, 1 << LayerMask.NameToLayer("Ball")))
+        //        {
+        //            m_rigidbody.position = hit.point + hit.normal.normalized * m_Radius;
+        //        }
+        //    }
+        //    m_LastPosition = m_rigidbody.position;
+        //}
+
 
 		public void clear()
 		{
@@ -154,6 +160,7 @@ using System.Collections;
 
         public override void Reset()
         {
+            Debug.Log("Reset white ball");
             base.Reset();
             transform.position = m_initalPos;
         }
@@ -164,13 +171,14 @@ using System.Collections;
             {
                 m_rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
                 m_rigidbody.useGravity = false;
-                StartCoroutine("TouchTable", powerScalar * .5f);
+                StartCoroutine("TouchTable", powerScalar * .1f);
             }
             //BaseGameManager.fireBall();
+            AudioHelper.m_Instance.onFireBall();
             GameManager.Rules.OnBallFired();
             m_slowTime = 0;
             m_rigidbody.AddForce(Pools.Cue.transform.forward * powerScalar * ConstantData.GetPoolDatas().MaxImpulse, ForceMode.Impulse);
-            m_rigidbody.AddTorque(ballTorque);
+            m_rigidbody.AddTorque(ballTorque * powerScalar);
             m_state = State.ROLL;
             //m_BallPhysicalDrag.enabled = true;
             OpenDrag();

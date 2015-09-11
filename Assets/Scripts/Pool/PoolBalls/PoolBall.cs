@@ -1,235 +1,288 @@
 ﻿using UnityEngine;
 using System.Collections;
-public class PoolBall : MonoBehaviour 
-	{
-        //the balls Id
-        [SerializeField]
-        protected int m_BallID = -1;
+public class PoolBall : MonoBehaviour
+{
+    //the balls Id
+    [SerializeField]
+    protected int m_BallID = -1;
 
-		//the type of ball
-		public BallType ballType;
+    //the type of ball
+    public BallType ballType;
 
-		public Vector3 ballTorque;
-		protected Rigidbody m_rigidbody;
+    public Vector3 ballTorque;
+    protected Rigidbody m_rigidbody;
 
-		//the inital position
-		protected Vector3 m_initalPos;
+    //the inital position
+    protected Vector3 m_initalPos;
 
-		//the inital rotation 
-		protected Quaternion m_initalRot;
-		public enum State
-		{
-			ROLL,
-			IDLE
-		};
+    //the inital rotation 
+    protected Quaternion m_initalRot;
 
-		//what state is the ball in
-		protected State m_state;
+    public SphereCollider sphereCollider;
 
-		//the current time the ball has to be slowed down
-		protected float m_slowTime;
+    [System.Flags]
+    public enum State
+    {
+        NONE = 0,
+        ROLL = 1 << 0 , // the ball is rolling
+        IDLE = 1 << 1,  // the ball is idling
+        POTTED = 1 << 2, //the ball is potted
+        HIDE = 1 << 3//do we hide the ball
+    };
 
-		//the time the ball has to be slowed down before its considered stopped
-		public float slowTime = 1;
+    //what state is the ball in
+    protected State m_state;
+    public State BallState { get { return m_state; } }
 
-		//did we hit the wall.
-        public bool hitWall = false;
+    //the current time the ball has to be slowed down
+    protected float m_slowTime;
 
-		//has the ball been pocketed
-		public bool pocketed=false;
+    //the time the ball has to be slowed down before its considered stopped
+    public float slowTime = 1;
 
-        protected BallShadowRenderer m_ShadowRenderer;
+    //did we hit the wall.
+    public bool hitWall = false;
 
-        //protected BallPhysicalDrag m_BallPhysicalDrag;
-        protected PhysicalSupportTools m_BallPhysicalDrag;
+    protected BallShadowRenderer m_ShadowRenderer;
 
-        protected PhysicMaterial m_PhysicMaterial;
+    //protected BallPhysicalDrag m_BallPhysicalDrag;
+    protected PhysicalSupportTools m_BallPhysicalDrag;
 
-        [SerializeField]
-        private float m_MaxYAxis;
+    protected PhysicMaterial m_PhysicMaterial;
 
+    [SerializeField]
+    private float m_MaxYAxis;
 
-		public virtual void Awake()
-		{
-			m_rigidbody =gameObject.GetComponent<Rigidbody>();
-            m_ShadowRenderer = GetComponent<BallShadowRenderer>();
-            //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
-            m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
-            m_PhysicMaterial = collider.sharedMaterial;
-		}
-		public virtual void Start() 
-		{
-			m_initalPos = transform.position;
-			m_initalRot = transform.rotation;
-			m_rigidbody.useConeFriction=true;
-		}
+    protected Renderer m_Mesh;
 
-        IEnumerator RecordYValue()
+    protected Vector3 m_LastPosition;
+
+    protected float m_Radius;
+
+    public virtual void Awake()
+    {
+        m_rigidbody = gameObject.GetComponent<Rigidbody>();
+        m_ShadowRenderer = GetComponent<BallShadowRenderer>();
+        sphereCollider = gameObject.GetComponent<SphereCollider>();
+        m_Mesh = GetComponent<MeshRenderer>();
+        //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
+        m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
+        m_Radius = sphereCollider.radius * transform.localScale.x;
+        m_PhysicMaterial = collider.sharedMaterial;
+    }
+    public virtual void Start()
+    {
+        m_initalPos = transform.position;
+        m_initalRot = transform.rotation;
+        m_rigidbody.useConeFriction = true;
+    }
+
+    IEnumerator RecordYValue()
+    {
+        yield return new WaitForSeconds(1);
+        m_MaxYAxis = m_rigidbody.position.y;
+        yield return null;
+    }
+
+    private void YValueDrag()
+    {
+        Vector3 v = m_rigidbody.position;
+        v.y = m_MaxYAxis;
+        m_rigidbody.position = v;
+    }
+
+    //point the ball at the target
+    public void PointAtTarget(Vector3 target)
+    {
+        Vector3 vel = m_rigidbody.velocity;
+        float mag = vel.magnitude;
+        Vector3 newDir = target - transform.position;
+        m_rigidbody.velocity = newDir.normalized * mag;
+    }
+
+    public int GetBallID()
+    {
+        return m_BallID;
+    }
+
+    public virtual void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.name.Contains("Rail"))
         {
-            yield return new WaitForSeconds(1);
-            m_MaxYAxis = m_rigidbody.position.y;
-            yield return null;
-        }
-
-        private void YValueDrag()
-        {
-            Vector3 v = m_rigidbody.position;
-            v.y = m_MaxYAxis;
-            m_rigidbody.position = v;
-        }
-
-		//point the ball at the target
-		public void PointAtTarget(Vector3 target)
-		{
-			Vector3 vel = m_rigidbody.velocity;
-			float mag = vel.magnitude;
-			Vector3 newDir = target - transform.position;
-			m_rigidbody.velocity = newDir.normalized * mag;
-		}
-
-        public int GetBallID()
-        {
-            return m_BallID;
-        }
-
-		public virtual void OnCollisionEnter (Collision col){
-            if (col.gameObject.name.Contains("Rail"))
-			{
-				//we hit the wall.
-                //BaseGameManager.ballHitWall(rigidbody.velocity);
-                if(!hitWall)
-                {
-                    GameManager.Rules.BallHitRail();
-                    hitWall = true;
-                }
-			}
-			if (col.gameObject.name.Contains("Ball"))
-			{
-                //BaseGameManager.ballHitBall(rigidbody.velocity);
-			}
-		}
-
-		public void OnEnable()
-		{
-            PoolRulesBase.onFireBall += OnFireBall;
-            PoolRulesBase.onNewTurn += OnNewTurn;
-            OpenRenderer();
-		}
-
-
-		public void OnDisable()
-		{
-            PoolRulesBase.onFireBall -= OnFireBall;
-            PoolRulesBase.onNewTurn -= OnNewTurn;
-		}
-
-		public void OnFireBall()
-		{
-            m_slowTime = 0;
-		}
-
-        public void OnNewTurn(int turnIndex)
-        {
-            hitWall = false;
-        }
-
-		public void Update()
-        {
-            if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
+            //we hit the wall.
+            //BaseGameManager.ballHitWall(rigidbody.velocity);
+            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            if (!hitWall)
             {
-                if (m_state == State.ROLL)
+                GameManager.Rules.BallHitRail();
+                hitWall = true;
+            }
+        }
+        if (col.gameObject.name.Contains("Ball"))
+        {
+            //BaseGameManager.ballHitBall(rigidbody.velocity);
+            AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+        }
+    }
+
+    public void OnEnable()
+    {
+        PoolRulesBase.onFireBall += OnFireBall;
+        PoolRulesBase.onNewTurn += OnNewTurn;
+        OpenRenderer();
+    }
+
+
+    public void OnDisable()
+    {
+        PoolRulesBase.onFireBall -= OnFireBall;
+        PoolRulesBase.onNewTurn -= OnNewTurn;
+    }
+
+    public void OnFireBall()
+    {
+        m_slowTime = 0;
+    }
+
+    public void OnNewTurn(int turnIndex)
+    {
+        hitWall = false;
+    }
+
+    public float GetRadius()
+    {
+        return m_Radius; /* -ConstantData.BallRadiusAdjustment;//BallRadiusAdjustment is the collision adjustment, otherwise colliding can not be happen*/
+    }
+
+    public void Update()
+    {
+        if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
+        {
+            if (m_state == State.ROLL)
+            {
+                if (m_slowTime < slowTime)
+                    m_slowTime += Time.deltaTime;
+                if (m_slowTime >= slowTime)
                 {
-                    if (m_slowTime < slowTime)
-                        m_slowTime += Time.deltaTime;
-                    if (m_slowTime >= slowTime)
-                    {
-                        m_state = State.IDLE;
-                        if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = false;
-                        CloseDrag();
-                    }
+                    m_state = State.IDLE;
+                    if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = false;
+                    CloseDrag();
                 }
             }
-            else
-            {
-                if(m_state != State.ROLL)
-                {
-                    OpenDrag();
-                    if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = true;
-                    m_state = State.ROLL;
-                    m_slowTime = 0;
-                }
-            }
-		}
-
-        void LateUpdate()
-        {
-            if (m_rigidbody.position.y > m_MaxYAxis)
-                YValueDrag();
         }
-
-		public void Potted()
-		{
-			if(m_rigidbody)
-			{
-				pocketed=true;
-				m_rigidbody.velocity = Vector3.zero;
-                m_rigidbody.angularVelocity = Vector3.zero;
-				m_state = State.IDLE;
-                CloseDrag();
-                CloseRenderer();
-                enabled = false;
-                RemovePhysicalMaterial();
-                //gameObject.SetActive(false);
-			}
-		}
-
-        public virtual void Reset()
+        else
         {
-            pocketed = false;
-            m_slowTime = 0;
-            m_state = State.IDLE;
-            transform.rotation = m_initalRot;
-            m_rigidbody.constraints = RigidbodyConstraints.None;
-            m_rigidbody.angularVelocity = Vector3.zero;
+            if (m_state != State.ROLL)
+            {
+                OpenDrag();
+                if (ballType != BallType.WHITE) m_ShadowRenderer.enabled = true;
+                m_state = State.ROLL;
+                m_slowTime = 0;
+            }
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (m_rigidbody.position.y > m_MaxYAxis)
+            YValueDrag();
+    }
+
+    public void Potted()
+    {
+        if (m_rigidbody)
+        {
+            m_state = State.POTTED;
             m_rigidbody.velocity = Vector3.zero;
-            OpenRenderer();
-            ReversePhysicalMaterial();
-            PhysicalSupportTools.Remove(gameObject, PhysicalSupportType.MaxSpeedLimit);
-            enabled = true;
+            m_rigidbody.angularVelocity = Vector3.zero;
+            //m_state = State.IDLE;
+            CloseDrag();
+            CloseRenderer();
+            enabled = false;
+            RemovePhysicalMaterial();
+            //gameObject.SetActive(false);
         }
+    }
 
-		public bool IsDoneRolling()
-		{
-			return m_state == State.IDLE;
-		}
-
-        public void CloseRenderer()
+    public virtual void Reset()
+    {
+        m_slowTime = 0;
+        m_state = State.IDLE;
+        //SupportTools.SetPosition(gameObject, m_initalPos, SupportTools.AxisIgnore.IgnoreX | SupportTools.AxisIgnore.IgnoreZ);
+        Vector3 v = transform.position;
+        m_rigidbody.isKinematic = false;
+        v.y = m_MaxYAxis;
+        transform.position = v;
+        transform.rotation = m_initalRot;
+        m_rigidbody.constraints = RigidbodyConstraints.None;
+        m_rigidbody.angularVelocity = Vector3.zero;
+        m_rigidbody.velocity = Vector3.zero;
+        OpenRenderer();
+        ReversePhysicalMaterial();
+        PhysicalSupportTools.Remove(gameObject, PhysicalSupportType.MaxSpeedLimit);
+        RackBallCollision rb;
+        if(rb = GetComponent<RackBallCollision>())
         {
-            if(m_ShadowRenderer) m_ShadowRenderer.Close();
+            Destroy(rb);
         }
+        enabled = true;
+        m_LastPosition = transform.position;
+    }
 
-        public void OpenRenderer()
-        {
-            if(m_ShadowRenderer) m_ShadowRenderer.Open();
-        }
+    public bool IsDoneRolling()
+    {
+        return m_state != State.ROLL;
+    }
 
-        public void CloseDrag()
-        {
-            m_BallPhysicalDrag.enabled = false;
-        }
+    public void CloseRenderer()
+    {
+        if (m_ShadowRenderer) m_ShadowRenderer.Close();
+    }
 
-        public void OpenDrag()
-        {
-            m_BallPhysicalDrag.enabled = true;
-        }
+    public void OpenRenderer()
+    {
+        if (m_ShadowRenderer) m_ShadowRenderer.Open();
+    }
 
-        public void RemovePhysicalMaterial()
-        {
-            collider.sharedMaterial = null;
-        }
+    public void CloseDrag()
+    {
+        m_BallPhysicalDrag.enabled = false;
+    }
 
-        public void ReversePhysicalMaterial()
-        {
-            collider.sharedMaterial = m_PhysicMaterial;
-        }
-	}
+    public void OpenDrag()
+    {
+        m_BallPhysicalDrag.enabled = true;
+    }
+
+    public void RemovePhysicalMaterial()
+    {
+        collider.sharedMaterial = null;
+    }
+
+    public void ReversePhysicalMaterial()
+    {
+        collider.sharedMaterial = m_PhysicMaterial;
+    }
+
+    public void Hide()
+    {
+        m_Mesh.enabled = false;
+        collider.enabled = false;
+        CloseRenderer();
+        m_state = State.HIDE;
+    }
+
+    public void Display()
+    {
+        m_Mesh.enabled = true;
+        collider.enabled = true;
+        OpenRenderer();
+        m_state = State.IDLE;
+    }
+
+    public bool IsBallDisable()
+    {
+        return (m_state & (State.POTTED | State.HIDE)) == 0;
+    }
+
+}

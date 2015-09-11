@@ -55,14 +55,14 @@ public class CueAndGuidelines : MonoBehaviour {
             m_HitBallDir.position = shtp;
             Vector3 v3 = (shtp - shp).normalized;
             float d = Vector2.Dot(-m_GuideLine.right, v3);
-            float d40 = d * 40;
+            float d40 = d * ConstantData.GuidelineLength;
             v3 = v3 * d;
             m_HitBallDir.right = v3;
             m_HitBallDir.sizeDelta = new Vector2(d40, m_HitBallDir.rect.height);
             //whiteballdir
             m_WhiteBallDir.position = shwp;
             m_WhiteBallDir.right = -m_GuideLine.right - v3;
-            m_WhiteBallDir.sizeDelta = new Vector2(40 - d40, m_WhiteBallDir.rect.height);
+            m_WhiteBallDir.sizeDelta = new Vector2(ConstantData.GuidelineLength - d40, m_WhiteBallDir.rect.height);
         }
         else
         {

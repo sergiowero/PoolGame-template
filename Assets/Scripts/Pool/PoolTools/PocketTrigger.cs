@@ -11,6 +11,7 @@ public class PocketTrigger : MonoBehaviour
     {
         if(collision.transform.name.Contains("Ball"))
         {
+            AudioHelper.m_Instance.onBallEnterPocket();
             BallInPocket pocket = collision.gameObject.GetComponent<BallInPocket>();
             collision.transform.GetComponent<PoolBall>().CloseRenderer();
             if(pocket == null)

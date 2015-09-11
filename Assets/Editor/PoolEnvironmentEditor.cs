@@ -200,9 +200,9 @@ public class PoolEnvironmentEditor : EditorWindow
 
         /////////////////水平加塞
         GUI.BeginGroup(new Rect(10, 435, 400, 80));
-        SetValue("水平加塞比值(0-1)：", () =>
+        SetValue("水平加塞比值：", () =>
         {
-            if (float.TryParse(s6, out f) && f >= 0 && f <= 1)
+            if (float.TryParse(s6, out f))
             {
                 m_DataAsset.HorizontalSidingStrength = f;
             }
@@ -223,9 +223,9 @@ public class PoolEnvironmentEditor : EditorWindow
 
         /////////////////垂直加塞
         GUI.BeginGroup(new Rect(10, 520, 400, 80));
-        SetValue("垂直加塞比值\n(0-1)：", () =>
+        SetValue("垂直加塞比值：", () =>
         {
-            if (float.TryParse(s7, out f) && f >= 0 && f <= 1)
+            if (float.TryParse(s7, out f))
             {
                 m_DataAsset.VerticalSidingStrength = f;
             }

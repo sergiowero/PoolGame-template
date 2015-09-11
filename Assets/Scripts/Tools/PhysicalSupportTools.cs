@@ -142,14 +142,18 @@ class PhysicalDrag : IPhysicalSupport
     Vector3 m_Velocity;
     Vector3 m_AngularVelocity;
 
+#if !UNITY_EDITOR
     float m_VelocityDrag;
     float m_AngularVelocityDrag;
+#endif
 
     public void Init(Hashtable table)
     {
         m_Rigidbody = (Rigidbody)table["Rigidbody"];
+#if !UNITY_EDITOR
         m_VelocityDrag = (float)table["VelocityDrag"];
         m_AngularVelocityDrag = (float)table["AngularVelocityDrag"];
+#endif
     }
 
     public void FixedCall()
@@ -163,7 +167,11 @@ class PhysicalDrag : IPhysicalSupport
     private void VelocityDrag()
     {
         m_Velocity = m_Rigidbody.velocity;
+#if UNITY_EDITOR
+        float f = m_Velocity.magnitude - ConstantData.GetPoolDatas().BallDrag * Time.fixedDeltaTime;
+#else
         float f = m_Velocity.magnitude - m_VelocityDrag * Time.fixedDeltaTime;
+#endif
         if (f <= 0)
         {
             m_Rigidbody.velocity = Vector3.zero;
@@ -177,7 +185,11 @@ class PhysicalDrag : IPhysicalSupport
     private void AngularVelocityDrag()
     {
         m_AngularVelocity = m_Rigidbody.angularVelocity;
+#if UNITY_EDITOR
+        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 2 : 1) * Time.fixedDeltaTime;
+#else
         float f = m_AngularVelocity.magnitude - m_AngularVelocityDrag * Time.fixedDeltaTime;
+#endif
         if (f <= 0)
         {
             m_Rigidbody.angularVelocity = Vector3.zero;

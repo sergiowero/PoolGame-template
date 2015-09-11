@@ -163,12 +163,15 @@ using Debugger;
 			 }
 		}
 
-        public void Siding(Vector2 sideOffset)
+        public void Siding(Vector2 sideOffset, bool update = false)
         {
             if(sideOffset != Vector2.zero)
             {
-                sideOffset.x *= ConstantData.GetPoolDatas().HorizontalSidingStrength;
-                sideOffset.y *= ConstantData.GetPoolDatas().VerticalSidingStrength;
+                if(!update)
+                {
+                    sideOffset.x *= ConstantData.GetPoolDatas().HorizontalSidingStrength;
+                    sideOffset.y *= ConstantData.GetPoolDatas().VerticalSidingStrength;
+                }
                 Vector3 v1 = transform.localToWorldMatrix.MultiplyVector(new Vector3(sideOffset.x, sideOffset.y, 0));
                 Vector3 v2 = transform.localToWorldMatrix.MultiplyVector(m_RefPoint);
                 Vector3 v3 = Vector3.Cross(v2, v1);
@@ -196,7 +199,7 @@ using Debugger;
 
         public void UpdateSiding()
         {
-            Siding(m_CurrentSideOffset);
+            Siding(m_CurrentSideOffset, true);
         }
 
         public void OnDrawGizmos()

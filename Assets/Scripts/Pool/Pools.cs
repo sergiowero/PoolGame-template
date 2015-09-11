@@ -75,38 +75,7 @@ public class Pools : MonoBehaviour
         {
             m_BallIcons[i - 1] = Resources.Load<Sprite>("BallsIcon/" + i);
         }
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-        StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));
-#endif
     }
-
-    #region IEnumerator
-    IEnumerator LoadPoolAsset(System.Action<PoolDataAsset> onloaded)
-    {
-        WWW www = new WWW(StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
-        Debug.Log("load file : " + StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
-        yield return www;
-        if (string.IsNullOrEmpty(www.error))
-        {
-            Debug.Log("load file success");
-            onloaded(StreamTools.DeserializeObject<PoolDataAsset>(www.bytes));
-        }
-        else
-        {
-            Debug.LogError(www.error);
-        }
-    }
-    #endregion
-
-    #region Callback
-#if UNITY_ANDROID
-    private void OnPoolAssetLoadedAtAndroidPlatform(PoolDataAsset dataAsset)
-    {
-        ConstantData.SetPoolDatas(dataAsset);
-    }
-#endif
-    #endregion
 
     #region Methods-------------------------------------------------------------
     private PoolBall[] _GetBallsArray()
@@ -130,9 +99,10 @@ public class Pools : MonoBehaviour
 
         for (int i = 1; i <= 15; i++)
         {
-            if ((pottedOnly && Balls[i].pocketed) || !pottedOnly)
+            if(Balls[i].BallState != PoolBall.State.HIDE)
             {
-                t.Add(i, Balls[i]);
+                if ((pottedOnly && Balls[i].BallState == PoolBall.State.POTTED) || !pottedOnly)
+                    t.Add(i, Balls[i]);
             }
         }
 
@@ -146,7 +116,7 @@ public class Pools : MonoBehaviour
             t.Remove(8);
         }
         //the x axis space can calculated with Pythagorean theorem, the z axis space is diameter of the ball
-        float R = (CueBall.GetRadius() + ConstantData.BallRadiusAdjustment + 0.001f) * 2, x = Black8Origin.position.x - squr3 * R, z;
+        float R = (CueBall.GetRadius() + 0.001f) * 2, x = Black8Origin.position.x - squr3 * R, z;
         Vector3 p = Vector3.one;
         List<int> list = new List<int>(t.Keys);
         for (int i = 1, k = 1; i <= 5; i++)
@@ -175,15 +145,5 @@ public class Pools : MonoBehaviour
             }
             x += .5f * R * squr3;
         }
-    }
-
-    private static PoolBall GetPottedBall()
-    {
-        for (int i = 1; i <= 15; i++)
-        {
-            if (!Balls[i].pocketed)
-                return Balls[i];
-        }
-        return null;
     }
 }

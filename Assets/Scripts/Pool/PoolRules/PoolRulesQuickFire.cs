@@ -15,6 +15,7 @@ public class PoolRulesQuickFire : PoolRulesBase
     public override void Initialize()
     {
         m_Time = ConstantData.TimeLimitQuickFire;
+        m_Player.PlayTime = ConstantData.TimeLimitQuickFire;
         m_Player.SetTime(m_Time, true);
         m_HandleWhiteball = false;
     }
@@ -26,8 +27,9 @@ public class PoolRulesQuickFire : PoolRulesBase
 
         m_Player.SetTime(m_Time);
 
-        if (m_Time <= 0)
+        if (m_Time <= 0 && !m_GameOver)
         {
+            m_GameOver = true;
             if (onGameOver != null)
             {
                 onGameOver(m_Player);
@@ -46,8 +48,13 @@ public class PoolRulesQuickFire : PoolRulesBase
         if(ball.ballType != BallType.WHITE)
         {
             m_Player.AddBall(ball.GetBallID());
-            m_Player.AddScore(100);
+            m_Player.AddScore(ConstantData.QuickFireBallPottedScore);
             m_Time += 10;
+            m_Player.PlayTime += 10;
+        }
+        else
+        {
+            m_Player.ComboBreak();
         }
     }
 
@@ -75,25 +82,22 @@ public class PoolRulesQuickFire : PoolRulesBase
         base.OnBallFired();
     }
 
-    void OnGUI()
-    {
-        if(GUILayout.Button("Reset all balls"))
-        {
-            Pools.ResetAllBalls(false, true);
-            Pools.CueBall.Reset();
-        }
-    }
-
     protected override void TurnBegin()
     {
         if(m_WhiteBallPotted)
         {
             m_Time -= 30;
         }
+        if (m_PottedBallListThisRound.Count == 0 && !m_WhiteBallPotted)
+        {
+            m_Player.ComboBreak();
+        }
         base.TurnBegin();
         if(m_PottedBallList.Count == 14)
         {
             Pools.ResetAllBalls(true, true);
+            m_PottedBallList.Clear();
+            m_Player.Rank++;
         }
     }
 

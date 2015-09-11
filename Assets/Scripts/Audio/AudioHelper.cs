@@ -1,90 +1,72 @@
 ﻿using UnityEngine;
 using System.Collections;
-	public class AudioHelper : MonoBehaviour {
+public class AudioHelper : MonoBehaviour
+{
 
-		//called when the ball enters a pocket.
-		public AudioClip onBallEnterPocketAC;
+    public static AudioHelper m_Instance = null;
 
-		//called when the ball is fired
-		public AudioClip onBallFiredAC;
+    //called when the ball enters a pocket.
+    public AudioClip m_BallPotted;
 
-		//called when the ball hits another ball
-		public AudioClip onBallHitBallAC;
+    //called when the ball is fired
+    public AudioClip m_BallFired;
 
-		
-		//called when the ball hits a wall.
-		public AudioClip onBallHitWallAC;
-
-		
-		//called when there is a foul.
-		public AudioClip onFoulAC;
-		public void OnEnable()
-		{
-            //BaseGameManager.onBallEnterPocket	+= onBallEnterPocket;
-            //PoolRulesBase.onFireBall			+= onFireBall;
-            //BaseGameManager.onBallHitBall		+= onBallHitBall;
-            //BaseGameManager.onBallHitWall		+= onBallHitWall;
-            //BaseGameManager.onFoul		+= onFoul;
+    //called when the ball hits another ball
+    public AudioClip m_BallHitBall;
 
 
-		}
-		public void OnDisable()
-		{
-            //BaseGameManager.onBallHitBall		-= onBallHitBall;
-            //BaseGameManager.onBallHitWall		-= onBallHitWall;
-            //BaseGameManager.onFoul				-= onFoul;
+    //called when the ball hits a wall.
+    public AudioClip m_BallHitRail;
 
-            //BaseGameManager.onBallEnterPocket  -= onBallEnterPocket;
-            //PoolRulesBase.onFireBall			-= onFireBall;
+    public AudioSource m_Audio;
 
-		}
-		public void onFoul(string onFoul)
-		{
-			if(audio)
-			{
-                //audio.PlayOneShot( onFoulAC,0.25f );
-			}
-		}
-		
+    void Awake()
+    {
+        m_Audio = audio;
+        m_Instance = this;
+    }
 
+    void OnDestroy()
+    {
+        m_Instance = null;
+    }
 
+    public void onBallHitBall(Vector3 vel)
+    {
+        float v0 = Mathf.Max(vel.x, vel.y, vel.z);
+        if (m_Audio)
+        {
+            v0 = Mathf.Clamp(v0, 0, 4f);
+            m_Audio.PlayOneShot(m_BallHitBall, v0);
+        }
+    }
 
-		public void onBallHitBall(Vector3 vel)
-		{
-			float v0 = Mathf.Max(vel.x,vel.y,vel.z);
-			if(audio)
-			{
-                v0 = Mathf.Clamp(2,4,v0);
-				audio.PlayOneShot( onBallHitBallAC,v0);
-			}
-		}
+    public void onBallHitWall(Vector3 vel)
+    {
+        float v0 = Mathf.Max(vel.x, vel.y, vel.z);
 
-		public void onBallHitWall(Vector3 vel)
-		{
-			float v0 = Mathf.Max(vel.x,vel.y,vel.z);
+        if (m_Audio)
+        {
+            v0 = Mathf.Clamp( v0 , 0, .5f);
+            m_Audio.PlayOneShot(m_BallHitRail, v0);
+        }
+    }
 
-			if(audio)
-			{
-                v0 = Mathf.Clamp(2, 4, v0);
-				audio.PlayOneShot( onBallHitWallAC ,v0);
-			}
-		}
+    public void onFireBall()
+    {
+        if (m_Audio)
+        {
+            m_Audio.PlayOneShot(m_BallFired);
+        }
+    }
 
-		public void onFireBall()
-		{
-			if(audio)
-			{
-				audio.PlayOneShot( onBallFiredAC );
-			}
-		}
-
-		public void onBallEnterPocket(string pocketID,PoolBall ball)
-		{
-			if(audio)
-			{
-                //audio.PlayOneShot( onBallEnterPocketAC );
-			}
-		}
+    public void onBallEnterPocket()
+    {
+        if (m_Audio)
+        {
+            m_Audio.PlayOneShot(m_BallPotted);
+        }
+    }
 
 
-	}
+}
