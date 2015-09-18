@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameType m_DebugGameType;
+    [SerializeField]
+    private LevelData m_DebugLevelData;
 
     void Awake()
     {
@@ -32,9 +34,11 @@ public class GameManager : MonoBehaviour
                 Rules = gameObject.AddComponent<PoolRulesStandard>();
                 break;
             case GameType.Mission:
+                BaseUIController.topMenu = SupportTools.AddChild<TopMenuMission>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuMission");
+                Rules = gameObject.AddComponent<PoolRulesMission>();
+                //LevelData.CurrentLevel = m_DebugLevelData;
                 break;
         }
         Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
-        Rules.Initialize();
     }
 }

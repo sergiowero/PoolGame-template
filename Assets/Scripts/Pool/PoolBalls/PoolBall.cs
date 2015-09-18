@@ -30,6 +30,7 @@ public class PoolBall : MonoBehaviour
         HIDE = 1 << 3//do we hide the ball
     };
 
+    [SerializeField]
     //what state is the ball in
     protected State m_state;
     public State BallState { get { return m_state; } }
@@ -47,6 +48,8 @@ public class PoolBall : MonoBehaviour
 
     //protected BallPhysicalDrag m_BallPhysicalDrag;
     protected PhysicalSupportTools m_BallPhysicalDrag;
+
+    protected PhysicalSupportTools m_AngularVelocityCorrection;
 
     protected PhysicMaterial m_PhysicMaterial;
 
@@ -66,8 +69,9 @@ public class PoolBall : MonoBehaviour
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         m_Mesh = GetComponent<MeshRenderer>();
         //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
-        m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
         m_Radius = sphereCollider.radius * transform.localScale.x;
+        m_BallPhysicalDrag = PhysicalSupportTools.PhysicalDragTo(gameObject, ConstantData.GetPoolDatas().BallDrag, ConstantData.GetPoolDatas().BallAngularDrag);
+        //m_AngularVelocityCorrection = PhysicalSupportTools.AngularVelocityCorrectionTo(gameObject, m_rigidbody, m_Radius);
         m_PhysicMaterial = collider.sharedMaterial;
     }
     public virtual void Start()
@@ -103,6 +107,11 @@ public class PoolBall : MonoBehaviour
     public int GetBallID()
     {
         return m_BallID;
+    }
+
+    public void SetBallID(int id)
+    {
+        m_BallID = id;
     }
 
     public virtual void OnCollisionEnter(Collision col)
@@ -264,19 +273,27 @@ public class PoolBall : MonoBehaviour
         collider.sharedMaterial = m_PhysicMaterial;
     }
 
+    [ContextMenu("Hide")]
     public void Hide()
     {
-        m_Mesh.enabled = false;
-        collider.enabled = false;
-        CloseRenderer();
+        GetComponent<Renderer>().enabled = false;
+        GetComponent<Collider>().enabled = false;
+        GetComponent<Rigidbody>().isKinematic = true;
+        enabled = false;
+        transform.FindChild("Shadow").gameObject.SetActive(false);
+        GetComponent<BallShadowRenderer>().enabled = false;
         m_state = State.HIDE;
     }
 
+    [ContextMenu("Show")]
     public void Display()
     {
-        m_Mesh.enabled = true;
-        collider.enabled = true;
-        OpenRenderer();
+        GetComponent<Renderer>().enabled = true;
+        GetComponent<Collider>().enabled = true;
+        GetComponent<Rigidbody>().isKinematic = false;
+        enabled = true;
+        transform.FindChild("Shadow").gameObject.SetActive(true);
+        GetComponent<BallShadowRenderer>().enabled = true;
         m_state = State.IDLE;
     }
 

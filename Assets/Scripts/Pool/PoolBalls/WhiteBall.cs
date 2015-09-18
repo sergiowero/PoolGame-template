@@ -143,21 +143,6 @@ using System.Collections;
         //    m_LastPosition = m_rigidbody.position;
         //}
 
-
-		public void clear()
-		{
-			m_rigidbody.constraints = RigidbodyConstraints.None;
-			m_slowTime=0;
-            m_state = State.IDLE;
-
-            transform.rotation = Quaternion.identity;
-			if(m_rigidbody)
-			{
-				m_rigidbody.angularVelocity = Vector3.zero;
-				m_rigidbody.velocity = Vector3.zero;
-			}
-		}
-
         public override void Reset()
         {
             Debug.Log("Reset white ball");

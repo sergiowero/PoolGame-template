@@ -1,9 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class GlobalInitialization : MonoBehaviour 
+public sealed class GlobalInitialization : MonoBehaviour 
 {
+    [SerializeField]
+    private List<LevelData> m_LevelDatas = new List<LevelData>();
+
     void Awake()
+    {
+        ConstantData.LevelDatas = m_LevelDatas;
+    }
+
+    void Start()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));
@@ -36,5 +45,4 @@ public class GlobalInitialization : MonoBehaviour
     }
 #endif
     #endregion
-
 }

@@ -15,19 +15,35 @@ public class ConstantData
 
     public const float TimePerRoundHigh = 60;
 
-    public const float TimeLimitQuickFire = 60 * 2;
+    public const float TimeLimitQuickFire = /*60 * 2;*/10;
 
     public const int QuickFireBallPottedScore = 100;
 
     public const float QuickFireComboRewards = .5f;
 
+    public const int MissionFireBallPottedScore = 100;
+
+    public const int MissionShotCount = 5;
+
     public const int GuidelineLength = 400;
+
+    public const int MissionCueballPottedPunishment = 2;
+
+    public const int MissionNoBallHittedPunishment = 1;
+
+    public const int MissionPottedScore = 100;
+
+    public const int PhysicalRecoverInternal = 30 * 60;
 
     private static PoolDataAsset PoolDatas = null;
     public static string PoolDataAssetsFile { get { return "PoolEnvironmentData/PoolPhysical.asset"; } }
     public static string QuickFireGameRecordPath { get { return "GameRecords/QuickFireData"; } }
 
     public static GameType GType = GameType.None;
+
+    public static int MPhysical = 20;
+
+    public static System.Collections.Generic.List<LevelData> LevelDatas;
 
     public static PoolDataAsset GetPoolDatas()
     {

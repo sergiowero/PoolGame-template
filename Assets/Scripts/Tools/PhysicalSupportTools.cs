@@ -13,6 +13,7 @@ public enum PhysicalSupportType
 {
     MaxSpeedLimit,
     PhysicalDrag,
+    AngularVelocityCorrection,
     None
 }
 
@@ -24,6 +25,20 @@ public class PhysicalSupportTools : MonoBehaviour
     void FixedUpdate()
     {
         m_Support.FixedCall();
+    }
+
+    public static PhysicalSupportTools AngularVelocityCorrectionTo(GameObject o, Hashtable table)
+    {
+        AngularVelocityCorrection avc = new AngularVelocityCorrection();
+        avc.Init(table);
+        return AddSupportTools(o, PhysicalSupportType.AngularVelocityCorrection, avc);
+    }
+
+    public static PhysicalSupportTools AngularVelocityCorrectionTo(GameObject o, Rigidbody rb, float r)
+    {
+        AngularVelocityCorrection avc = new AngularVelocityCorrection();
+        avc.Init(Table("Rigidbody", rb, "Radius", r));
+        return AddSupportTools(o, PhysicalSupportType.AngularVelocityCorrection, avc);
     }
 
     public static PhysicalSupportTools MaxSpeedLimitTo(GameObject o, Hashtable table)
@@ -110,6 +125,20 @@ public class PhysicalSupportTools : MonoBehaviour
         }
         return t;
     }
+
+    public static Vector3 CalculateAngularVelocity(float radius, Vector3 velocity)
+    {
+        return new Vector3(
+            CalculateAngularVelocity(radius, velocity.z),
+            CalculateAngularVelocity(radius, 0),
+            CalculateAngularVelocity(radius, -velocity.x)
+            );
+    }
+
+    public static float CalculateAngularVelocity(float radius, float velocity)
+    {
+        return velocity / radius;
+    }
 }
 
 #region MaxSpeedLimit-------------------------------------------------------------------------------------
@@ -135,6 +164,7 @@ class MaxSpeedLimit : IPhysicalSupport
 }
 #endregion
 
+#region PhysicalDrag------------------------------------------------------------------------------
 class PhysicalDrag : IPhysicalSupport
 {
     Rigidbody m_Rigidbody;
@@ -197,6 +227,36 @@ class PhysicalDrag : IPhysicalSupport
         else
         {
             m_Rigidbody.angularVelocity = m_AngularVelocity.normalized * f;
+        }
+    }
+}
+#endregion
+
+class AngularVelocityCorrection : IPhysicalSupport
+{
+    Rigidbody m_Rigidbody;
+    float m_Radius;
+
+
+    Vector3 m_Velocity;
+    Vector3 m_AngularVelocity;
+
+    public void Init(Hashtable table)
+    {
+        m_Rigidbody = (Rigidbody)table["Rigidbody"];
+        m_Radius = (float)table["Radius"];
+    }
+
+    public void FixedCall()
+    {
+        if (m_Rigidbody.isKinematic)
+            return;
+
+        m_Velocity = m_Rigidbody.velocity;
+        m_AngularVelocity = PhysicalSupportTools.CalculateAngularVelocity(m_Radius, m_Velocity);
+        if(m_Rigidbody.angularVelocity.sqrMagnitude <= m_AngularVelocity.sqrMagnitude)
+        {
+            m_Rigidbody.angularVelocity = m_AngularVelocity;
         }
     }
 }

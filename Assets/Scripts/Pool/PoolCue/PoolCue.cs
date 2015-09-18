@@ -25,9 +25,6 @@ using Debugger;
 		//the current state
 		protected State m_state;
 
-        [SerializeField]
-        protected Transform m_CueImage;
-
 		//the inital rotation
 		protected Quaternion m_initalRot;
 
@@ -112,11 +109,6 @@ using Debugger;
 			transform.parent = null;
 		}
 
-		public virtual bool isBallOkay(PoolBall ball)
-		{
-			return true;
-		}
-
         public void Rotate(float angle)
         {
             CurRotAngle = angle;
@@ -127,6 +119,7 @@ using Debugger;
 
         public void Reset()
         {
+            Debug.Log("Cue reset");
             transform.localEulerAngles = new Vector3(0, 90, 0);
             HandleRotate();
             UpdateSiding();

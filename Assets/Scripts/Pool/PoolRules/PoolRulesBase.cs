@@ -32,9 +32,12 @@ public enum PocketIndexes
 public enum BallType
 {
     NONE = 99,
-    STRIPE = 9,
-    SOLID = 1,
+    STRIPE = 15,
+    SOLID = 7,
     BLACK = 8,
+    REDCUSTOM = 20,
+    BLUECUSTOM = 30,
+    YELLOWCUSTOM = 40,
     WHITE = 0
 }
 
@@ -48,9 +51,10 @@ public enum GameType
 
 public abstract class PoolRulesBase : MonoBehaviour
 {
-    public static System.Action<int> onNewTurn;
-    public static System.Action onFireBall;
-    public static System.Action<IPlayer> onGameOver;
+    public static Delegate1Args<int> onNewTurn;
+    public static Delegate0Args onFireBall;
+    public static Delegate1Args<IPlayer> onGameOver;
+    public static Delegate0Args onCueballPotted;
 
     protected GlobalState m_State = GlobalState.NONE;
     protected GlobalState m_PrevState;
@@ -84,14 +88,13 @@ public abstract class PoolRulesBase : MonoBehaviour
     protected bool m_HandleWhiteball = true;
     public bool HandleWhiteBall { get { return m_HandleWhiteball; } }
 
-    IEnumerator Start()
+    protected virtual void Start()
     {
         Pools.ResetAllBalls(false, true);
-        yield return new WaitForEndOfFrame();
         TurnBegin();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         if (State == GlobalState.ROLLING && !m_GameOver)
         {
@@ -122,7 +125,11 @@ public abstract class PoolRulesBase : MonoBehaviour
         if (ballInPocket) Destroy(ballInPocket);
 
         if (ball.ballType == BallType.WHITE)
+        {
             m_WhiteBallPotted = true;
+            if (onCueballPotted != null)
+                onCueballPotted();
+        }
         else
             m_PottedBallListThisRound.Add(ball);
     }
@@ -146,17 +153,22 @@ public abstract class PoolRulesBase : MonoBehaviour
             Pools.CueBall.Reset();
         m_WhiteBallPotted = false;
         m_TimeOut = false;
+        if (onNewTurn != null)
+        {
+            onNewTurn(m_Turn);
+        }
+    }
+
+    protected virtual IEnumerator CheckResultAndChangeTurn(float time)
+    {
+        yield return new WaitForSeconds(time);
         for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
         {
             PoolBall pb = m_PottedBallListThisRound[i];
             m_PottedBallList.Add(pb.GetBallID(), pb);
         }
         m_PottedBallListThisRound.Clear();
-
-        if (onNewTurn != null)
-        {
-            onNewTurn(m_Turn);
-        }
+        TurnBegin();
     }
     #endregion
 
@@ -165,11 +177,7 @@ public abstract class PoolRulesBase : MonoBehaviour
 
     public abstract void BallHitRail();
 
-    protected abstract IEnumerator CheckResultAndChangeTurn(float time);
-
     //protected abstract void OnTimeOut();
-
-    public abstract void Initialize();
 
     protected abstract void CustomUpdate();
 

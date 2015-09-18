@@ -15,8 +15,6 @@ public class BasePlayer : MonoBehaviour, IPlayer
         get { return m_TargetBallType; }
     }
 
-    protected string playerName = "Player 1";
-
     protected List<PoolBall> m_TargetBalls = new List<PoolBall>();
     public List<PoolBall> BallsList { get { return m_TargetBalls; } }
 

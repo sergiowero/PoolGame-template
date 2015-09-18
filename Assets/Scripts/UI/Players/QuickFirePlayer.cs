@@ -56,6 +56,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         m_Score = transform.FindChild("Score").FindChild("Value").GetComponent<Text>();
         PoolRulesBase.onGameOver += OnGameOver;
         PoolRulesBase.onFireBall += OnFireBall;
+        PoolRulesBase.onCueballPotted += ComboBreak;
         m_MultiplierValue = 1;
         m_PlayerData = new PlayerData();
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -69,6 +70,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
     {
         PoolRulesBase.onGameOver -= OnGameOver;
         PoolRulesBase.onFireBall -= OnFireBall;
+        PoolRulesBase.onCueballPotted -= ComboBreak;
     }
 
     void Update()

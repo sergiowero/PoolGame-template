@@ -36,6 +36,13 @@ public class PoolRulesStandard : PoolRulesBase
         get { return m_Players[m_OpponentPlayerIndex]; }
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        m_TimePerRound = ConstantData.TimePerRoundLow;
+        m_Time = m_TimePerRound;
+    } 
+
     private bool AnyBallWithTypeEnterPocket(BallType type)
     {
         for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
@@ -60,11 +67,6 @@ public class PoolRulesStandard : PoolRulesBase
                 StartCoroutine(CheckResultAndChangeTurn(0));
             }
         }
-    }
-
-    public override void Initialize()
-    {
-        m_TimePerRound = ConstantData.TimePerRoundLow;
     }
 
     public override void SetPlayers(params IPlayer[] players)

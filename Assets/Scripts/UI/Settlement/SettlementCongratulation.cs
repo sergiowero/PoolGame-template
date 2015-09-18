@@ -11,7 +11,7 @@ public class SettlementCongratulation : MonoBehaviour
     protected Text m_FriendScoreText;
 
     [SerializeField]
-    protected Image m_FriednAvatar;
+    protected Image m_FriendAvatar;
 
     public virtual void SetScore(params float[] score)
     {

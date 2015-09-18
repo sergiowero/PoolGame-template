@@ -4,9 +4,6 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 
-/// <summary>
-/// need initializtion
-/// </summary>
 public class CueOperateArea : MonoBehaviour {
 
     private static CueOperateArea m_Instance = null;
@@ -39,14 +36,16 @@ public class CueOperateArea : MonoBehaviour {
     {
         BaseUIController.cueAndLines.gameObject.SetActive(true);
         if (GameManager.Rules.FirstRound)
-            Pools.Cue.Reset();
+            Pools.Cue.Reset(); 
         else
         {
             for (int i = 0; i < 16; i++)
             {
-                if (i == 8) continue;
                 PoolBall ball = Pools.Balls[i];
-                if (ball != null && ball.gameObject.activeInHierarchy)
+                if (ball.ballType == BallType.WHITE || ball.ballType == BallType.BLACK) 
+                    continue;
+
+                if (ball != null && ball.gameObject.activeInHierarchy && ball.BallState == PoolBall.State.IDLE)
                 {
                     PointerAtWorld(ball.transform.position);
                     break;

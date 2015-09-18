@@ -7,17 +7,18 @@ public class PoolRulesQuickFire : PoolRulesBase
 
     //protected  
 
-    public override void SetPlayers(params IPlayer[] players)
+    protected override void Start()
     {
-        m_Player = (QuickFirePlayer)players[0];
-    }
-
-    public override void Initialize()
-    {
+        base.Start();
         m_Time = ConstantData.TimeLimitQuickFire;
         m_Player.PlayTime = ConstantData.TimeLimitQuickFire;
         m_Player.SetTime(m_Time, true);
         m_HandleWhiteball = false;
+    }
+
+    public override void SetPlayers(params IPlayer[] players)
+    {
+        m_Player = (QuickFirePlayer)players[0];
     }
 
     protected override void CustomUpdate()
@@ -52,10 +53,6 @@ public class PoolRulesQuickFire : PoolRulesBase
             m_Time += 10;
             m_Player.PlayTime += 10;
         }
-        else
-        {
-            m_Player.ComboBreak();
-        }
     }
 
     public override void BallHitRail()
@@ -69,6 +66,20 @@ public class PoolRulesQuickFire : PoolRulesBase
     protected override IEnumerator CheckResultAndChangeTurn(float time)
     {
         yield return new WaitForSeconds(time);
+        if (m_WhiteBallPotted)
+        {
+            m_Time -= 30;
+        }
+        if (m_PottedBallListThisRound.Count == 0 && !m_WhiteBallPotted)
+        {
+            m_Player.ComboBreak();
+        }
+        for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+        {
+            PoolBall pb = m_PottedBallListThisRound[i];
+            m_PottedBallList.Add(pb.GetBallID(), pb);
+        }
+        m_PottedBallListThisRound.Clear();
         TurnBegin();
     }
 
@@ -84,14 +95,6 @@ public class PoolRulesQuickFire : PoolRulesBase
 
     protected override void TurnBegin()
     {
-        if(m_WhiteBallPotted)
-        {
-            m_Time -= 30;
-        }
-        if (m_PottedBallListThisRound.Count == 0 && !m_WhiteBallPotted)
-        {
-            m_Player.ComboBreak();
-        }
         base.TurnBegin();
         if(m_PottedBallList.Count == 14)
         {

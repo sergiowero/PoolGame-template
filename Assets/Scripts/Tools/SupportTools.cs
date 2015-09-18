@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public delegate void Delegate1Args<T>(T t);
+public delegate void Delegate0Args();
+
+
 public class SupportTools
 {
     [System.Flags]

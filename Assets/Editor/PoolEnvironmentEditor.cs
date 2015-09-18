@@ -19,17 +19,18 @@ public class PoolEnvironmentEditor : EditorWindow
 
     bool awakeAtPlaying = false;
 
-    [MenuItem("Window/游戏环境编辑")]
+    [MenuItem("Window/游戏环境编辑/打开")]
     static void Init()
     {
         window = (PoolEnvironmentEditor)EditorWindow.GetWindow(typeof(PoolEnvironmentEditor), false, "Pool Editor");
         window.Show();
     }
 
-    [MenuItem("Window/关闭环境窗口")]
-    static void close()
+    [MenuItem("Window/游戏环境编辑/关闭")]
+    static void CloseWindow()
     {
-        window.Close();
+        if (window)
+            window.Close();
     }
 
     void Awake()

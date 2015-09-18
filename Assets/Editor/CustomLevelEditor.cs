@@ -22,11 +22,12 @@ public class CustomLevelEditor : EditorWindow
     public static float AreaWidth;
     public static float AreaHeight;
 
-    static CustomLevelEditor m_LevelEditorWindow;
+    public static CustomLevelEditor m_LevelEditorWindow;
 
     Texture2D m_BackImage;
 
-    Dictionary<int, TouchObject> m_touchObjects = new Dictionary<int, TouchObject>();
+    Dictionary<int, TouchObject> m_StardardBalls = new Dictionary<int, TouchObject>();
+    List<TouchObject> m_OtherBalls = new List<TouchObject>();
 
     string m_LevelName;
 
@@ -34,36 +35,47 @@ public class CustomLevelEditor : EditorWindow
 
     string m_PrevLevelDataFileName = null;
 
-    [MenuItem("Window/关卡编辑")]
+    Transform m_CustomBallRoot;
+
+    [MenuItem("Window/关卡编辑/打开")]
     static void Init()
     {
-        if(m_LevelEditorWindow == null)
+        if (m_LevelEditorWindow == null)
             m_LevelEditorWindow = (CustomLevelEditor)EditorWindow.GetWindow(typeof(CustomLevelEditor), false, "Level editor");
         m_LevelEditorWindow.Show();
     }
 
+    [MenuItem("Window/关卡编辑/关闭")]
+    static void CloseWindow()
+    {
+        if (m_LevelEditorWindow)
+            m_LevelEditorWindow.Close();
+    }
+
     void Awake()
     {
+        m_CustomBallRoot = GameObject.Find("8Ball/OtherObjects").transform;
         Transform trans = GameObject.Find("WhiteBall").transform;
         Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/Side/Siding.png");
-        m_touchObjects.Add(0, new TouchObject() { transform = trans, texture = tex });
-        for(int i = 1; i <= 15; i++)
+        m_StardardBalls.Add(0, new TouchObject() { transform = trans, texture = tex, id = 0, type = BallType.WHITE });
+        for (int i = 1; i <= 15; i++)
         {
             trans = GameObject.Find("Ball" + i.ToString()).transform;
             tex = Resources.Load<Texture2D>("BallsIcon/" + i.ToString());
             TouchObject to = new TouchObject();
             to.transform = trans;
             to.texture = tex;
+            to.id = i;
+            to.type = trans.GetComponent<PoolBall>().ballType;
             try
             {
-                m_touchObjects.Add(i, to);
+                m_StardardBalls.Add(i, to);
             }
             catch (System.Exception e)
             {
                 Debug.LogException(e);
             }
         }
-
         // 暂时留空，  没有其他物品
         //trans = GameObject.Find("OtherObjects").transform;
         //int j = 0;
@@ -80,12 +92,11 @@ public class CustomLevelEditor : EditorWindow
         YSize = TableMax.y - TableMin.y;
         m_Aspect = YSize / XSize;
         m_GridSize = c.GetComponent<SphereCollider>().radius * c.transform.localScale.x - ConstantData.BallRadiusAdjustment;
-        AreaWidth = Screen.width / 2;
+        AreaWidth = 953;//constant value
         AreaHeight = AreaWidth * m_Aspect;
         m_xRadio = AreaWidth / XSize;
         m_yRadio = AreaHeight / YSize;
         m_GridSize = m_GridSize * AreaWidth / XSize;
-
         m_BackImage = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/MatchScene/QuickFire/Box.png");
 
         GetBallObjectsRect();
@@ -95,24 +106,87 @@ public class CustomLevelEditor : EditorWindow
     {
         m_LevelEditorWindow = null;
         if (m_BackImage) Resources.UnloadAsset(m_BackImage);
-        foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
+        foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
         {
-            if(k.Value.texture)
+            if (k.Value.texture)
             {
                 Resources.UnloadAsset(k.Value.texture);
             }
         }
-        m_touchObjects.Clear();
+
+        while(m_OtherBalls.Count != 0)
+        {
+            Remove(m_OtherBalls[0]);
+        }
+        
+        m_StardardBalls.Clear();
         AreaWidth = 0;
         AreaHeight = 0;
         XSize = 0;
         YSize = 0;
     }
 
+    public void Remove(object o)
+    {
+        TouchObject to = (TouchObject)o;
+        if(m_OtherBalls.Contains(to))
+        {
+            DestroyImmediate(to.transform.gameObject);
+            m_OtherBalls.Remove(to);
+        }
+        //if (m_StardardBalls.ContainsKey(id))
+        //{
+        //    TouchObject to = m_StardardBalls[id];
+        //    DestroyImmediate(to.transform.gameObject);
+        //    m_StardardBalls.Remove(id);
+        //    I--;
+        //}
+    }
+
+    public void Hide(object o)
+    {
+        int id = (int)o;
+        if (m_StardardBalls.ContainsKey(id))
+        {
+            m_StardardBalls[id].Hide();
+        }
+    }
+
+    public void AddBall(BallType type)
+    {
+        string name = type.ToString();
+
+        GameObject o = Instantiate((GameObject)Resources.Load(name)) as GameObject;
+
+        o.transform.SetParent(m_CustomBallRoot.transform);
+        o.transform.localRotation = Quaternion.identity;
+        o.transform.localPosition = new Vector3(-7.6f, -2.3f, 0);
+
+        Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/EditorTextures/" + name + ".png");
+        TouchObject to = new TouchObject() { transform = o.transform, id = o.GetInstanceID(), texture = tex, draw = true, type = type };
+        m_OtherBalls.Add(to);
+
+        GetBallObjectsRect();
+    }
+
+    public void AddBall(LevelData.OtherObjectDatas data)
+    {
+        string name = data.Type.ToString();
+        GameObject o = Instantiate((GameObject)Resources.Load(name)) as GameObject;
+
+        o.transform.SetParent(m_CustomBallRoot.transform);
+        o.transform.localRotation = Quaternion.identity;
+        o.transform.localPosition = new Vector3(data.Position.x, -2.3f, data.Position.z);
+
+        Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/EditorTextures/" + name + ".png");
+        TouchObject to = new TouchObject() { transform = o.transform, id = data.ID, rect = data.pRect, texture = tex, type = data.Type, draw = true };
+        m_OtherBalls.Add(to);
+    }
+
     void OnGUI()
     {
         //GUI.BeginGroup(new Rect(0, 0, m_AreaWidth + 100, m_AreaHeight + 100));
-        if(Application.isPlaying)
+        if (Application.isPlaying)
         {
             Color c = GUI.contentColor;
             GUI.contentColor = Color.red;
@@ -121,6 +195,8 @@ public class CustomLevelEditor : EditorWindow
             return;
         }
 
+        GUILayout.Label(" count : " + m_OtherBalls.Count)
+            ;
         DrawBackground();
 
         DrawBallObjects();
@@ -135,12 +211,18 @@ public class CustomLevelEditor : EditorWindow
 
     void GetBallObjectsRect()
     {
-        foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
+        foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
         {
             Vector3 v = k.Value.transform.position;
             Rect rect = new Rect((v.x - TableMin.x) * m_xRadio, AreaHeight - (v.z - TableMin.y) * m_yRadio, m_GridSize * 2, m_GridSize * 2);
             k.Value.rect = rect;
             k.Value.draw = k.Value.transform.GetComponent<Renderer>().enabled;
+        }
+        foreach(var v in m_OtherBalls)
+        {
+            Vector3 vv = v.transform.position;
+            Rect rect = new Rect((vv.x - TableMin.x) * m_xRadio, AreaHeight - (vv.z - TableMin.y) * m_yRadio, m_GridSize * 2, m_GridSize * 2);
+            v.rect = rect;
         }
     }
 
@@ -155,9 +237,13 @@ public class CustomLevelEditor : EditorWindow
 
     void DrawBallObjects()
     {
-        foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
+        foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
         {
             k.Value.Draw();
+        }
+        foreach(var v in m_OtherBalls)
+        {
+            v.Draw();
         }
     }
 
@@ -173,12 +259,20 @@ public class CustomLevelEditor : EditorWindow
         if (GUI.Button(new Rect(255, 50, 100, 30), "保存") && !string.IsNullOrEmpty(m_LevelName))
         {
             LevelData data = ScriptableObject.CreateInstance<LevelData>();
-            foreach (KeyValuePair<int, TouchObject> k in m_touchObjects)
+            foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
             {
-                LevelData.PositionDatas d = new LevelData.PositionDatas(k.Key, k.Value.transform.position, k.Value.rect);
-                data.BallsPosition.Add(d);
-                LevelData.DisplayDatas dd = new LevelData.DisplayDatas(k.Key, k.Value.draw);
-                data.BallsDrawList.Add(dd);
+                    LevelData.PositionDatas d = new LevelData.PositionDatas(k.Key, k.Value.transform.position, k.Value.rect);
+                    data.BallsPosition.Add(d);
+                    LevelData.DisplayDatas dd = new LevelData.DisplayDatas(k.Key, k.Value.draw);
+                    data.BallsDrawList.Add(dd);
+            }
+            foreach(var v in m_OtherBalls)
+            {
+                Vector3 vv = v.transform.position;
+                vv.y = -2.3f;
+                v.transform.position = vv;
+                LevelData.OtherObjectDatas d = new LevelData.OtherObjectDatas(v.id, v.transform.position, v.rect, v.type);
+                data.OtherObjectsPosition.Add(d);
             }
             data.FileName = m_LevelName;
             AssetDatabase.CreateAsset(data, StreamTools.GetStreamingAssetsPathInEditor() + "LevelDatas/" + m_LevelName + ".asset");
@@ -186,6 +280,20 @@ public class CustomLevelEditor : EditorWindow
         }
         GUI.skin.label.fontSize = 12;
         GUI.skin.textField.fontSize = 12;
+
+        if (GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 500, 50, 150, 30), "添加一个红球"))
+        {
+            AddBall(BallType.REDCUSTOM);
+        }
+        if (GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 350, 50, 150, 30), "添加一个蓝球"))
+        {
+            AddBall(BallType.BLUECUSTOM);
+        }
+        if (GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 200, 50, 150, 30), "添加一个黄球"))
+        {
+            AddBall(BallType.YELLOWCUSTOM);
+        }
+
 
         GUI.EndGroup();
     }
@@ -196,9 +304,9 @@ public class CustomLevelEditor : EditorWindow
         float heightDivide16 = height * 0.0625f;
         GUI.BeginGroup(new Rect(AreaWidth + 2 * m_GridSize, 0, 100, height));
         GUI.Box(new Rect(0, 0, 100, height), "");
-        
+
         int i = 0;
-        foreach(KeyValuePair<int , TouchObject> k in m_touchObjects)
+        foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
         {
             Color c = GUI.color;
             GUI.color = Color.blue;
@@ -214,24 +322,33 @@ public class CustomLevelEditor : EditorWindow
 
     void CheckDataEquals()
     {
-        if(m_CurrentLevelData != null && m_CurrentLevelData.FileName != m_PrevLevelDataFileName)
+        if (m_CurrentLevelData != null && m_CurrentLevelData.FileName != m_PrevLevelDataFileName)
         {
+            while(m_OtherBalls.Count != 0)
+            {
+                Remove(m_OtherBalls[0]);
+            }
             List<LevelData.PositionDatas> ballPositions = m_CurrentLevelData.BallsPosition;
             for (int i = 0, count = ballPositions.Count; i < count; i++)
             {
                 int key = ballPositions[i].ID;
-                m_touchObjects[key].transform.position = ballPositions[i].Positon;
-                m_touchObjects[key].rect = ballPositions[i].pRect;
+                m_StardardBalls[key].transform.position = ballPositions[i].Positon;
+                m_StardardBalls[key].rect = ballPositions[i].pRect;
             }
             List<LevelData.DisplayDatas> ballDisplays = m_CurrentLevelData.BallsDrawList;
             for (int i = 0, count = ballDisplays.Count; i < count; i++)
             {
-                m_touchObjects[ballDisplays[i].ID].draw = ballDisplays[i].Draw;
+                m_StardardBalls[ballDisplays[i].ID].draw = ballDisplays[i].Draw;
+            }
+            List<LevelData.OtherObjectDatas> otherData = m_CurrentLevelData.OtherObjectsPosition;
+            for (int i = 0, count = otherData.Count; i < count; i++)
+            {
+                AddBall(otherData[i]);
             }
             m_LevelName = m_CurrentLevelData.FileName;
             m_PrevLevelDataFileName = m_LevelName;
         }
-        else if(m_CurrentLevelData == null && m_PrevLevelDataFileName != null)
+        else if (m_CurrentLevelData == null && m_PrevLevelDataFileName != null)
         {
             m_PrevLevelDataFileName = null;
         }
@@ -240,6 +357,10 @@ public class CustomLevelEditor : EditorWindow
 
 class TouchObject
 {
+    public int id;
+
+    public BallType type;
+
     public bool draw = true;
 
     private bool prevDraw = true;
@@ -261,37 +382,58 @@ class TouchObject
 
     public void CheckValueChanged()
     {
-        if(prevDraw != draw)
+        if (prevDraw != draw)
         {
-            if(draw)
+            if (draw)
             {
-                transform.GetComponent<Renderer>().enabled = true;
-                transform.GetComponent<Collider>().enabled = true;
-                transform.FindChild("Shadow").gameObject.SetActive(true);
-                transform.GetComponent<BallShadowRenderer>().enabled = true;
+                transform.GetComponent<PoolBall>().Display();
             }
             else
             {
-                transform.GetComponent<Renderer>().enabled = false;
-                transform.GetComponent<Collider>().enabled = false;
-                transform.FindChild("Shadow").gameObject.SetActive(false);
-                transform.GetComponent<BallShadowRenderer>().enabled = false;
+                transform.GetComponent<PoolBall>().Hide();
             }
             prevDraw = draw;
         }
     }
 
-    public void Draw()
+    public void Hide()
     {
         if (!draw) return;
 
+        transform.GetComponent<Renderer>().enabled = false;
+        transform.GetComponent<Collider>().enabled = false;
+        transform.FindChild("Shadow").gameObject.SetActive(false);
+        transform.GetComponent<BallShadowRenderer>().enabled = false;
+        draw = false;
+        prevDraw = draw;
+    }
+
+    public void Draw()
+    {
+        if (!draw) return;
         GUI.DrawTexture(rect, texture);
-        if(Event.current.type == EventType.MouseUp)
+        GUI.Label(rect, id.ToString());
+        if (Event.current.type == EventType.ContextClick && rect.Contains(Event.current.mousePosition))
+        {
+            if (type == BallType.WHITE)
+                return;
+
+            GenericMenu gMenu = new GenericMenu();
+
+            if (type <= BallType.STRIPE)
+                gMenu.AddItem(new GUIContent("Hide", ""), false, CustomLevelEditor.m_LevelEditorWindow.Hide, id);
+            else
+                gMenu.AddItem(new GUIContent("Delete", ""), false, CustomLevelEditor.m_LevelEditorWindow.Remove, this);
+
+            gMenu.ShowAsContext();
+            Event.current.Use();
+        }
+        else if (Event.current.type == EventType.MouseUp)
         {
             //m_LastPosition = Vector3.zero;
             m_Dragging = false;
         }
-        else if(Event.current.type == EventType.MouseDown
+        else if (Event.current.type == EventType.MouseDown
             && rect.Contains(Event.current.mousePosition))
         {
             m_PositionDelta = Event.current.mousePosition - rect.position;
@@ -309,7 +451,6 @@ class TouchObject
 
             rect.position = v;
         }
-
         //计算球实际的位置
         Vector3 vv = transform.position;
         vv.x = rect.x * CustomLevelEditor.XSize / CustomLevelEditor.AreaWidth + CustomLevelEditor.TableMin.x;
