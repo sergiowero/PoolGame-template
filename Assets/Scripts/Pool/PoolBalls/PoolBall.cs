@@ -20,6 +20,8 @@ public class PoolBall : MonoBehaviour
 
     public SphereCollider sphereCollider;
 
+    public bool AudioEnable = true;
+
     [System.Flags]
     public enum State
     {
@@ -27,7 +29,7 @@ public class PoolBall : MonoBehaviour
         ROLL = 1 << 0 , // the ball is rolling
         IDLE = 1 << 1,  // the ball is idling
         POTTED = 1 << 2, //the ball is potted
-        HIDE = 1 << 3//do we hide the ball
+        HIDE = 1 << 3,//do we hide the ball
     };
 
     [SerializeField]
@@ -61,6 +63,8 @@ public class PoolBall : MonoBehaviour
     protected Vector3 m_LastPosition;
 
     protected float m_Radius;
+
+    public virtual int MissionPoint { get { return ConstantData.MissionPottedPoint; } }
 
     public virtual void Awake()
     {
@@ -127,10 +131,10 @@ public class PoolBall : MonoBehaviour
                 hitWall = true;
             }
         }
-        if (col.gameObject.name.Contains("Ball"))
+        if (col.gameObject.CompareTag("Ball"))
         {
             //BaseGameManager.ballHitBall(rigidbody.velocity);
-            AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+            if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
         }
     }
 
@@ -153,7 +157,7 @@ public class PoolBall : MonoBehaviour
         m_slowTime = 0;
     }
 
-    public void OnNewTurn(int turnIndex)
+    public virtual void OnNewTurn(int turnIndex)
     {
         hitWall = false;
     }
@@ -163,7 +167,7 @@ public class PoolBall : MonoBehaviour
         return m_Radius; /* -ConstantData.BallRadiusAdjustment;//BallRadiusAdjustment is the collision adjustment, otherwise colliding can not be happen*/
     }
 
-    public void Update()
+    public virtual void Update()
     {
         if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
         {
@@ -197,7 +201,7 @@ public class PoolBall : MonoBehaviour
             YValueDrag();
     }
 
-    public void Potted()
+    public virtual void Potted(PocketIndexes pocketIndex)
     {
         if (m_rigidbody)
         {

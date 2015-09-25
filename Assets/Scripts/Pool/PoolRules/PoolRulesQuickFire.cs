@@ -49,7 +49,7 @@ public class PoolRulesQuickFire : PoolRulesBase
         if(ball.ballType != BallType.WHITE)
         {
             m_Player.AddBall(ball.GetBallID());
-            m_Player.AddScore(ConstantData.QuickFireBallPottedScore);
+            m_Player.AddScore(ConstantData.QuickFireBallPottedPoint);
             m_Time += 10;
             m_Player.PlayTime += 10;
         }

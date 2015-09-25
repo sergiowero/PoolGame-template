@@ -47,7 +47,7 @@ public class CueAndGuidelines : MonoBehaviour {
         //cue
         m_Cue.position = MathTools.World2UI(Pools.CueBall.GetPosition());
         m_Cue.right = -m_GuideLine.right;
-        if(hitTrans.name.Contains("Ball"))
+        if(hitTrans.CompareTag("Ball"))
         {
             m_HitBallDir.gameObject.SetActive(true);
             m_WhiteBallDir.gameObject.SetActive(true);

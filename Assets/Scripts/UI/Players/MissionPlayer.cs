@@ -3,23 +3,44 @@ using System.Collections;
 
 public class MissionPlayer : MonoBehaviour, IPlayer
 {
+    private MissionRecords m_Records = null;
+    public MissionRecords Records { get { return m_Records; } }
+
     public int playerID {  get;  set;  }
 
     [System.Serializable]
-    public class PlayerData
+    public class PlayerData : IPlayerData
     {
-        public int FireCount;
+        public int ShotCount;
         public int PottedCount;
-        public int HitRate;
+        public float HitRate;
         public int Link;
         public int MaxLink;
         public int ShotsRemain = ConstantData.MissionShotCount;
         public int HighScore;
         public int Score;
         public int Star;
+
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder builder = new System.Text.StringBuilder();
+            builder.Append("FireCount : ").Append(ShotCount).Append('\n')
+                .Append("Potted count : ").Append(PottedCount).Append('\n')
+                .Append("Hit rate : ").Append(HitRate).Append('\n')
+                .Append("Link : ").Append(Link).Append('\n')
+                .Append("Max link : ").Append(MaxLink).Append('\n')
+                .Append("Shot remain : ").Append(ShotsRemain).Append('\n')
+                .Append("Hight score : ").Append(HighScore).Append('\n')
+                .Append("Score : ").Append(Score).Append('\n')
+                .Append("Star : ").Append(Star);
+            return builder.ToString();
+        }
     }
 
-    public PlayerData m_PlayerData = new PlayerData();
+    protected PlayerData m_PlayerData = new PlayerData();
+
+    public PlayerData Data { get { return m_PlayerData; } }
 
     public int ShotsRemain 
     { 
@@ -29,8 +50,8 @@ public class MissionPlayer : MonoBehaviour, IPlayer
 
     public int FireCount
     {
-        get { return m_PlayerData.FireCount; }
-        set { m_PlayerData.FireCount = value; }
+        get { return m_PlayerData.ShotCount; }
+        set { m_PlayerData.ShotCount = value; }
     }
 
     public int PottedCount
@@ -39,7 +60,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         set { m_PlayerData.PottedCount = value; }
     }
 
-    public int HitRate
+    public float HitRate
     {
         get { return m_PlayerData.HitRate; }
         set { m_PlayerData.HitRate = value; }
@@ -58,55 +79,79 @@ public class MissionPlayer : MonoBehaviour, IPlayer
 
     public void AddScore(int score)
     {
-        m_PlayerData.Score += score * (m_PlayerData.Link + 1);
+        m_PlayerData.Score += (int)(score * (m_PlayerData.Link + 4) * .2f);
+        if (m_PlayerData.HighScore < m_PlayerData.Score)
+            m_PlayerData.HighScore = m_PlayerData.Score;
     }
 
     void Awake()
     {
         PoolRulesBase.onGameOver += GameOver;
+        BombBall.GameoverWithBoom += GameOver;
         PoolRulesBase.onFireBall += FireBall;
+#if UNITY_ANDROID && !UNITY_EDITOR
+        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.MissionLevelDataRecordPath;
+        StartCoroutine(StreamTools.LoadBytes<MissionRecords>(filePath, OnLoadedMissionRecordsOnAndroid));
+#else
+        LoadMissionRecords();
+#endif
     }
 
     void OnDestroy()
     {
         PoolRulesBase.onGameOver -= GameOver;
+        BombBall.GameoverWithBoom -= GameOver;
         PoolRulesBase.onFireBall -= FireBall;
     }
 
     protected void GameOver(IPlayer player)
     {
+        string name = LevelDataIndex.CurrentLevel.FileName;
+        m_PlayerData.Star = LayoutConfiguration.instance[name].GetStarWithScore(m_PlayerData.Score);
+        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 : Mathf.Round(((float)m_PlayerData.PottedCount / (float)m_PlayerData.ShotCount) * 1000f) / 1000f;
+        int star = 0;
         if(player != null && player.playerID == playerID)
         {
-            ShowWinUI();
+            AddScore(ShotsRemain * 200);
+            star = Mathf.Max(m_Records.GetStar(name), m_PlayerData.Star);
+            m_Records.Record(name, star, m_PlayerData.HighScore);
+            StreamTools.SerializeObject(m_Records, ConstantData.MissionLevelDataRecordPath);
+            BaseUIController.MSettlement.ShowCongratulationUI(m_PlayerData.Score);
         }
         else
         {
-            ShowLoseUI();
+            BaseUIController.MSettlement.ShowRegretUI(m_PlayerData.Score, m_PlayerData.HighScore);
         }
+        BaseUIController.MSettlement.SetMissionData(m_PlayerData);
     }
 
-    void Start()
+    protected void OnLoadedMissionRecordsOnAndroid(MissionRecords records)
     {
-
+        if (records != null)
+        {
+            m_Records = records;
+        }
+        else
+        {
+            m_Records = new MissionRecords();
+        }
+        int highScoreRecord = m_Records.GetHighScore(LevelDataIndex.CurrentLevel.FileName);
+        m_PlayerData.HighScore = highScoreRecord;
     }
 
-    void Update()
+    protected void LoadMissionRecords()
     {
-
+        m_Records = StreamTools.DeserializeObject<MissionRecords>(ConstantData.MissionLevelDataRecordPath);
+        if(m_Records == null)
+        {
+            m_Records = new MissionRecords();
+        }
+        int highScoreRecord = m_Records.GetHighScore(LevelDataIndex.CurrentLevel.FileName);
+        m_PlayerData.HighScore = highScoreRecord;
     }
 
     protected void FireBall()
     {
-        m_PlayerData.FireCount++;
-    }
-
-    protected void ShowWinUI()
-    {
-        Debug.Log("Win");
-    }
-
-    protected void ShowLoseUI()
-    {
-        Debug.Log("Lose");
+        m_PlayerData.ShotCount++;
     }
 }

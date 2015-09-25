@@ -2,12 +2,59 @@
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Collections.Generic;
 
 public class StreamTools
 {
+    public static IEnumerator LoadBytes<T>(string filePath, Delegate1Args<T> onloaded) where T : new()
+    {
+        WWW www = new WWW(filePath);
+        Debug.Log("Loading file : " + filePath);
+        yield return www;
+        if (string.IsNullOrEmpty(www.error))
+        {
+            Debug.Log("Load file success : " + filePath);
+            onloaded(StreamTools.DeserializeObject<T>(www.bytes));
+        }
+        else
+        {
+            Debug.Log(www.error);
+            onloaded(default(T));
+        }
+    }
+
+    public static FileInfo[] GetAllFile(string path, string pattern = null)
+    {
+        DirectoryInfo dirInfo = new DirectoryInfo(path);
+        List<FileInfo> fileInfos = new List<FileInfo>();
+        if(dirInfo.Exists)
+        {
+            FileInfo[] infos;
+            if (string.IsNullOrEmpty(pattern))
+                infos = dirInfo.GetFiles();
+            else
+                infos = dirInfo.GetFiles(pattern); 
+            //pass the .meta file
+            foreach(var v in infos)
+            {
+                string name = v.Name;
+                if (name.Substring(name.LastIndexOf(".") + 1).CompareTo("meta") != 0)
+                    fileInfos.Add(v);
+            }
+            return fileInfos.ToArray();
+        }
+        return null;
+    }
+
     public static void SerializeObject(object o, string fileName)
     {
-        string file = GetStreamingAssetsPath() + fileName;
+        //string file = GetStreamingAssetsPath() + fileName;
+        string dir = fileName.Substring(0, fileName.LastIndexOf('/'));
+        if(!Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+
+        string file = fileName;
+        Debug.Log("Serialize object at : " + file);
         using (FileStream fs = new FileStream(file, FileMode.Create))
         {
             BinaryFormatter formatter = new BinaryFormatter();
@@ -17,7 +64,7 @@ public class StreamTools
             }
             catch (System.NotImplementedException e)
             {
-                Debug.LogException(e); 
+                Debug.LogException(e);
             }
         }
     }
@@ -33,8 +80,9 @@ public class StreamTools
                 t = (T)formatter.Deserialize(ms);
             }
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
+            Debug.Log(e.Message);
             return default(T);
         }
         return t;
@@ -43,7 +91,8 @@ public class StreamTools
     public static T DeserializeObject<T>(string fileName) where T : new()
     {
         T t = new T();
-        string file = GetStreamingAssetsPath() + fileName;
+        //string file = GetStreamingAssetsPath() + fileName;
+        string file = fileName;
         try
         {
             using (FileStream fs = new FileStream(file, FileMode.Open))
@@ -63,23 +112,38 @@ public class StreamTools
                 }
             }
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
+            Debug.Log(e.Message);
             return default(T);
         }
         return t;
     }
 
-    public static string GetStreamingAssetsPath()
+    public static string GetStreamingAssetsPath(bool usePrefix = false)
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        string s = usePrefix ? "jar:file://" : "";
+#else
+        string s = usePrefix ? "file:///" : "";
+#endif
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN
-        return Application.dataPath + "/StreamingAssets/";
+        return s + Application.dataPath + "/StreamingAssets/";
 #elif UNITY_IPHONE
-        return Application.dataPath + "/Raw/";
+        return s + Application.dataPath + "/Raw/";
 #elif UNITY_ANDROID
-        return "jar:file://" + Application.dataPath + "!/assets/";
+        return  s + Application.dataPath + "!/assets/";
 #else 
-        return Application.dataPath + "/StreamingAssets/";
+        return s + Application.dataPath + "/StreamingAssets/";
+#endif
+    }
+
+    public static string GetPersistentDataPath()
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        return Application.persistentDataPath + "//";
+#else
+        return Application.persistentDataPath + "/";
 #endif
     }
 

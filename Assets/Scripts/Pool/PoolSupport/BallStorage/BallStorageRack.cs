@@ -61,6 +61,7 @@ public class BallStorageRack : MonoBehaviour {
 
     public void Add(PoolBall ball)
     {
+        ball.AudioEnable = true;
         Rigidbody rb = ball.rigidbody;
         rb.position = m_InitTrans.position;
         rb.velocity = Vector3.zero;

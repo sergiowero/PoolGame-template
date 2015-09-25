@@ -24,7 +24,7 @@ public class CustomLevelEditor : EditorWindow
 
     public static CustomLevelEditor m_LevelEditorWindow;
 
-    Texture2D m_BackImage;
+    //Texture2D m_BackImage;
 
     Dictionary<int, TouchObject> m_StardardBalls = new Dictionary<int, TouchObject>();
     List<TouchObject> m_OtherBalls = new List<TouchObject>();
@@ -32,10 +32,18 @@ public class CustomLevelEditor : EditorWindow
     string m_LevelName;
 
     LevelData m_CurrentLevelData = null;
+    LevelDataIndex m_LevelDataIndex = null;
 
     string m_PrevLevelDataFileName = null;
 
     Transform m_CustomBallRoot;
+
+    bool[] m_PocketReward = new bool[6];
+    bool[] m_PocketPunishment = new bool[6];
+    bool[] m_PocketBlockOff = new bool[6];
+    string[] m_PocketDesc = new string[6] { "左上", "中上", "右上", "左下", "中下", "右下" };
+    Transform[] m_PocketsTrans = new Transform[6];
+
 
     [MenuItem("Window/关卡编辑/打开")]
     static void Init()
@@ -52,8 +60,27 @@ public class CustomLevelEditor : EditorWindow
             m_LevelEditorWindow.Close();
     }
 
+    void SyncData()
+    {
+        System.IO.FileInfo[] fileInfos = StreamTools.GetAllFile(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath, "*-*");
+
+        if(fileInfos.Length != m_LevelDataIndex.Count)
+        {
+            Debug.Log("Level data indexes need synchronized, now synchronizing");
+            m_LevelDataIndex.Clear();
+            foreach (var v in fileInfos)
+            {
+                LevelData data = Resources.LoadAssetAtPath<LevelData>(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath + v.Name);
+                m_LevelDataIndex.Add(data);
+            }
+        }
+    }
+
     void Awake()
     {
+        if (!EditorApplication.currentScene.Contains("PoolGame"))
+            return;
+        GetLevelDataIndex();
         m_CustomBallRoot = GameObject.Find("8Ball/OtherObjects").transform;
         Transform trans = GameObject.Find("WhiteBall").transform;
         Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/Side/Siding.png");
@@ -76,14 +103,14 @@ public class CustomLevelEditor : EditorWindow
                 Debug.LogException(e);
             }
         }
-        // 暂时留空，  没有其他物品
-        //trans = GameObject.Find("OtherObjects").transform;
-        //int j = 0;
-        //foreach(Transform t in trans)
-        //{
-        //    j++;
-        //}
 
+        string ss = "Table_new/Colliders/pocket_";
+        m_PocketsTrans[0] = GameObject.Find(ss + "TopLeft").transform;
+        m_PocketsTrans[1] = GameObject.Find(ss + "TopCenter").transform;
+        m_PocketsTrans[2] = GameObject.Find(ss + "TopRight").transform;
+        m_PocketsTrans[3] = GameObject.Find(ss + "BottomLeft").transform;
+        m_PocketsTrans[4] = GameObject.Find(ss + "BottomCenter").transform;
+        m_PocketsTrans[5] = GameObject.Find(ss + "BottomRight").transform;
 
         Constraint c = GameObject.FindObjectOfType<WhiteBall>().GetComponent<Constraint>();
         TableMin = new Vector2(c.xAxis.x, c.zAxis.x);
@@ -97,15 +124,14 @@ public class CustomLevelEditor : EditorWindow
         m_xRadio = AreaWidth / XSize;
         m_yRadio = AreaHeight / YSize;
         m_GridSize = m_GridSize * AreaWidth / XSize;
-        m_BackImage = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/MatchScene/QuickFire/Box.png");
-
+        //m_BackImage = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/Table/bian.png");
+        SyncData();
         GetBallObjectsRect();
     }
 
     void OnDestroy()
     {
         m_LevelEditorWindow = null;
-        if (m_BackImage) Resources.UnloadAsset(m_BackImage);
         foreach (KeyValuePair<int, TouchObject> k in m_StardardBalls)
         {
             if (k.Value.texture)
@@ -119,11 +145,32 @@ public class CustomLevelEditor : EditorWindow
             Remove(m_OtherBalls[0]);
         }
         
+        foreach(Transform t in m_PocketsTrans)
+        {
+            t.FindChild("PunishmentSprite").gameObject.SetActive(false);
+            t.FindChild("RewardSprite").gameObject.SetActive(false);
+            t.FindChild("BlockOff").gameObject.SetActive(false);
+        }
+
         m_StardardBalls.Clear();
         AreaWidth = 0;
         AreaHeight = 0;
         XSize = 0;
         YSize = 0;
+    }
+
+    private LevelDataIndex GetLevelDataIndex()
+    {
+        if (m_LevelDataIndex == null)
+        {
+            m_LevelDataIndex = Resources.LoadAssetAtPath<LevelDataIndex>(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataIndexPath);
+            if (!m_LevelDataIndex)
+            {
+                m_LevelDataIndex = ScriptableObject.CreateInstance<LevelDataIndex>();
+                AssetDatabase.CreateAsset(m_LevelDataIndex, StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataIndexPath);
+            }
+        }
+        return m_LevelDataIndex;
     }
 
     public void Remove(object o)
@@ -134,13 +181,6 @@ public class CustomLevelEditor : EditorWindow
             DestroyImmediate(to.transform.gameObject);
             m_OtherBalls.Remove(to);
         }
-        //if (m_StardardBalls.ContainsKey(id))
-        //{
-        //    TouchObject to = m_StardardBalls[id];
-        //    DestroyImmediate(to.transform.gameObject);
-        //    m_StardardBalls.Remove(id);
-        //    I--;
-        //}
     }
 
     public void Hide(object o)
@@ -195,8 +235,17 @@ public class CustomLevelEditor : EditorWindow
             return;
         }
 
-        GUILayout.Label(" count : " + m_OtherBalls.Count)
-            ;
+        if(!EditorApplication.currentScene.Contains("PoolGame"))
+        {
+            Color c = GUI.contentColor;
+            GUI.contentColor = Color.red;
+            GUILayout.Label("请在PoolGame场景中打开此窗口。");
+            GUI.contentColor = c;
+            return;
+        }
+
+        GUILayout.Label(" count : " + m_OtherBalls.Count);
+
         DrawBackground();
 
         DrawBallObjects();
@@ -249,7 +298,7 @@ public class CustomLevelEditor : EditorWindow
 
     void DrawOtherGUI()
     {
-        GUI.BeginGroup(new Rect(0, AreaHeight + 2 * m_GridSize, AreaWidth + 2 * m_GridSize + 100, 100));
+        GUI.BeginGroup(new Rect(0, AreaHeight + 2 * m_GridSize, AreaWidth + 2 * m_GridSize + 100, 350));
         m_CurrentLevelData = EditorGUILayout.ObjectField("关卡数据文件： ", m_CurrentLevelData, typeof(LevelData), false) as LevelData;
         CheckDataEquals();
         GUI.skin.label.fontSize = 20;
@@ -268,16 +317,95 @@ public class CustomLevelEditor : EditorWindow
             }
             foreach(var v in m_OtherBalls)
             {
-                Vector3 vv = v.transform.position;
+                Vector3 vv = v.transform.localPosition;
                 vv.y = -2.3f;
-                v.transform.position = vv;
+                v.transform.localPosition = vv;
                 LevelData.OtherObjectDatas d = new LevelData.OtherObjectDatas(v.id, v.transform.position, v.rect, v.type);
                 data.OtherObjectsPosition.Add(d);
             }
+            //data.StartPunishmentPocket = m_StartPunishmentIndex;
+            //data.StartRewardPocket = m_StartRewardIndex;
+            PocketIndexes blockoff = PocketIndexes.None;
+            PocketIndexes punishment = PocketIndexes.None;
+            PocketIndexes reward = PocketIndexes.None;
+            for (int i = 0; i < 6; i++)
+            {
+                if(m_PocketBlockOff[i])
+                {
+                    blockoff |= (PocketIndexes)(1 << i);
+                }
+            }
+            data.BlockPockets = blockoff;
+            for (int i = 0; i < 6; i++ )
+            {
+                if(m_PocketReward[i])
+                {
+                    reward |= (PocketIndexes)(1 << i);
+                }
+            }
+            data.StartRewardPocket = reward;
+            for (int i = 0; i < 6; i++)
+            {
+                if(m_PocketPunishment[i])
+                {
+                    punishment |= (PocketIndexes)(1 << i);
+                }
+            }
+            data.StartPunishmentPocket = punishment;
             data.FileName = m_LevelName;
             AssetDatabase.CreateAsset(data, StreamTools.GetStreamingAssetsPathInEditor() + "LevelDatas/" + m_LevelName + ".asset");
             m_CurrentLevelData = data;
+            m_LevelDataIndex.Add(data);
         }
+
+        GUI.Box(new Rect(0, 150, 250, 100), "");
+        GUI.Label(new Rect(0, 150, 100, 30), "惩罚袋:");
+        Rect re = new Rect(0, 200, 100, 20);
+        int kk = 0;
+        for (int i = 0; i < 2; i++)
+        {
+            Rect re1 = re;
+            for (int j = 0; j < 3; j++, kk++)
+            {
+                m_PocketPunishment[kk] = GUI.Toggle(re1, m_PocketPunishment[kk], m_PocketDesc[kk]);
+                m_PocketsTrans[kk].FindChild("PunishmentSprite").gameObject.SetActive(m_PocketPunishment[kk]);
+                re1.x += 100;
+            }
+            re.y += 20;
+        }
+
+        GUI.Box(new Rect(300, 150, 250, 100), "");
+        GUI.Label(new Rect(300, 150, 100, 30), "奖励袋:");
+        re = new Rect(300, 200, 100, 20);
+        kk = 0;
+        for (int i = 0; i < 2; i++)
+        {
+            Rect re1 = re;
+            for (int j = 0; j < 3; j++, kk++)
+            {
+                m_PocketReward[kk] = GUI.Toggle(re1, m_PocketReward[kk], m_PocketDesc[kk]);
+                m_PocketsTrans[kk].FindChild("RewardSprite").gameObject.SetActive(m_PocketReward[kk]);
+                re1.x += 100;
+            }
+            re.y += 20;
+        }
+
+        GUI.Box(new Rect(600, 150, 250, 100), "");
+        GUI.Label(new Rect(600, 150, 100, 30), "封住袋口:");
+        re = new Rect(600, 200, 100, 20);
+        kk = 0;
+        for (int i = 0; i < 2; i++)
+        {
+            Rect re1 = re;
+            for(int j = 0; j < 3; j++, kk++)
+            {
+                m_PocketBlockOff[kk] = GUI.Toggle(re1, m_PocketBlockOff[kk], m_PocketDesc[kk]);
+                m_PocketsTrans[kk].FindChild("BlockOff").gameObject.SetActive(m_PocketBlockOff[kk]);
+                re1.x += 100;
+            }
+            re.y += 20;
+        }
+
         GUI.skin.label.fontSize = 12;
         GUI.skin.textField.fontSize = 12;
 
@@ -293,7 +421,18 @@ public class CustomLevelEditor : EditorWindow
         {
             AddBall(BallType.YELLOWCUSTOM);
         }
-
+        if(GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 500, 85, 150, 30), "添加一个炸弹球"))
+        {
+            AddBall(BallType.BOMB);
+        }
+        if (GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 350, 85, 150, 30), "添加一个吸收球"))
+        {
+            AddBall(BallType.ABSORB);
+        }
+        if (GUI.Button(new Rect(AreaWidth + 2 * m_GridSize - 200, 85, 150, 30), "添加一个破碎球"))
+        {
+            AddBall(BallType.SINGULARITY);
+        }
 
         GUI.EndGroup();
     }
@@ -327,6 +466,33 @@ public class CustomLevelEditor : EditorWindow
             while(m_OtherBalls.Count != 0)
             {
                 Remove(m_OtherBalls[0]);
+            }
+            int kkk = 0;
+            while(kkk < 6)
+            {
+                if ((m_CurrentLevelData.BlockPockets & (PocketIndexes)(1 << kkk)) != 0)
+                    m_PocketBlockOff[kkk] = true;
+                else 
+                    m_PocketBlockOff[kkk] = false;
+                kkk++;
+            }
+            kkk = 0;
+            while(kkk < 6)
+            {
+                if ((m_CurrentLevelData.StartPunishmentPocket & (PocketIndexes)(1 << kkk)) != 0)
+                    m_PocketPunishment[kkk] = true;
+                else
+                    m_PocketPunishment[kkk] = false;
+                kkk++;
+            }
+            kkk = 0;
+            while(kkk < 6)
+            {
+                if ((m_CurrentLevelData.StartRewardPocket & (PocketIndexes)(1 << kkk)) != 0)
+                    m_PocketReward[kkk] = true;
+                else
+                    m_PocketReward[kkk] = false;
+                kkk++;
             }
             List<LevelData.PositionDatas> ballPositions = m_CurrentLevelData.BallsPosition;
             for (int i = 0, count = ballPositions.Count; i < count; i++)

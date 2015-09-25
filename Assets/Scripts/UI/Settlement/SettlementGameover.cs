@@ -5,25 +5,25 @@ using System.Collections;
 public class SettlementGameover : MonoBehaviour 
 {
     [SerializeField]
+    protected Text m_HitRate;
+    [SerializeField]
+    protected Text m_MaxLink;
+    [SerializeField]
+    protected Text m_Score;
+    [SerializeField]
+    protected Text m_HighScore;
+    [SerializeField]
+    protected Text m_FriendHighScore;
+    [SerializeField]
     private Text m_ShotCount;
     [SerializeField]
     private Text m_PottedCount;
-    [SerializeField]
-    private Text m_HitRate;
-    [SerializeField]
-    private Text m_MaxLink;
     [SerializeField]
     private Text m_PlayTime;
     [SerializeField]
     private Text m_AverageTime;
     [SerializeField]
-    private Text m_Score;
-    [SerializeField]
-    private Text m_HighScore;
-    [SerializeField]
     private Text m_MaxRank;
-    [SerializeField]
-    private Text m_FriendHighScore;
 
     //缺少文字说明， 先这个样子
     public void SetData(QuickFirePlayer.PlayerData playerData)

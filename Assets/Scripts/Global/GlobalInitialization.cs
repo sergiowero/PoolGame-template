@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public sealed class GlobalInitialization : MonoBehaviour 
 {
     [SerializeField]
-    private List<LevelData> m_LevelDatas = new List<LevelData>();
+    private LevelDataIndex m_LevelDatas;
 
     void Awake()
     {
@@ -20,7 +20,7 @@ public sealed class GlobalInitialization : MonoBehaviour
     }
 
     #region IEnumerator
-    IEnumerator LoadPoolAsset(System.Action<PoolDataAsset> onloaded)
+    IEnumerator LoadPoolAsset(Delegate1Args<PoolDataAsset> onloaded)
     {
         WWW www = new WWW(StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
         Debug.Log("load file : " + StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);

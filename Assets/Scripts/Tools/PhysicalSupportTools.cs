@@ -19,6 +19,7 @@ public enum PhysicalSupportType
 
 public class PhysicalSupportTools : MonoBehaviour 
 {
+    [SerializeField]
     private PhysicalSupportType m_SupportType;
     private IPhysicalSupport m_Support;
 
@@ -196,6 +197,9 @@ class PhysicalDrag : IPhysicalSupport
 
     private void VelocityDrag()
     {
+        if (m_Rigidbody.isKinematic)
+            return;
+
         m_Velocity = m_Rigidbody.velocity;
 #if UNITY_EDITOR
         float f = m_Velocity.magnitude - ConstantData.GetPoolDatas().BallDrag * Time.fixedDeltaTime;
@@ -214,6 +218,9 @@ class PhysicalDrag : IPhysicalSupport
 
     private void AngularVelocityDrag()
     {
+        if (m_Rigidbody.isKinematic)
+            return;
+
         m_AngularVelocity = m_Rigidbody.angularVelocity;
 #if UNITY_EDITOR
         float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 2 : 1) * Time.fixedDeltaTime;

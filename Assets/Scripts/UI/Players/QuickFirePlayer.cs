@@ -5,7 +5,7 @@ using System.Collections;
 public class QuickFirePlayer : MonoBehaviour, IPlayer
 {
     [System.Serializable]
-    public class PlayerData
+    public class PlayerData : IPlayerData
     {
         public int ShotCount;
         public int PottedCount;
@@ -60,7 +60,8 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         m_MultiplierValue = 1;
         m_PlayerData = new PlayerData();
 #if UNITY_ANDROID && !UNITY_EDITOR
-        StartCoroutine(LoadPlayerDataOnAndroid(OnLoadedPlayerDataOnAndroid));
+        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.QuickFireGameRecordPath;
+        StartCoroutine(StreamTools.LoadBytes<PlayerData>(filePath, OnLoadedPlayerDataOnAndroid));
 #else
         LoadPlayerData();
 #endif
@@ -94,20 +95,6 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         m_Time.text = m_TimeSpan.Minutes + ":" + m_TimeSpan.Seconds;
     }
 
-    protected IEnumerator LoadPlayerDataOnAndroid(System.Action<PlayerData> onloaded)
-    {
-        WWW www = new WWW(StreamTools.GetStreamingAssetsPath() + ConstantData.QuickFireGameRecordPath);
-        yield return www;
-        if(string.IsNullOrEmpty(www.error))
-        {
-            onloaded(StreamTools.DeserializeObject<PlayerData>(www.bytes));
-        }
-        else
-        {
-            onloaded(null);
-        }
-    }
-
     protected void OnLoadedPlayerDataOnAndroid(PlayerData data)
     {
         if(data != null)
@@ -127,7 +114,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
 
     protected void OnGameOver(IPlayer player)
     {
-        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 :  Mathf.Round((m_PlayerData.PottedCount / m_PlayerData.ShotCount) * 1000) / 1000;
+        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 :  Mathf.Round((m_PlayerData.PottedCount / m_PlayerData.ShotCount) * 1000f) / 1000f;
         if(m_PlayerData.HighScore < m_PlayerData.Score)
         {
             m_PlayerData.HighScore = m_PlayerData.Score;

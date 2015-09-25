@@ -11,19 +11,30 @@ public class PoolRulesMission : PoolRulesBase
 
     protected bool m_WhiteballHitBallThisRound = false;
 
+    protected int m_PunishmentCountThisRound = 0;// the count that ball is potted at punitive pocket per round
+
+    protected int m_RewardCountThisRound = 0;//the count that ball is potted at reward pocket per round
+
     void Awake()
     {
+        SingularityBall.SingularityBreakBall += OnSingularityBreakBall;
     }
 
     void OnDestroy()
     {
+        SingularityBall.SingularityBreakBall -= OnSingularityBreakBall;
+    }
+
+    void OnGUI()
+    {
+        GUILayout.Label(m_Player.Data.ToString());
     }
 
     protected override void Start()
     {
-        List<LevelData.DisplayDatas> ld = LevelData.CurrentLevel.BallsDrawList;
-        List<LevelData.PositionDatas> lp = LevelData.CurrentLevel.BallsPosition;
-        List<LevelData.OtherObjectDatas> lo = LevelData.CurrentLevel.OtherObjectsPosition;
+        List<LevelData.DisplayDatas> ld = LevelDataIndex.CurrentLevel.BallsDrawList;
+        List<LevelData.PositionDatas> lp = LevelDataIndex.CurrentLevel.BallsPosition;
+        List<LevelData.OtherObjectDatas> lo = LevelDataIndex.CurrentLevel.OtherObjectsPosition;
         for (int i = 0, count = ld.Count; i < count; i++ )
         {
             if (ld[i].ID == 0) continue;
@@ -39,16 +50,21 @@ public class PoolRulesMission : PoolRulesBase
         {
             Pools.Balls[lp[i].ID].transform.position = lp[i].Positon;
         }
+        Transform ooRoot = GameObject.Find("8Ball/OtherObjects").transform;
         for (int i = 0, count = lo.Count; i < count; i++ )
         {
             LevelData.OtherObjectDatas d = lo[i];
             GameObject o = Resources.Load(d.Type.ToString()) as GameObject;
             GameObject oo = Instantiate(o) as GameObject;
-            oo.transform.SetParent(GameObject.Find("8Ball/OtherObjects").transform);
+            oo.transform.SetParent(ooRoot);
             oo.transform.position = d.Position;
-            oo.GetComponent<PoolBall>().SetBallID(d.ID);
-            oo.GetComponent<PoolBall>().ballType = d.Type;
+            PoolBall pb = oo.GetComponent<PoolBall>();
+            pb.SetBallID(d.ID);
+            pb.ballType = d.Type;
+            m_TargetBalls.Add(d.ID);
         }
+        PocketTrigger.MarkPocketType(LevelDataIndex.CurrentLevel.StartPunishmentPocket, LevelDataIndex.CurrentLevel.StartRewardPocket);
+        PocketTrigger.Block(LevelDataIndex.CurrentLevel.BlockPockets);
         TurnBegin();
     }
 
@@ -64,6 +80,8 @@ public class PoolRulesMission : PoolRulesBase
         {
             m_Player.ShotsRemain -= ConstantData.MissionNoBallHittedPunishment;
         }
+
+        m_Player.ShotsRemain += ConstantData.RewardShots * m_RewardCountThisRound - ConstantData.PunitiveShots * m_PunishmentCountThisRound;
 
         for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
         {
@@ -90,8 +108,36 @@ public class PoolRulesMission : PoolRulesBase
     protected override void TurnBegin()
     {
         base.TurnBegin();
-        Debug.Log("Turn begin");
         m_WhiteballHitBallThisRound = false;
+        m_PunishmentCountThisRound = 0;
+        m_RewardCountThisRound = 0;
+
+        if(m_Turn > 1)
+        {
+            //generate punitive pocket and reward pocket
+            //punishment
+            PocketIndexes punishment = PocketIndexes.None;
+            if (Random.Range(0, 100) > ConstantData.SpecialPocketProbability)
+            {
+                punishment |= (PocketIndexes)(1 << Random.Range(0, 5));
+                if (Random.Range(0, 1) == 1)
+                {
+                    punishment |= (PocketIndexes)(1 << Random.Range(0, 5));
+                }
+            }
+            //reward
+            PocketIndexes reward = PocketIndexes.None;
+            if (Random.Range(0, 100) > ConstantData.SpecialPocketProbability)
+            {
+                reward |= (PocketIndexes)(1 << Random.Range(0, 5));
+                if (Random.Range(0, 1) == 1)
+                {
+                    reward |= (PocketIndexes)(1 << Random.Range(0, 5));
+                }
+            }
+
+            PocketTrigger.MarkPocketType(punishment, reward);
+        }
     }
 
     public override void SetPlayers(params IPlayer[] players)
@@ -102,15 +148,45 @@ public class PoolRulesMission : PoolRulesBase
     public override void PotBall(PoolBall ball, PocketIndexes pocket)
     {
         base.PotBall(ball, pocket);
-        if(ball.ballType == BallType.WHITE)
+
+        if ((pocket & PocketTrigger.PunitivePocket) != 0)
+            m_PunishmentCountThisRound++;
+        if ((pocket & PocketTrigger.RewardPocket) != 0)
+            m_RewardCountThisRound++;
+
+        if (ball.ballType == BallType.WHITE)
         {
             m_Player.Link = 0;
+            return;
+        }
+        else if (ball.ballType == BallType.BOMB)
+            m_Player.AddScore(ConstantData.MissionBombPottedPoint);
+        else if (ball.ballType == BallType.SINGULARITY)
+            m_Player.AddScore(ConstantData.MissionSingularityPottedPoint);
+        else if(ball.ballType == BallType.ABSORB)
+        {
+            m_Player.AddScore(ConstantData.MissionAbsorbPottedPoint);
+            AbsorbBall b = (AbsorbBall)ball;
+            for(int i = 0, count = b.AbsorbList.Count; i < count; i++)
+            {
+                PotBall(b.AbsorbList[i], pocket);
+                Pools.StorageRack.Add(b.AbsorbList[i]);
+            }
+            b.AbsorbList.Clear();
         }
         else
+            m_Player.AddScore(ConstantData.MissionPottedPoint);
+
+        m_Player.Link++;
+        m_Player.PottedCount++;
+        m_TargetBalls.Remove(ball.GetBallID());
+    }
+
+    protected void OnSingularityBreakBall(PoolBall ball)
+    {
+        if(ball)
         {
-            m_Player.AddScore(ConstantData.MissionPottedScore);
-            m_Player.Link++;
-            m_Player.PottedCount++;
+            Destroy(ball.gameObject);
             m_TargetBalls.Remove(ball.GetBallID());
         }
     }

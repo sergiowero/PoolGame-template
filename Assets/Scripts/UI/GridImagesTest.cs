@@ -10,7 +10,7 @@ public class GridImagesTest : MonoBehaviour
 
     public void OnClickButton()
     {
-        LevelData.CurrentLevel = MLevelData;
+        LevelDataIndex.CurrentLevel = MLevelData;
         ConstantData.GType = GameType.Mission;
         Application.LoadLevel(1);
     }

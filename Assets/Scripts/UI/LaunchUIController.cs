@@ -28,11 +28,11 @@ public class LaunchUIController : MonoBehaviour
 
     void Start()
     {
-        List<LevelData> m_LevelData = ConstantData.LevelDatas;
+        LevelDataIndex levelIndex = ConstantData.LevelDatas;
         int i = 0;
-        for(int count = m_LevelData.Count; i < count; i++)
+        for (int count = levelIndex.Count; i < count; i++)
         {
-            LevelData data = m_LevelData[i];
+            LevelData data = levelIndex[i];
             GridImagesTest oo = SupportTools.AddChild<GridImagesTest>(m_LayoutRoot.gameObject, "TestRes/Image");
             oo.MLevelData = data;
             oo.m_Text.text = data.FileName;

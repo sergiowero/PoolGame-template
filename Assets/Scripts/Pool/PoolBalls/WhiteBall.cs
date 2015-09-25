@@ -116,9 +116,9 @@ using System.Collections;
             //    hitWall = true;
             //}
             #endregion
-            if (name.Contains("Ball"))
+            if (col.transform.CompareTag("Ball"))
 			{
-                AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+                if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
 				PoolBall ball = col.gameObject.GetComponent<PoolBall>();
                 GameManager.Rules.WhiteBallHitBall(ball);
 				if(ball && ball==m_targetBall)
@@ -145,7 +145,6 @@ using System.Collections;
 
         public override void Reset()
         {
-            Debug.Log("Reset white ball");
             base.Reset();
             transform.position = m_initalPos;
         }

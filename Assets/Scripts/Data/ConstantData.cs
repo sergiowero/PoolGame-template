@@ -15,13 +15,13 @@ public class ConstantData
 
     public const float TimePerRoundHigh = 60;
 
-    public const float TimeLimitQuickFire = /*60 * 2;*/10;
+    public const float TimeLimitQuickFire = 60 * 2;
 
-    public const int QuickFireBallPottedScore = 100;
+    public const int QuickFireBallPottedPoint = 100;
 
     public const float QuickFireComboRewards = .5f;
 
-    public const int MissionFireBallPottedScore = 100;
+    public const int MissionFireBallPottedPoint = 100;
 
     public const int MissionShotCount = 5;
 
@@ -31,26 +31,55 @@ public class ConstantData
 
     public const int MissionNoBallHittedPunishment = 1;
 
-    public const int MissionPottedScore = 100;
+    public const int MissionPottedPoint = 100;
 
-    public const int PhysicalRecoverInternal = 30 * 60;
+    public const int MissionSingularityPottedPoint = 300;
+
+    public const int MissionBombPottedPoint = 300;
+
+    public const int MissionAbsorbPottedPoint = 0;
+
+    public const int MissionBombBallDuration = 90;
+
+    public const int SpecialPocketProbability = 30;
+
+    public const int PunitiveShots = 2;
+
+    public const int RewardShots = 1;
+
+    public const int PhysicalRecoverInterval = 30 * 60;
 
     private static PoolDataAsset PoolDatas = null;
     public static string PoolDataAssetsFile { get { return "PoolEnvironmentData/PoolPhysical.asset"; } }
-    public static string QuickFireGameRecordPath { get { return "GameRecords/QuickFireData"; } }
+    public static string QuickFireGameRecordPath 
+    {
+        get 
+        { 
+            return StreamTools.GetPersistentDataPath() + "GameRecords/QuickFireData";
+        } 
+    }
+    public static string MissionLevelDataRecordPath
+    { 
+        get 
+        {
+            return StreamTools.GetPersistentDataPath() + "GameRecords/MissionData";
+        } 
+    }
+    public static string MissionLevelDataPath { get { return "LevelDatas/"; } }
+    public static string MissionLevelDataIndexPath { get { return "LevelDatas/LevelDataIndex.asset"; } }
 
     public static GameType GType = GameType.None;
 
     public static int MPhysical = 20;
 
-    public static System.Collections.Generic.List<LevelData> LevelDatas;
+    public static LevelDataIndex LevelDatas;
 
     public static PoolDataAsset GetPoolDatas()
     {
 #if !UNITY_ANDROID || UNITY_EDITOR
         if (PoolDatas == null)
         {
-            PoolDatas = StreamTools.DeserializeObject<PoolDataAsset>(PoolDataAssetsFile);
+            PoolDatas = StreamTools.DeserializeObject<PoolDataAsset>(StreamTools.GetStreamingAssetsPath() +  PoolDataAssetsFile);
             if (PoolDatas == null)
             {
                 UnityEngine.Debug.Log("Pool asset data is null");

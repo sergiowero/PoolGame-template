@@ -18,7 +18,12 @@ public class AudioHelper : MonoBehaviour
     //called when the ball hits a wall.
     public AudioClip m_BallHitRail;
 
+    public AudioClip m_Break;
+
+    public AudioClip m_Explosion;
+
     public AudioSource m_Audio;
+
 
     void Awake()
     {
@@ -68,5 +73,19 @@ public class AudioHelper : MonoBehaviour
         }
     }
 
+    public void onBreak()
+    {
+        if(m_Audio)
+        {
+            m_Audio.PlayOneShot(m_Break);
+        }
+    }
 
+    public void onExplosion()
+    {
+        if(m_Audio)
+        {
+            m_Audio.PlayOneShot(m_Explosion);
+        }
+    }
 }

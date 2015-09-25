@@ -14,15 +14,19 @@ public class PoolRecycler : MonoBehaviour
     //the box collider ref.
     private BoxCollider m_boxCollider;
 
-    //the trigger id
-    [SerializeField]
-    private PocketIndexes m_PocketIndex;
+    private PocketTrigger m_RefTrigger;
 
 #if USE_GIZMOS
     [Range(0, 1)]
     [SerializeField]
     private float m_Radius = 1;
 #endif
+    
+    public void SetTrigger(PocketTrigger _Trigger)
+    {
+        m_RefTrigger = _Trigger;
+    }
+
     void Start()
     {
         m_boxCollider = gameObject.GetComponent<BoxCollider>();
@@ -51,9 +55,9 @@ public class PoolRecycler : MonoBehaviour
     void OnTriggerEnter(Collider col)
     {
         PoolBall pb = col.GetComponent<PoolBall>();
-        if (col.name.Contains("Ball"))
+        if (col.CompareTag("Ball"))
         {
-            GameManager.Rules.PotBall(pb, m_PocketIndex);
+            GameManager.Rules.PotBall(pb, m_RefTrigger.PocketIndex);
             Pools.StorageRack.Add(pb);
         }
     }

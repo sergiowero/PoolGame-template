@@ -119,7 +119,6 @@ using Debugger;
 
         public void Reset()
         {
-            Debug.Log("Cue reset");
             transform.localEulerAngles = new Vector3(0, 90, 0);
             HandleRotate();
             UpdateSiding();
@@ -147,7 +146,7 @@ using Debugger;
 					nrm.y=0;
 					m_targetBall=null;
 
-					if(rch.collider.name.Contains("Ball"))
+					if(rch.collider.CompareTag("Ball"))
 					{
                         m_targetBall = rch.transform.GetComponent<PoolBall>();
 						m_targetPos = rch.point - nrm;

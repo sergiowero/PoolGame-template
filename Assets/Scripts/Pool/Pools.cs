@@ -13,6 +13,7 @@ public class Pools : MonoBehaviour
     private Camera m_SceneCamera;
     private BallStorageRack m_BallStorageRack;
     private Sprite[] m_BallIcons;
+    private List<PocketTrigger> m_PocketTriggers = new List<PocketTrigger>();
     [SerializeField]
     private Transform m_CueBallOrigin;
     [SerializeField]
@@ -29,6 +30,7 @@ public class Pools : MonoBehaviour
     public static Camera SceneCamera { get { return m_Instance.m_SceneCamera; } }
     public static BallStorageRack StorageRack { get { return m_Instance.m_BallStorageRack; } }
     public static Sprite[] BallIcons { get { return m_Instance.m_BallIcons; } }
+    public static List<PocketTrigger> PocketTriggers { get { return m_Instance.m_PocketTriggers; } }
     public static Transform CueBallOrigin { get { return m_Instance.m_CueBallOrigin; } }
     public static Transform Black8Origin { get { return m_Instance.m_Black8Origin; } }
     public static Transform CenterOrigin { get { return m_Instance.m_CenterOrigin; } }
@@ -75,9 +77,19 @@ public class Pools : MonoBehaviour
         {
             m_BallIcons[i - 1] = Resources.Load<Sprite>("BallsIcon/" + i);
         }
+
+        m_PocketTriggers.AddRange(FindObjectsOfType<PocketTrigger>());
+        m_PocketTriggers.Sort((PocketTrigger left, PocketTrigger right) =>
+            {
+                if (left.PocketIndex < right.PocketIndex)
+                    return -1;
+                else if (left.PocketIndex > right.PocketIndex)
+                    return 1;
+                else
+                    return 0;
+            });
     }
 
-    #region Methods-------------------------------------------------------------
     private PoolBall[] _GetBallsArray()
     {
         PoolBall[] balls = new PoolBall[m_Balls.Count];
@@ -87,7 +99,6 @@ public class Pools : MonoBehaviour
         }
         return balls;
     }
-    #endregion
 
     public static void ResetAllBalls(bool pottedOnly, bool black8Origin)
     {

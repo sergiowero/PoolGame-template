@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
         if (m_DebugGameType != GameType.None)
         {
             ConstantData.GType = m_DebugGameType;
+            LevelDataIndex.CurrentLevel = m_DebugLevelData;
         }
     }
 
@@ -36,7 +37,6 @@ public class GameManager : MonoBehaviour
             case GameType.Mission:
                 BaseUIController.topMenu = SupportTools.AddChild<TopMenuMission>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuMission");
                 Rules = gameObject.AddComponent<PoolRulesMission>();
-                //LevelData.CurrentLevel = m_DebugLevelData;
                 break;
         }
         Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());

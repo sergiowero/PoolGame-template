@@ -19,14 +19,23 @@ public enum CallPockets
     AllShots = 3
 }
 
+public enum PocketType
+{
+    None = 0,
+    Punishment = 1,
+    Reward = 2
+}
+
+[System.Flags]
 public enum PocketIndexes
 {
-    TopLeft = 1,
-    TopCenter = 2,
-    TopRight = 3,
-    BottomLeft = 4,
-    BottomCenter = 5,
-    BottomRight = 6
+    None = 0,
+    TopLeft = 1 << 0,
+    TopCenter = 1 << 1,
+    TopRight = 1 << 2,
+    BottomLeft = 1 << 3,
+    BottomCenter = 1 << 4,
+    BottomRight = 1 << 5
 }
 
 public enum BallType
@@ -38,6 +47,9 @@ public enum BallType
     REDCUSTOM = 20,
     BLUECUSTOM = 30,
     YELLOWCUSTOM = 40,
+    BOMB = 70,
+    ABSORB = 71,
+    SINGULARITY = 72,
     WHITE = 0
 }
 
@@ -88,6 +100,7 @@ public abstract class PoolRulesBase : MonoBehaviour
     protected bool m_HandleWhiteball = true;
     public bool HandleWhiteBall { get { return m_HandleWhiteball; } }
 
+    #region Virtual methods.............................
     protected virtual void Start()
     {
         Pools.ResetAllBalls(false, true);
@@ -117,10 +130,9 @@ public abstract class PoolRulesBase : MonoBehaviour
         CustomUpdate();
     }
 
-    #region Virtual methods.............................
     public virtual void PotBall(PoolBall ball, PocketIndexes pocket)
     {
-        ball.Potted();
+        ball.Potted(pocket);
         BallInPocket ballInPocket = ball.GetComponent<BallInPocket>();
         if (ballInPocket) Destroy(ballInPocket);
 

@@ -56,7 +56,7 @@ public class EternalNode : MonoBehaviour
     private void PhysicalRecover()
     {
         m_PhysicalRcoverTime += m_TimeDelta;
-        if(m_PhysicalRcoverTime > ConstantData.PhysicalRecoverInternal)
+        if(m_PhysicalRcoverTime > ConstantData.PhysicalRecoverInterval)
         {
             ConstantData.MPhysical++;
             if (ConstantData.MPhysical > 20)
