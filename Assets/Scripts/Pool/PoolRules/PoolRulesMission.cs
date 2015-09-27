@@ -62,6 +62,7 @@ public class PoolRulesMission : PoolRulesBase
             pb.SetBallID(d.ID);
             pb.ballType = d.Type;
             m_TargetBalls.Add(d.ID);
+            //Pools.CustomBalls.Add(pb.GetBallID(), pb);
         }
         PocketTrigger.MarkPocketType(LevelDataIndex.CurrentLevel.StartPunishmentPocket, LevelDataIndex.CurrentLevel.StartRewardPocket);
         PocketTrigger.Block(LevelDataIndex.CurrentLevel.BlockPockets);
@@ -72,16 +73,19 @@ public class PoolRulesMission : PoolRulesBase
     {
         yield return new WaitForSeconds(time);
 
+        int shots = 0;
         if (m_WhiteBallPotted || !m_WhiteballHitBallThisRound)
         {
-            m_Player.ShotsRemain -= ConstantData.MissionCueballPottedPunishment;
+            shots -= ConstantData.MissionCueballPottedPunishment;
         }
         else if (m_PottedBallListThisRound.Count == 0)
         {
-            m_Player.ShotsRemain -= ConstantData.MissionNoBallHittedPunishment;
+            shots -= ConstantData.MissionNoBallHittedPunishment;
         }
-
-        m_Player.ShotsRemain += ConstantData.RewardShots * m_RewardCountThisRound - ConstantData.PunitiveShots * m_PunishmentCountThisRound;
+        shots += ConstantData.RewardShots * m_RewardCountThisRound - ConstantData.PunitiveShots * m_PunishmentCountThisRound;
+        m_Player.ShotsRemain += shots;
+        if (shots != 0)
+            BaseUIController.GenerateTips("CUE " + shots, shots > 0 ? Color.yellow : Color.red, true);
 
         for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
         {
@@ -153,19 +157,19 @@ public class PoolRulesMission : PoolRulesBase
             m_PunishmentCountThisRound++;
         if ((pocket & PocketTrigger.RewardPocket) != 0)
             m_RewardCountThisRound++;
-
+        int score = 0;
         if (ball.ballType == BallType.WHITE)
         {
             m_Player.Link = 0;
             return;
         }
         else if (ball.ballType == BallType.BOMB)
-            m_Player.AddScore(ConstantData.MissionBombPottedPoint);
+            score = ConstantData.MissionBombPottedPoint;
         else if (ball.ballType == BallType.SINGULARITY)
-            m_Player.AddScore(ConstantData.MissionSingularityPottedPoint);
+            score = ConstantData.MissionSingularityPottedPoint;
         else if(ball.ballType == BallType.ABSORB)
         {
-            m_Player.AddScore(ConstantData.MissionAbsorbPottedPoint);
+            score = ConstantData.MissionAbsorbPottedPoint;
             AbsorbBall b = (AbsorbBall)ball;
             for(int i = 0, count = b.AbsorbList.Count; i < count; i++)
             {
@@ -175,9 +179,22 @@ public class PoolRulesMission : PoolRulesBase
             b.AbsorbList.Clear();
         }
         else
-            m_Player.AddScore(ConstantData.MissionPottedPoint);
+            score = ConstantData.MissionPottedPoint;
+        m_Player.AddScore(score);
 
         m_Player.Link++;
+        string tips;
+        if (m_Player.Link > 1)
+            tips = "COMBO x " + m_Player.Link + "\n+" + score;
+        else
+            tips = "+" + score;
+        BaseUIController.GenerateTips(tips, Color.yellow, MathTools.World2UI(PocketTrigger.GetPocketWithIndexes(pocket).GetRealPosition()));
+        if (m_Player.Link >= 5)
+        {
+            BaseUIController.GenerateTips("Great!");
+        }
+
+
         m_Player.PottedCount++;
         m_TargetBalls.Remove(ball.GetBallID());
     }

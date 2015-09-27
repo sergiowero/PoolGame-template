@@ -12,6 +12,7 @@ public class PocketTrigger : MonoBehaviour
     private SpriteRenderer m_Punishment;
     private SpriteRenderer m_Reward;
     private GameObject m_Block;
+    private Transform m_RealPosition;
 
     public static PocketIndexes PunitivePocket;
     public static PocketIndexes RewardPocket;
@@ -21,6 +22,7 @@ public class PocketTrigger : MonoBehaviour
         m_Punishment = transform.FindChild("PunishmentSprite").GetComponent<SpriteRenderer>();
         m_Reward = transform.FindChild("RewardSprite").GetComponent<SpriteRenderer>();
         m_Block = transform.FindChild("BlockOff").gameObject;
+        m_RealPosition = transform.FindChild("RealPosition");
         m_Punishment.gameObject.SetActive(false);
         m_Reward.gameObject.SetActive(false);
         m_Block.gameObject.SetActive(false);
@@ -69,6 +71,11 @@ public class PocketTrigger : MonoBehaviour
         }
     }
 
+    public Vector3 GetRealPosition()
+    {
+        return m_RealPosition.position;
+    }
+
     public static void MarkPocketType(PocketIndexes punishmentIndex, PocketIndexes rewardIndex)
     {
         for(int i = 0, length = Pools.PocketTriggers.Count; i < length; i++)
@@ -93,5 +100,15 @@ public class PocketTrigger : MonoBehaviour
             if ((trigger.PocketIndex & pockets) != 0x0)
                 trigger.BlockOff();
         }
+    }
+
+    public static PocketTrigger GetPocketWithIndexes(PocketIndexes index)
+    {
+        for(int i = 0, count = Pools.PocketTriggers.Count; i < count; i++)
+        {
+            if((Pools.PocketTriggers[i].m_PocketIndex & index) != 0x0)
+                return Pools.PocketTriggers[i];
+        }
+        return null;
     }
 }

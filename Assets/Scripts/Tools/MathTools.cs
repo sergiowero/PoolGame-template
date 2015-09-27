@@ -40,7 +40,7 @@ public class MathTools
     }
 
     /// <summary>
-    /// siwtch coordinate form world space to ui space
+    /// switch coordinate form world space to ui space
     /// </summary>
     /// <param name="v"></param>
     /// <returns></returns>

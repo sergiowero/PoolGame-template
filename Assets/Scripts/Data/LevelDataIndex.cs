@@ -61,15 +61,13 @@ public class LevelDataIndex : ScriptableObject
         m_Indexes = new List<LevelData>();
     }
 
-    private int Comp(LevelData l, LevelData r)
+    public static int Comp(string l, string r)
     {
-        string left = l.FileName;
-        string right = r.FileName;
-        string[] leftNum = left.Split('-');
-        string[] rightNum = right.Split('-');
+        string[] leftNum = l.Split('-');
+        string[] rightNum = r.Split('-');
         if (leftNum.Length != 2 || rightNum.Length != 2)
         {
-            throw new System.Exception("Occur error . left name : " + left + " , right name : " + right);
+            throw new System.Exception("Occur error . left name : " + l + " , right name : " + r);
         }
         int bigNumLeft = int.Parse(leftNum[0]);
         int bigNumRight = int.Parse(rightNum[0]);
@@ -88,6 +86,13 @@ public class LevelDataIndex : ScriptableObject
             return 1;
 
         return 0;
+    }
+
+    public static int Comp(LevelData l, LevelData r)
+    {
+        string left = l.FileName;
+        string right = r.FileName;
+        return Comp(left, right);
     }
 }
 

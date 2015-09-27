@@ -48,9 +48,10 @@ public class CueOperateArea : MonoBehaviour {
                 if (ball != null && ball.gameObject.activeInHierarchy && ball.BallState == PoolBall.State.IDLE)
                 {
                     PointerAtWorld(ball.transform.position);
-                    break;
+                    return;
                 }
             }
+            PointerAtAngle(0, true);
         }
     }
 
@@ -100,13 +101,13 @@ public class CueOperateArea : MonoBehaviour {
         PointerAt(v);
     }
 
-    public void PointerAtAngle(float angle, bool b)
+    public void PointerAtAngle(float angle, bool anticlockwise)
     {
-        //pass too small angle
-        if (float.IsNaN(angle) || float.IsInfinity(angle) || angle < 1)
+        //pass too small angle                                              /*this is meaningless*/
+        if (float.IsNaN(angle) || float.IsInfinity(angle)/* || angle < 1*/)
             return;
 
-        if (b) Pools.Cue.Rotate(-angle);
+        if (anticlockwise) Pools.Cue.Rotate(-angle);
         else Pools.Cue.Rotate(angle);
     }
 

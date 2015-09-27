@@ -21,11 +21,13 @@ public class ConstantData
 
     public const float QuickFireComboRewards = .5f;
 
+    public const string MissionProgressKeyName = "MissionProgress";
+
     public const int MissionFireBallPottedPoint = 100;
 
     public const int MissionShotCount = 5;
 
-    public const int GuidelineLength = 400;
+    public const int GuidelineLength = 500;
 
     public const int MissionCueballPottedPunishment = 2;
 

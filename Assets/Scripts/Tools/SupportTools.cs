@@ -24,10 +24,15 @@ public class SupportTools
         return child.gameObject;
     }
 
-    public static GameObject AddChild(GameObject parent, GameObject Child)
+    public static GameObject AddChild(GameObject parent, GameObject child)
     {
-        GameObject o = (GameObject)GameObject.Instantiate(Child);
+        GameObject o = (GameObject)GameObject.Instantiate(child);
         return AddChild(parent.transform, o.transform);
+    }
+
+    public static T AddChild<T>(GameObject parent, GameObject child) where T : Component
+    {
+        return AddChild(parent, child).GetComponent<T>();
     }
 
     public static T AddChild<T>(GameObject parent, string path) where T : Component

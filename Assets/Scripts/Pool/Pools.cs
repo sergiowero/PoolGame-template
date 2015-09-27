@@ -9,6 +9,7 @@ public class Pools : MonoBehaviour
 
     #region Fields ---------------------------------------------------------------
     private Dictionary<int, PoolBall> m_Balls;
+    private Dictionary<int, PoolBall> m_CustomBalls;
     private PoolCue m_Cue;
     private Camera m_SceneCamera;
     private BallStorageRack m_BallStorageRack;
@@ -24,6 +25,7 @@ public class Pools : MonoBehaviour
 
     #region Static fields--------------------------------------------------------
     public static Dictionary<int, PoolBall> Balls { get { return m_Instance.m_Balls; } }
+    public static Dictionary<int, PoolBall> CustomBalls { get { return m_Instance.m_CustomBalls; } }
     public static PoolBall[] BallsArray { get { return m_Instance._GetBallsArray(); } }
     public static PoolCue Cue { get { return m_Instance.m_Cue; } }
     public static WhiteBall CueBall { get { return m_Instance.m_Balls[0] as WhiteBall; } }
@@ -57,7 +59,7 @@ public class Pools : MonoBehaviour
         {
             Debug.LogError("the balls number is not explicit in the scene, please debug the code");
         }
-
+        m_CustomBalls = new Dictionary<int, PoolBall>();
         PoolCue[] cues = GameObject.FindObjectsOfType<PoolCue>();
         if (cues == null || cues.Length != 1)
         {

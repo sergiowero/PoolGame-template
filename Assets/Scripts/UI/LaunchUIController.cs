@@ -12,6 +12,8 @@ public class LaunchUIController : MonoBehaviour
     public GameObject m_ScrollView;
     public GameObject m_MissionNode;
 
+    private string m_MissionProgress;
+
     public Text m_Physical;
     public static void SetPhysical(int value) 
     {
@@ -24,6 +26,14 @@ public class LaunchUIController : MonoBehaviour
         m_Instance = this;
         SetPhysical(ConstantData.MPhysical);
         m_MissionNode.SetActive(false);
+        if (PlayerPrefs.HasKey(ConstantData.MissionProgressKeyName))
+        {
+            m_MissionProgress = PlayerPrefs.GetString(ConstantData.MissionProgressKeyName);
+        }
+        else
+        {
+            m_MissionProgress = "1-1";
+        }
     }
 
     void Start()
@@ -32,6 +42,10 @@ public class LaunchUIController : MonoBehaviour
         int i = 0;
         for (int count = levelIndex.Count; i < count; i++)
         {
+            //mission progress...
+            if(LevelDataIndex.Comp(m_MissionProgress, levelIndex[i].FileName) == -1)
+                break;
+
             LevelData data = levelIndex[i];
             GridImagesTest oo = SupportTools.AddChild<GridImagesTest>(m_LayoutRoot.gameObject, "TestRes/Image");
             oo.MLevelData = data;

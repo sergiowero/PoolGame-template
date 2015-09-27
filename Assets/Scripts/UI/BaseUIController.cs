@@ -27,6 +27,8 @@ public class BaseUIController : MonoBehaviour {
     private TopMenu m_TopMenu;
     [SerializeField]
     private Settlement m_Settlement;
+    [SerializeField]
+    private TextTips m_Tips;
 
     public static TextArea text { get { return m_Instance.m_Text; } }
     public static CueOperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
@@ -90,5 +92,22 @@ public class BaseUIController : MonoBehaviour {
     public void Back2MainScene()
     {
         Application.LoadLevel(0);
+    }
+
+    public static void GenerateTips(string text, Color c, Vector3 position, bool stationary = false)
+    {
+        TextTips tips = SupportTools.AddChild<TextTips>(m_Instance.gameObject, m_Instance.m_Tips.gameObject);
+        tips.transform.position = position;
+        tips.SetText(text, c, stationary);
+    }
+
+    public static void GenerateTips(string text, Color c, bool stationary = false)
+    {
+        GenerateTips(text, c, Vector3.zero, stationary);
+    }
+
+    public static void GenerateTips(string text)
+    {
+        GenerateTips(text, Color.white);
     }
 }

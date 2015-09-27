@@ -1,10 +1,18 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MissionPlayer : MonoBehaviour, IPlayer
 {
     private MissionRecords m_Records = null;
     public MissionRecords Records { get { return m_Records; } }
+
+    [SerializeField]
+    private Text m_Combo;
+    [SerializeField]
+    private Text m_MaxCombo;
+    [SerializeField]
+    private Text m_Score;
 
     public int playerID {  get;  set;  }
 
@@ -74,6 +82,8 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             m_PlayerData.Link = value;
             if (m_PlayerData.MaxLink < m_PlayerData.Link)
                 m_PlayerData.MaxLink = m_PlayerData.Link;
+            m_Combo.text = "Combo : " + m_PlayerData.Link;
+            m_MaxCombo.text = "Max combo : " + m_PlayerData.MaxLink;
         }
     }
 
@@ -82,6 +92,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         m_PlayerData.Score += (int)(score * (m_PlayerData.Link + 4) * .2f);
         if (m_PlayerData.HighScore < m_PlayerData.Score)
             m_PlayerData.HighScore = m_PlayerData.Score;
+        m_Score.text = "Score : " + m_PlayerData.Score;
     }
 
     void Awake()
@@ -117,6 +128,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             m_Records.Record(name, star, m_PlayerData.HighScore);
             StreamTools.SerializeObject(m_Records, ConstantData.MissionLevelDataRecordPath);
             BaseUIController.MSettlement.ShowCongratulationUI(m_PlayerData.Score);
+            PlayerPrefs.SetString(ConstantData.MissionProgressKeyName, ConstantData.LevelDatas.Next(LevelDataIndex.CurrentLevel).FileName);
         }
         else
         {
