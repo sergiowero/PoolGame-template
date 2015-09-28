@@ -5,14 +5,6 @@ public class SingularityBall : PoolBall
 {
     public static Delegate1Args<PoolBall> SingularityBreakBall;
 
-    public override int MissionPoint
-    {
-        get
-        {
-            return ConstantData.MissionSingularityPottedPoint;
-        }
-    }
-
     public override void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.name.Contains("Rail"))

@@ -223,7 +223,7 @@ class PhysicalDrag : IPhysicalSupport
 
         m_AngularVelocity = m_Rigidbody.angularVelocity;
 #if UNITY_EDITOR
-        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 2 : 1) * Time.fixedDeltaTime;
+        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 3 : 1) * Time.fixedDeltaTime;
 #else
         float f = m_AngularVelocity.magnitude - m_AngularVelocityDrag * Time.fixedDeltaTime;
 #endif

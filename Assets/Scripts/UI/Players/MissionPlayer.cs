@@ -8,9 +8,9 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     public MissionRecords Records { get { return m_Records; } }
 
     [SerializeField]
-    private Text m_Combo;
+    private Text m_ShotsRemain;
     [SerializeField]
-    private Text m_MaxCombo;
+    private Text m_LevelName;
     [SerializeField]
     private Text m_Score;
 
@@ -53,7 +53,11 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     public int ShotsRemain 
     { 
         get { return m_PlayerData.ShotsRemain; }
-        set { m_PlayerData.ShotsRemain = value < 0 ? 0 : value; }
+        set 
+        {
+            m_PlayerData.ShotsRemain = value < 0 ? 0 : value;
+            m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
+        }
     }
 
     public int FireCount
@@ -82,17 +86,26 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             m_PlayerData.Link = value;
             if (m_PlayerData.MaxLink < m_PlayerData.Link)
                 m_PlayerData.MaxLink = m_PlayerData.Link;
-            m_Combo.text = "Combo : " + m_PlayerData.Link;
-            m_MaxCombo.text = "Max combo : " + m_PlayerData.MaxLink;
         }
     }
 
-    public void AddScore(int score)
+    public void AddScore(int score, PocketTrigger pocket)
     {
-        m_PlayerData.Score += (int)(score * (m_PlayerData.Link + 4) * .2f);
+        int s = (int)(score * (m_PlayerData.Link + 4) * .2f);
+        m_PlayerData.Score += s;
         if (m_PlayerData.HighScore < m_PlayerData.Score)
             m_PlayerData.HighScore = m_PlayerData.Score;
-        m_Score.text = "Score : " + m_PlayerData.Score;
+        m_Score.text = "Score " + m_PlayerData.Score;
+
+        if(pocket)
+        {
+            string tips;
+            if (Link > 1)
+                tips = "COMBO x " + Link + "\n+" + s;
+            else
+                tips = "+" + s;
+            BaseUIController.GenerateTips(tips, Color.yellow, MathTools.World2UI(pocket.GetRealPosition()));
+        }
     }
 
     void Awake()
@@ -100,6 +113,9 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onGameOver += GameOver;
         BombBall.GameoverWithBoom += GameOver;
         PoolRulesBase.onFireBall += FireBall;
+        m_LevelName.text = "Level " + LevelDataIndex.CurrentLevel.FileName;
+        m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
+        m_Score.text = "Score 0";
 #if UNITY_ANDROID && !UNITY_EDITOR
         string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.MissionLevelDataRecordPath;
         StartCoroutine(StreamTools.LoadBytes<MissionRecords>(filePath, OnLoadedMissionRecordsOnAndroid));
@@ -123,7 +139,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         int star = 0;
         if(player != null && player.playerID == playerID)
         {
-            AddScore(ShotsRemain * 200);
+            AddScore(ShotsRemain * 200, null);
             star = Mathf.Max(m_Records.GetStar(name), m_PlayerData.Star);
             m_Records.Record(name, star, m_PlayerData.HighScore);
             StreamTools.SerializeObject(m_Records, ConstantData.MissionLevelDataRecordPath);

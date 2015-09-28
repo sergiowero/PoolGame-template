@@ -4,14 +4,6 @@ using System.Collections.Generic;
 
 public class AbsorbBall : PoolBall 
 {
-    public override int MissionPoint
-    {
-        get
-        {
-            return 0;
-        }
-    }
-
     private List<PoolBall> m_AbsorbList = new List<PoolBall>();
 
     public List<PoolBall> AbsorbList { get { return m_AbsorbList; } }

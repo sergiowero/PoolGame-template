@@ -21,6 +21,9 @@ public class SettlementMissionGameover : MonoBehaviour
     [SerializeField]
     private Text m_FriendHighScore;
 
+    [SerializeField]
+    public Button nextButton;
+
 
     public void SetData(MissionPlayer.PlayerData playerData)
     {

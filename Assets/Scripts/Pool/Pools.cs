@@ -27,6 +27,7 @@ public class Pools : MonoBehaviour
     public static Dictionary<int, PoolBall> Balls { get { return m_Instance.m_Balls; } }
     public static Dictionary<int, PoolBall> CustomBalls { get { return m_Instance.m_CustomBalls; } }
     public static PoolBall[] BallsArray { get { return m_Instance._GetBallsArray(); } }
+    public static PoolBall[] CustomBallsArray { get { return m_Instance._GetCustomBallArray(); } }
     public static PoolCue Cue { get { return m_Instance.m_Cue; } }
     public static WhiteBall CueBall { get { return m_Instance.m_Balls[0] as WhiteBall; } }
     public static Camera SceneCamera { get { return m_Instance.m_SceneCamera; } }
@@ -100,6 +101,17 @@ public class Pools : MonoBehaviour
             balls[i] = m_Balls[i];
         }
         return balls;
+    }
+
+    private PoolBall[] _GetCustomBallArray()
+    {
+        PoolBall[] cBalls = new PoolBall[m_CustomBalls.Count];
+        int i = 0;
+        foreach(var v in m_CustomBalls)
+        {
+            cBalls[i++] = v.Value;
+        }
+        return cBalls;
     }
 
     public static void ResetAllBalls(bool pottedOnly, bool black8Origin)

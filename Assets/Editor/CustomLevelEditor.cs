@@ -317,9 +317,6 @@ public class CustomLevelEditor : EditorWindow
             }
             foreach(var v in m_OtherBalls)
             {
-                Vector3 vv = v.transform.localPosition;
-                vv.y = -2.3f;
-                v.transform.localPosition = vv;
                 LevelData.OtherObjectDatas d = new LevelData.OtherObjectDatas(v.id, v.transform.position, v.rect, v.type);
                 data.OtherObjectsPosition.Add(d);
             }

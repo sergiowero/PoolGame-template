@@ -28,9 +28,9 @@ public class SettlementCongratulation : MonoBehaviour
 
     }
     
-    public void OnBack()
+    public void OnBack(bool b = true)
     {
-        BaseUIController.MSettlement.SwitchUI();
+        BaseUIController.MSettlement.SwitchUI(b);
     }
 
 }

@@ -24,14 +24,20 @@ public class Settlement : MonoBehaviour
         m_MissionGameOver.gameObject.SetActive(false);
     }
 
-    public void SwitchUI()
+    public void SwitchUI(bool showNextLevel)
     {
         m_CongratulationUI.gameObject.SetActive(false);
         m_RegretUI.gameObject.SetActive(false);
         if (ConstantData.GType == GameType.QuickFire)
             m_GameOverUI.gameObject.SetActive(true);
         else if(ConstantData.GType == GameType.Mission)
+        {
             m_MissionGameOver.gameObject.SetActive(true);
+            if(!showNextLevel)
+            {
+                m_MissionGameOver.nextButton.gameObject.SetActive(false);
+            }
+        }
     }
 
     public void SetPlayerData(QuickFirePlayer.PlayerData playerData)

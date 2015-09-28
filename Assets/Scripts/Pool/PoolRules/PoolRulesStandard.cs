@@ -45,12 +45,22 @@ public class PoolRulesStandard : PoolRulesBase
 
     private bool AnyBallWithTypeEnterPocket(BallType type)
     {
-        for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+        if(type == BallType.NONE)
         {
-            if (m_PottedBallListThisRound[i].ballType == type)
+            if (m_PottedBallListThisRound.Count > 0)
                 return true;
+            else
+                return false;
         }
-        return false;
+        else
+        {
+            for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+            {
+                if (m_PottedBallListThisRound[i].ballType == type)
+                    return true;
+            }
+            return false;
+        }
     }
 
     protected override void CustomUpdate()
@@ -114,6 +124,14 @@ public class PoolRulesStandard : PoolRulesBase
                 m_CurPlayerIndex = MathTools.Roll(0, m_Players.Length, m_CurPlayerIndex + 1);
                 CurrentPlayer.Begin();
             }
+
+            for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+            {
+                PoolBall pb = m_PottedBallListThisRound[i];
+                m_PottedBallList.Add(pb.GetBallID(), pb);
+            }
+            m_PottedBallListThisRound.Clear();
+
             TurnBegin();
         }
     }

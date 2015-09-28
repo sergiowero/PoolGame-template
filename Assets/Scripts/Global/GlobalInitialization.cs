@@ -22,8 +22,8 @@ public sealed class GlobalInitialization : MonoBehaviour
     #region IEnumerator
     IEnumerator LoadPoolAsset(Delegate1Args<PoolDataAsset> onloaded)
     {
-        WWW www = new WWW(StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
-        Debug.Log("load file : " + StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
+        WWW www = new WWW(StreamTools.GetStreamingAssetsPath(true) + ConstantData.PoolDataAssetsFile);
+        Debug.Log("load file : " + StreamTools.GetStreamingAssetsPath(true) + ConstantData.PoolDataAssetsFile);
         yield return www;
         if (string.IsNullOrEmpty(www.error))
         {

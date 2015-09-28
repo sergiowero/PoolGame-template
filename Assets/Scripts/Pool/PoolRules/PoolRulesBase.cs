@@ -111,23 +111,33 @@ public abstract class PoolRulesBase : MonoBehaviour
     {
         if (State == GlobalState.ROLLING && !m_GameOver)
         {
-            bool rollingDone = true;
-            PoolBall[] balls = Pools.BallsArray;
-            for (int i = 0, length = balls.Length; i < length; i++)
-            {
-                if (balls[i] && !balls[i].IsDoneRolling())
-                {
-                    rollingDone = false;
-                    break;
-                }
-            }
+            bool rollingDone = CheckIsBallsDoneRolling(Pools.BallsArray) && CheckIsBallsDoneRolling(Pools.CustomBallsArray);
             if (rollingDone)
             {
+                Debug.Log("rolling done");
                 State = GlobalState.IDLE;
                 StartCoroutine(CheckResultAndChangeTurn(ConstantData.TurnWaitTime));
             }
         }
         CustomUpdate();
+    }
+
+    protected bool CheckIsBallsDoneRolling(PoolBall[] balls)
+    {
+        for (int i = 0, length = balls.Length; i < length; i++)
+        {
+            if (balls[i])
+            {
+                if (balls[i].BallState == PoolBall.State.HIDE)
+                    continue;
+
+                if (!balls[i].IsDoneRolling())
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public virtual void PotBall(PoolBall ball, PocketIndexes pocket)

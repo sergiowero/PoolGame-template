@@ -27,7 +27,7 @@ public class ConstantData
 
     public const int MissionShotCount = 5;
 
-    public const int GuidelineLength = 500;
+    public const int GuidelineLength = 60;
 
     public const int MissionCueballPottedPunishment = 2;
 
@@ -40,6 +40,12 @@ public class ConstantData
     public const int MissionBombPottedPoint = 300;
 
     public const int MissionAbsorbPottedPoint = 0;
+
+    public const int MissionYellowBallPoint = 150;
+
+    public const int MissionRedBallPoint = 100;
+
+    public const int MissionBlueBallPoint = 200;
 
     public const int MissionBombBallDuration = 90;
 

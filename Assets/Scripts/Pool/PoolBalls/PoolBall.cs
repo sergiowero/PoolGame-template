@@ -64,8 +64,6 @@ public class PoolBall : MonoBehaviour
 
     protected float m_Radius;
 
-    public virtual int MissionPoint { get { return ConstantData.MissionPottedPoint; } }
-
     public virtual void Awake()
     {
         m_rigidbody = gameObject.GetComponent<Rigidbody>();
@@ -303,7 +301,7 @@ public class PoolBall : MonoBehaviour
 
     public bool IsBallDisable()
     {
-        return (m_state & (State.POTTED | State.HIDE)) == 0;
+        return (m_state & (State.POTTED | State.HIDE)) != 0x0;
     }
 
 }

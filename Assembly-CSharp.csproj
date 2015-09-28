@@ -118,6 +118,7 @@
      <Compile Include="Assets\Scripts\UI\Siding.cs" />
      <Compile Include="Assets\Scripts\UI\SidingAnchor.cs" />
      <Compile Include="Assets\Scripts\UI\TextArea.cs" />
+     <Compile Include="Assets\Scripts\UI\TextTips.cs" />
      <Compile Include="Assets\Scripts\UI\UISupport\ImageTwinkle.cs" />
      <None Include="Assets\MyTest\TestShader.shader" />
      <None Include="Assets\MyTest\MyShader.shader" />

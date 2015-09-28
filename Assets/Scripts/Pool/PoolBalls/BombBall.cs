@@ -10,14 +10,6 @@ public class BombBall : PoolBall
     [SerializeField]
     private GUISkin m_Skin;
 
-    public override int MissionPoint
-    {
-        get
-        {
-            return ConstantData.MissionBombPottedPoint;
-        }
-    }
-
     public override void Awake()
     {
         base.Awake();
