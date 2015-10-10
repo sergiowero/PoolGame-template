@@ -116,11 +116,10 @@ public class WhiteBall : PoolBall
         //if (!name.Contains("surface") && gameObject.activeInHierarchy)
         //    StartCoroutine("TouchTable", 0);
         #region Might be useful
-        //if (name.Contains("Rail"))
-        //{
-        //    AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
-        //    hitWall = true;
-        //}
+        if (col.gameObject.name.Contains("Rail"))
+        {
+            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+        }
         #endregion
         if (col.transform.CompareTag("Ball"))
         {

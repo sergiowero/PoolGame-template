@@ -9,7 +9,6 @@ public class Testttt : MonoBehaviour
     [SerializeField]
     private float m_A;
 
-
     void Update()
     {
         //float sinx = Mathf.Sin(m_A);

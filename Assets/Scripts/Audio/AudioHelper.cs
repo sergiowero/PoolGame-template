@@ -41,7 +41,9 @@ public class AudioHelper : MonoBehaviour
         float v0 = Mathf.Max(vel.x, vel.y, vel.z);
         if (m_Audio)
         {
-            v0 = Mathf.Clamp(v0, 0, 4f);
+            //v0 = Mathf.Clamp(v0, 0, 1f);
+            v0 = Mathf.Clamp(v0, 0, 5);
+            v0 = Mathf.Lerp(0, 1, v0 * .2f);
             m_Audio.PlayOneShot(m_BallHitBall, v0);
         }
     }
@@ -52,7 +54,8 @@ public class AudioHelper : MonoBehaviour
 
         if (m_Audio)
         {
-            v0 = Mathf.Clamp( v0 , 0, .5f);
+            //v0 = Mathf.Clamp( v0 , 0, 1f);
+            v0 = Mathf.Lerp(.1f, 1, v0 * .05f);
             m_Audio.PlayOneShot(m_BallHitRail, v0);
         }
     }

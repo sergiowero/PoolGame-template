@@ -122,7 +122,7 @@
      <Compile Include="Assets\Scripts\UI\UISupport\ImageTwinkle.cs" />
      <None Include="Assets\MyTest\TestShader.shader" />
      <None Include="Assets\MyTest\MyShader.shader" />
-     <None Include="Assets\MyTest\PoolBallEffect.shader" />
+     <None Include="Assets\Shaders\PoolBallEffect.shader" />
      <None Include="Assets\MyTest\PlaneShader.shader" />
      <None Include="Assets\Datas\Layout.xml" />
      <None Include="Assets\MyTest\Pencil Sketch Shader.shader" />
