@@ -1,8 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\MyTest\Pencil Sketch Shader.shader">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\MyTest\TestShader.shader">
     <Files>
-      <File FileName="Assets\MyTest\Pencil Sketch Shader.shader" Line="95" Column="30" />
+      <File FileName="Assets\MyTest\Pencil Sketch Shader.shader" Line="99" Column="7" />
+      <File FileName="Assets\MyTest\MyShader.shader" Line="20" Column="28" />
+      <File FileName="Assets\MyTest\StencilTest.shader" Line="1" Column="1" />
+      <File FileName="Assets\MyTest\TestShader.shader" Line="18" Column="20" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
