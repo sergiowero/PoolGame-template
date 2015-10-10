@@ -82,6 +82,7 @@
      <Compile Include="Assets\Scripts\Pool\PoolSupport\BallStorage\StorageBottom.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolSupport\TemporarySlot.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolTools\BallDragger.cs" />
+     <Compile Include="Assets\Scripts\Pool\PoolTools\BallRefLightRenderer.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolTools\BallShadowRenderer.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolTools\PocketTrigger.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolTools\PoolRecycler.cs" />

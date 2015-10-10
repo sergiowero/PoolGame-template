@@ -20,10 +20,19 @@ public class Testttt : MonoBehaviour
     {
         if(GUILayout.Button("Apply"))
         {
-            Matrix4x4 m = GetRotateMatrix(m_A, m_Q);
-            transform.position = m.MultiplyPoint(transform.position);
-            Vector3 n = m_Q.normalized;
-            transform.localEulerAngles = new Quaternion(n.x, n.y, n.z, m_A) * transform.localEulerAngles;
+            Collider[] cols = Physics.OverlapSphere(transform.position, GetComponent<SphereCollider>().radius, 1 << LayerMask.NameToLayer("Ball"));
+            if(cols == null)
+            {
+                Debug.Log("null");
+            }
+            else if(cols.Length == 1)
+            {
+                Debug.Log(cols[0].name);
+            }
+            else
+            {
+                Debug.Log(cols.Length);
+            }
         }
     }
 

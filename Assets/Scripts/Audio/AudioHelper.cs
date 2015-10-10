@@ -38,7 +38,7 @@ public class AudioHelper : MonoBehaviour
 
     public void onBallHitBall(Vector3 vel)
     {
-        float v0 = Mathf.Max(vel.x, vel.y, vel.z);
+        float v0 = Mathf.Max(Mathf.Abs(vel.x), Mathf.Abs(vel.y), Mathf.Abs(vel.z));
         if (m_Audio)
         {
             //v0 = Mathf.Clamp(v0, 0, 1f);
@@ -50,12 +50,12 @@ public class AudioHelper : MonoBehaviour
 
     public void onBallHitWall(Vector3 vel)
     {
-        float v0 = Mathf.Max(vel.x, vel.y, vel.z);
-
+        float v0 = Mathf.Max(Mathf.Abs(vel.x), Mathf.Abs(vel.y), Mathf.Abs(vel.z));
         if (m_Audio)
         {
             //v0 = Mathf.Clamp( v0 , 0, 1f);
-            v0 = Mathf.Lerp(.1f, 1, v0 * .05f);
+            v0 = Mathf.Clamp(v0, 0, 5);
+            v0 = Mathf.Lerp(.2f, 1, v0 * .2f);
             m_Audio.PlayOneShot(m_BallHitRail, v0);
         }
     }

@@ -104,7 +104,8 @@ public abstract class PoolRulesBase : MonoBehaviour
     protected virtual void Start()
     {
         Pools.ResetAllBalls(false, true);
-        TurnBegin();
+        Invoke("TurnBegin", .01f);
+        //TurnBegin();
     }
 
     protected virtual void Update()

@@ -165,7 +165,8 @@ public class WhiteBall : PoolBall
     public override void Reset()
     {
         base.Reset();
-        transform.position = m_initalPos;
+        transform.position = Pools.CueBallOrigin.position;
+        //SupportTools.SetPosition(gameObject, Pools.CueBallOrigin.position, SupportTools.AxisIgnore.IgnoreY);
     }
 
     public void fireBall(float powerScalar)

@@ -116,6 +116,8 @@ public class Pools : MonoBehaviour
 
     public static void ResetAllBalls(bool pottedOnly, bool black8Origin)
     {
+        CheckAnyBallInTheResetBallArea();
+
         IDictionary<int, PoolBall> t = new Dictionary<int, PoolBall>();
         //whether put the black 8 to the origin ,1 means true, 0 means false
         int origin = 0;
@@ -141,7 +143,7 @@ public class Pools : MonoBehaviour
             t.Remove(8);
         }
         //the x axis space can calculated with Pythagorean theorem, the z axis space is diameter of the ball
-        float R = (CueBall.GetRadius() + 0.001f) * 2, x = Black8Origin.position.x - squr3 * R, z;
+        float R = (CueBall.GetRadius() + 0.0001f) * 2, x = Black8Origin.position.x - squr3 * R, z;
         Vector3 p = Vector3.one;
         List<int> list = new List<int>(t.Keys);
         for (int i = 1, k = 1; i <= 5; i++)
@@ -169,6 +171,45 @@ public class Pools : MonoBehaviour
                 z += R;
             }
             x += .5f * R * squr3;
+        }
+    }
+
+    private static void CheckAnyBallInTheResetBallArea()
+    {
+        float r = Pools.CueBall.GetRadius() * 7;
+        Collider[] cols = Physics.OverlapSphere(Pools.Black8Origin.position, r, 1 << LayerMask.NameToLayer("Ball") | 1 << LayerMask.NameToLayer("WhiteBall"));
+        Vector3 p1 = Pools.CenterOrigin.position;
+        Vector3 p2 = Pools.CueBallOrigin.position;
+        for (int i = 0, length = cols.Length; i < length; i++)
+        {
+            if(cols[i].name.Contains("WhiteBall"))
+            {
+                PutBallToThePoint(cols[i].GetComponent<WhiteBall>(), ref p2);
+                Pools.Cue.ResetPosition();
+            }
+            else
+            {
+                PutBallToThePoint(cols[i].GetComponent<PoolBall>(), ref p1);
+            }
+        }
+    }
+
+    private static void PutBallToThePoint(PoolBall ball, ref Vector3 p)
+    {
+        float r = ball.GetRadius();
+        while (Physics.OverlapSphere(p, r, 1 << LayerMask.NameToLayer("Ball")).Length != 0)
+        {
+            p.x -= r;
+        }
+        SupportTools.SetPosition(ball.gameObject, p, SupportTools.AxisIgnore.IgnoreY);
+        p.x -= r;
+    }
+
+    void OnGUI()
+    {
+        if(GUILayout.Button("Reset ball"))
+        {
+            ResetAllBalls(true, true);
         }
     }
 }

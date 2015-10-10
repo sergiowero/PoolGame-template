@@ -232,10 +232,7 @@ public class PoolBall : MonoBehaviour
         ReversePhysicalMaterial();
         PhysicalSupportTools.Remove(gameObject, PhysicalSupportType.MaxSpeedLimit);
         RackBallCollision rb;
-        if(rb = GetComponent<RackBallCollision>())
-        {
-            Destroy(rb);
-        }
+        if(rb = GetComponent<RackBallCollision>()) Destroy(rb);
         enabled = true;
         m_LastPosition = transform.position;
     }

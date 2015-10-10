@@ -149,6 +149,11 @@ public class PoolCue : MonoBehaviour
         HandleRotate();
     }
 
+    public void ResetPosition()
+    {
+        transform.position = Pools.CueBall.GetPosition();
+    }
+
     public void Siding(Vector2 sideOffset)
     {
         m_SidingPoint.localPosition = sideOffset * m_SidingPointOffsetRange;
