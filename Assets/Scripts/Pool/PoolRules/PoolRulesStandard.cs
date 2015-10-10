@@ -65,18 +65,18 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected override void CustomUpdate()
     {
-        if (m_Countdown)
-        {
-            m_Time -= Time.deltaTime;
-            CurrentPlayer.Countdown(m_Time / m_TimePerRound);
-            if (m_Time <= 0)
-            {
-                m_Countdown = false;
-                m_TimeOut = true;
-                //check the result immediately
-                StartCoroutine(CheckResultAndChangeTurn(0));
-            }
-        }
+        //if (m_Countdown)
+        //{
+        //    m_Time -= Time.deltaTime;
+        //    CurrentPlayer.Countdown(m_Time / m_TimePerRound);
+        //    if (m_Time <= 0)
+        //    {
+        //        m_Countdown = false;
+        //        m_TimeOut = true;
+        //        //check the result immediately
+        //        StartCoroutine(CheckResultAndChangeTurn(0));
+        //    }
+        //}
     }
 
     public override void SetPlayers(params IPlayer[] players)

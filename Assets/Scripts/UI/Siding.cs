@@ -8,11 +8,7 @@ public class Siding : MonoBehaviour
     private static Siding m_Instance = null;
 
     [SerializeField]
-    private RectTransform m_SideballT;//sideball toggle ,just for show
-    [SerializeField]
     private RectTransform m_SideballO;//sideball operator
-    [SerializeField]
-    private RectTransform m_AnchorT;//anchor to sideball toggle
     [SerializeField]
     private RectTransform m_AnchorO; //anchor to sideball operator
     [SerializeField]
@@ -20,7 +16,11 @@ public class Siding : MonoBehaviour
     [SerializeField]
     private RectTransform m_MaskDeactiveObject; //disable mask touch component
     [SerializeField]
-    private SidingAnchor m_SidingAnchor; 
+    private SidingAnchor m_SidingAnchor;
+    [SerializeField]
+    private Slider m_VerticalDegreeSlider;
+    [SerializeField]
+    private Text m_VerticalDegreeText;
 
     private bool m_SidingDrag = false;
 
@@ -45,6 +45,7 @@ public class Siding : MonoBehaviour
             m_SideballO.gameObject.SetActive(false);
             m_BlackMask.gameObject.SetActive(false);
             m_SidingAnchor.OnMovingDown = AnchorMoveDown;
+            m_VerticalDegreeSlider.value = 0;
         }
         else
         {
@@ -133,7 +134,7 @@ public class Siding : MonoBehaviour
 
     private void AnchorMoveDown()
     {
-        Pools.Cue.Siding(m_AnchorO.localPosition);
+        Pools.Cue.Siding(m_SidingAnchor.GetAnchorOffset());
         if(!m_SidingDrag)
         {
             OnToggleClick();
@@ -145,9 +146,22 @@ public class Siding : MonoBehaviour
         m_SidingAnchor.SetTargetPosition(offset);
     }
 
+    private void _ResetVerticalDegreeSlider()
+    {
+        m_VerticalDegreeSlider.value = 0;
+    }
+
     public static void ResetAnchorOffset()
     {
         m_Instance._SidingAnchorOffset(Vector2.zero);
+        m_Instance._ResetVerticalDegreeSlider();
         Pools.Cue.ResetSideOffset();
+    }
+
+    public void ChangeVerticalDegree(float value)
+    {
+        float fv = Mathf.Lerp(0, 90, value);
+        Pools.Cue.VerticalRotate(fv);
+        m_VerticalDegreeText.text = ((int)fv).ToString();
     }
 }

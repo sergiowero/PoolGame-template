@@ -52,10 +52,15 @@
      <Compile Include="Assets\Plugins\Pixelplacement\iTween\iTween.cs" />
      <None Include="Assets\MyTest\TestShader.shader" />
      <None Include="Assets\MyTest\MyShader.shader" />
+     <None Include="Assets\MyTest\PoolBallEffect.shader" />
+     <None Include="Assets\MyTest\PlaneShader.shader" />
      <None Include="Assets\Datas\Layout.xml" />
+     <None Include="Assets\MyTest\Pencil Sketch Shader.shader" />
      <None Include="Assets\Plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\MyTest\FullSea.shader" />
+     <None Include="Assets\MyTest\PlaneShader 1.shader" />
      <None Include="Assets\Shaders\Mobile-Specular.shader" />
+     <None Include="Assets\MyTest\StencilTest.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Program Files/Unity4/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>

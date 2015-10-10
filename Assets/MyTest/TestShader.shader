@@ -49,6 +49,12 @@ Shader "TestShader" {
 	{
 		Pass
 		{
+			Stencil
+			{
+				Ref 1
+				Comp always
+				Pass replace
+			}
 			Blend SrcAlpha OneMinusSrcAlpha
 			CGPROGRAM
 			#pragma target 3.0

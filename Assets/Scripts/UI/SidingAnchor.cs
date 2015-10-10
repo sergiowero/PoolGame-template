@@ -18,12 +18,21 @@ public class SidingAnchor : MonoBehaviour {
     private Vector3 m_TargetPosition;
     private Vector3 m_LastPosition;
 
+    [SerializeField]
+    private Vector2 m_MaxOffset = new Vector2(33, 33);
+
     public void SetTargetPosition(Vector3 v)
     {
         m_TargetPosition = v;
         m_LastPosition = m_AnchorO.localPosition;
         m_CurTime = 0;
         enabled = true;
+    }
+
+    //Change the range of siding offset to [-1,1]
+    public Vector3 GetAnchorOffset()
+    {
+        return new Vector3(m_AnchorO.localPosition.x / m_MaxOffset.x, m_AnchorO.localPosition.y / m_MaxOffset.y, 0);
     }
 
 	void Start () 

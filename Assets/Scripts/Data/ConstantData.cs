@@ -9,7 +9,7 @@ public class ConstantData
 
     public const float AdjustingCueScalar = 0.3f;
 
-    public const float TurnWaitTime = 1.5f;
+    public const float TurnWaitTime = .5f;
 
     public const float TimePerRoundLow = 30;
 

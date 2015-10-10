@@ -8,7 +8,7 @@ public class PoolEnvironmentEditor : EditorWindow
 
     string filePath;
 
-    string s1 = "", s2 = "", s3 = "", s4 = "", s5 = "", s6 = "", s7 = "";
+    string s1 = "", s2 = "", s3 = "", s4 = "", s5 = "";
     float f = 0;
     GUISkin skin;
 
@@ -199,7 +199,8 @@ public class PoolEnvironmentEditor : EditorWindow
         GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.RailBounciness + "</color>");
         GUI.EndGroup();
 
-        /////////////////水平加塞
+        #region Not use anymore
+        /* /////////////////水平加塞
         GUI.BeginGroup(new Rect(10, 435, 400, 80));
         SetValue("水平加塞比值：", () =>
         {
@@ -243,7 +244,8 @@ public class PoolEnvironmentEditor : EditorWindow
         s7 = GUI.TextField(new Rect(180, 5, 30, 20), s7);
         GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.VerticalSidingStrength + "</i></color>");
         GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.VerticalSidingStrength + "</color>");
-        GUI.EndGroup();
+        GUI.EndGroup();*/
+        #endregion
 
         ////////////////结束
         GUI.BeginGroup(new Rect(10, 605, 400, 80));
@@ -264,7 +266,7 @@ public class PoolEnvironmentEditor : EditorWindow
 
     private void SerPool()
     {
-        StreamTools.SerializeObject(m_DataAssetTemp, ConstantData.PoolDataAssetsFile);
+        StreamTools.SerializeObject(m_DataAssetTemp, StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
     }
 
     private void SetValue(string valueName, System.Action onApply, System.Action onSave, System.Action onReverse)

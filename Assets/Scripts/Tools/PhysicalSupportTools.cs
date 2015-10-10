@@ -223,18 +223,32 @@ class PhysicalDrag : IPhysicalSupport
 
         m_AngularVelocity = m_Rigidbody.angularVelocity;
 #if UNITY_EDITOR
-        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 3 : 1) * Time.fixedDeltaTime;
+        float f = Mathf.Abs(m_AngularVelocity.y) - ConstantData.GetPoolDatas().BallAngularDrag * Time.fixedDeltaTime * (m_Velocity.sqrMagnitude < .1f ? 5 : 1);
 #else
-        float f = m_AngularVelocity.magnitude - m_AngularVelocityDrag * Time.fixedDeltaTime;
+        float f = m_AngularVelocity.y - m_AngularVelocityDrag * Time.fixedDeltaTime;
 #endif
-        if (f <= 0)
+        if(f <= 0)
         {
-            m_Rigidbody.angularVelocity = Vector3.zero;
+            m_AngularVelocity.y = 0;
         }
         else
         {
-            m_Rigidbody.angularVelocity = m_AngularVelocity.normalized * f;
+            m_AngularVelocity.y = m_AngularVelocity.y < 0 ? -f : f;
         }
+        m_Rigidbody.angularVelocity = m_AngularVelocity;
+//#if UNITY_EDITOR
+//        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 3 : 1) * Time.fixedDeltaTime;
+//#else
+//        float f = m_AngularVelocity.magnitude - m_AngularVelocityDrag * Time.fixedDeltaTime;
+//#endif
+        //if (f <= 0)
+        //{
+        //    m_Rigidbody.angularVelocity = Vector3.zero;
+        //}
+        //else
+        //{
+        //    m_Rigidbody.angularVelocity = m_AngularVelocity.normalized * f;
+        //}
     }
 }
 #endregion
