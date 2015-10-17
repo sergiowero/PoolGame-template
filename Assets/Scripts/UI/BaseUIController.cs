@@ -13,7 +13,7 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private TextArea m_Text;
     [SerializeField]
-    private CueOperateArea m_CueOperateArea;
+    private OperateArea m_CueOperateArea;
     [SerializeField]
     private FireSlider m_FireSlider;
     [SerializeField]
@@ -29,14 +29,20 @@ public class BaseUIController : MonoBehaviour {
     private Settlement m_Settlement;
     [SerializeField]
     private TextTips m_Tips;
+    [SerializeField]
+    private GameObject m_GlobalMask;
+    [SerializeField]
+    private FollowWorldObject m_Hand;
 
     public static TextArea text { get { return m_Instance.m_Text; } }
-    public static CueOperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
+    public static OperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
     public static FireSlider fireSlider { get { return m_Instance.m_FireSlider; } }
     public static CueAndGuidelines cueAndLines { get { return m_Instance.m_CueAndLines; } }
     public static Siding siding { get { return m_Instance.m_Siding; } }
     public static  Transform TopMenuRoot { get { return m_Instance.m_TopMenuRoot; } }
     public static Settlement MSettlement { get { return m_Instance.m_Settlement; } }
+    public static GameObject GlobalMask { get { return m_Instance.m_GlobalMask; } }
+    public static FollowWorldObject hand { get { return m_Instance.m_Hand; } }
     public static TopMenu topMenu 
     {
         set 
@@ -54,6 +60,7 @@ public class BaseUIController : MonoBehaviour {
         }
         m_Instance = this;
         m_Text.gameObject.SetActive(false);
+        hand.gameObject.SetActive(false);
         PoolRulesBase.onFireBall += OnFireBall;
         PoolRulesBase.onNewTurn += OnStartRound;
     }
@@ -67,16 +74,14 @@ public class BaseUIController : MonoBehaviour {
 
     private void OnFireBall()
     {
-        siding.gameObject.SetActive(false);
         fireSlider.gameObject.SetActive(false);
-        cueOperateArea.gameObject.SetActive(false);
+        GlobalMask.SetActive(true);
     }
 
     private void OnStartRound(int playerIndex)
     {
-        cueOperateArea.gameObject.SetActive(true);
         fireSlider.gameObject.SetActive(true);
-        siding.gameObject.SetActive(true);
+        GlobalMask.SetActive(false);
     }
 
     public static Camera GetUICamera()

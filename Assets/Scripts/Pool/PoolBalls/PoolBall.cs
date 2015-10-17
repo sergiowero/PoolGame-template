@@ -2,6 +2,10 @@
 using System.Collections;
 public class PoolBall : MonoBehaviour
 {
+    public Delegate0Args onReset;
+
+    public bool yConstrain = true;
+
     //the balls Id
     [SerializeField]
     protected int m_BallID = -1;
@@ -48,6 +52,9 @@ public class PoolBall : MonoBehaviour
 
     protected BallShadowRenderer m_ShadowRenderer;
 
+    protected BallRefLightRenderer m_LightRenderer;
+    public BallRefLightRenderer LightRenderer { get { return m_LightRenderer; } }
+
     //protected BallPhysicalDrag m_BallPhysicalDrag;
     protected PhysicalSupportTools m_BallPhysicalDrag;
 
@@ -68,6 +75,7 @@ public class PoolBall : MonoBehaviour
     {
         m_rigidbody = gameObject.GetComponent<Rigidbody>();
         m_ShadowRenderer = GetComponent<BallShadowRenderer>();
+        m_LightRenderer = GetComponent<BallRefLightRenderer>();
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         m_Mesh = GetComponent<MeshRenderer>();
         //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
@@ -167,7 +175,7 @@ public class PoolBall : MonoBehaviour
 
     public virtual void Update()
     {
-        if (m_rigidbody.velocity.sqrMagnitude < .01f && m_rigidbody.angularVelocity.sqrMagnitude < .01f)
+        if (m_rigidbody.velocity.sqrMagnitude < .001f && m_rigidbody.angularVelocity.sqrMagnitude < .001f)
         {
             if (m_state == State.ROLL)
             {
@@ -195,7 +203,7 @@ public class PoolBall : MonoBehaviour
 
     void LateUpdate()
     {
-        if (m_rigidbody.position.y > m_MaxYAxis)
+        if (m_rigidbody.position.y > m_MaxYAxis && yConstrain)
             YValueDrag();
     }
 
@@ -217,6 +225,9 @@ public class PoolBall : MonoBehaviour
 
     public virtual void Reset()
     {
+        if (m_state == State.HIDE) return;
+
+
         m_slowTime = 0;
         m_state = State.IDLE;
         //SupportTools.SetPosition(gameObject, m_initalPos, SupportTools.AxisIgnore.IgnoreX | SupportTools.AxisIgnore.IgnoreZ);
@@ -228,6 +239,10 @@ public class PoolBall : MonoBehaviour
         m_rigidbody.constraints = RigidbodyConstraints.None;
         m_rigidbody.angularVelocity = Vector3.zero;
         m_rigidbody.velocity = Vector3.zero;
+        m_rigidbody.useGravity = true;
+        renderer.enabled = true;
+        collider.enabled = true;
+        LightRenderer.Open();
         OpenRenderer();
         ReversePhysicalMaterial();
         PhysicalSupportTools.Remove(gameObject, PhysicalSupportType.MaxSpeedLimit);
@@ -281,6 +296,8 @@ public class PoolBall : MonoBehaviour
         enabled = false;
         transform.FindChild("Shadow").gameObject.SetActive(false);
         GetComponent<BallShadowRenderer>().enabled = false;
+        transform.FindChild("RefLight").gameObject.SetActive(false);
+        GetComponent<BallRefLightRenderer>().enabled = false;
         m_state = State.HIDE;
     }
 
@@ -294,6 +311,8 @@ public class PoolBall : MonoBehaviour
         transform.FindChild("Shadow").gameObject.SetActive(true);
         GetComponent<BallShadowRenderer>().enabled = true;
         m_state = State.IDLE;
+        transform.FindChild("RefLight").gameObject.SetActive(true);
+        GetComponent<BallRefLightRenderer>().enabled = true;
     }
 
     public bool IsBallDisable()

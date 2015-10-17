@@ -12,13 +12,17 @@ public class PoolCue : MonoBehaviour
     //private Vector2 m_CurrentSideOffset;
     //[SerializeField]
     //private Vector3 m_RefPoint = new Vector3(0, 0, -1);
+    private Transform m_CueTrans;
     [SerializeField]
     private Transform m_FirePoint;
     [SerializeField]
     private Transform m_SidingPoint;
     [SerializeField]
-    [Range(0,0.01f)]
-    private float m_SidingPointOffsetRange;
+    private float m_SidingPointOffset;
+    private Vector3 m_CurrentSidingOffset;
+
+    [SerializeField]
+    private Vector2 m_SidingPointRange = new Vector2(.006f, .01f); //x: min ; y : max
 
     public enum State
     {
@@ -54,6 +58,8 @@ public class PoolCue : MonoBehaviour
         }
     }
 
+    protected Vector3 m_CurHitPoint;
+
     //do we want to rotate
     protected bool m_requestRotate = false;
 
@@ -65,30 +71,39 @@ public class PoolCue : MonoBehaviour
     protected Color m_GizmosColor;
     #endregion
 
-    //void Update()
-    //{
-    //    Vector3 v = m_CurrentSideOffset * m_SidingPointOffsetRange;
-    //    v.z = -.013f;
-    //    m_SidingPoint.localPosition = v;
-        
-    //    Pools.CueBall.SetHitPoint(m_SidingPoint.position);
-    //}
-
     public void Awake()
     {
-        m_initalPos = transform.localPosition;
-        m_initalRot = transform.localRotation;
+        m_CueTrans = transform;
+        m_initalPos = m_CueTrans.localPosition;
+        m_initalRot = m_CueTrans.localRotation;
         m_CurRotAngle = 0;
+        m_SidingPointOffset = m_SidingPointRange.x;
         FireSlider.OnSliderValueChange += SetPowerScalar;
         FireSlider.OnSliderRelease += Fire;
-        PoolRulesBase.onNewTurn += RoundBegin;
+    }
+
+    protected Vector3 GetHitPoint()
+    {
+        RaycastHit hitInfo;
+        if(Physics.Raycast(m_SidingPoint.position, m_FirePoint.forward,out hitInfo,float.MaxValue,  1 << LayerMask.NameToLayer("WhiteBall")))
+        {
+            return hitInfo.point;
+        }
+        BaseUIController.text.Show("The ray can not cast the white ball. need debug it");
+        return Vector3.zero;
+    }
+
+    public void LateUpdate()
+    {
+        m_CueTrans.position = Pools.CueBall.transform.position;
+        HandleRotate();
+        //Pools.CueBall.SetHitPoint(m_SidingPoint.position);
     }
 
     public void OnDestroy()
     {
         FireSlider.OnSliderValueChange -= SetPowerScalar;
         FireSlider.OnSliderRelease -= Fire;
-        PoolRulesBase.onNewTurn -= RoundBegin;
     }
 
     public void SetPowerScalar(float value)
@@ -97,67 +112,42 @@ public class PoolCue : MonoBehaviour
         BaseUIController.cueAndLines.AdjustingCue(value);
     }
 
-    private void RoundBegin(int i)
-    {
-        transform.position = Pools.CueBall.transform.position;
-        Pools.CueBall.SetHitPoint(m_SidingPoint.position);
-    }
-
-    void OnEnable()
-    {
-        transform.position = Pools.CueBall.transform.position;
-    }
-
-    public Vector3 GetFireDirection()
-    {
-        return m_FirePoint.forward;
-    }
-
     public void Fire()
     {
         m_requestFire = false;
 
         //lets set the balls target and the target position. When the white ball hits the first ball we will set the ball to point at the target.
         Pools.CueBall.setTarget(m_targetBall, m_targetPos);
-        Pools.CueBall.fireBall(m_powerScalar);
+        Pools.CueBall.fireBall(m_powerScalar, m_FirePoint.forward, GetHitPoint());
         m_state = State.ROLL;
         BaseUIController.cueAndLines.gameObject.SetActive(false);
-        transform.parent = null;
+        m_CueTrans.parent = null;
     }
 
     public void Rotate(float angle)
     {
         CurRotAngle = angle;
-        transform.RotateAround(Pools.CueBall.GetPosition(), Vector3.up, angle);
-        HandleRotate();
-        Pools.CueBall.SetHitPoint(m_SidingPoint.position);
+        m_CueTrans.RotateAround(Pools.CueBall.GetPosition(), Vector3.up, angle);
     }
 
     public void VerticalRotate(float angle)
     {
         m_FirePoint.localRotation = Quaternion.identity;
         m_FirePoint.localPosition = new Vector3(0, 0, -.013f);
-        m_FirePoint.RotateAround(Pools.CueBall.GetPosition(), transform.right, angle);
-        Pools.CueBall.SetHitPoint(m_SidingPoint.position);
-
-        //Vector2 op = new Vector2(Pools.CueBall.GetPosition().z, Pools.CueBall.GetPosition().y);
+        m_FirePoint.RotateAround(Pools.CueBall.GetPosition(), m_CueTrans.right, angle);
+        m_SidingPointOffset = Mathf.Lerp(m_SidingPointRange.x, m_SidingPointRange.y, angle / 90);
+        Siding(m_CurrentSidingOffset);
     }
 
     public void Reset()
     {
-        transform.localEulerAngles = new Vector3(0, 90, 0);
-        HandleRotate();
-    }
-
-    public void ResetPosition()
-    {
-        transform.position = Pools.CueBall.GetPosition();
+        m_CueTrans.localEulerAngles = new Vector3(0, 90, 0);
     }
 
     public void Siding(Vector2 sideOffset)
     {
-        m_SidingPoint.localPosition = sideOffset * m_SidingPointOffsetRange;
-        Pools.CueBall.SetHitPoint(m_SidingPoint.position);
+        m_CurrentSidingOffset = sideOffset;
+        m_SidingPoint.localPosition = m_CurrentSidingOffset * m_SidingPointOffset;
     }
 
     void HandleRotate()
@@ -165,7 +155,7 @@ public class PoolCue : MonoBehaviour
         if (Pools.CueBall && Pools.CueBall.sphereCollider)
         {
             SphereCollider sc = Pools.CueBall.sphereCollider;
-            Ray ray = new Ray(Pools.CueBall.transform.position, transform.forward);
+            Ray ray = new Ray(Pools.CueBall.transform.position, m_CueTrans.forward);
             float r = Pools.CueBall.GetRadius();
             RaycastHit rch;
             if (Physics.SphereCast(ray, r - Mathf.Epsilon, out rch, 1000f, layerMask.value))
@@ -191,12 +181,6 @@ public class PoolCue : MonoBehaviour
         }
     }
 
-    public void ResetSideOffset()
-    {
-        //m_CurrentSideOffset = Vector2.zero;
-        m_SidingPoint.localPosition = Vector3.zero;
-    }
-
     public void Hide()
     {
         gameObject.SetActive(false);
@@ -207,11 +191,6 @@ public class PoolCue : MonoBehaviour
     {
         gameObject.SetActive(true);
         BaseUIController.cueAndLines.gameObject.SetActive(true);
-    }
-
-    public void UpdateSiding()
-    {
-        //Siding(m_CurrentSideOffset, true);
     }
 
     public void OnDrawGizmos()

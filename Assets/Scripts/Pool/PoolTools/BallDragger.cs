@@ -24,6 +24,11 @@ public class BallDragger : MonoBehaviour {
 
     private bool m_Drag;
 
+    void Awake()
+    {
+
+    }
+
 	void Update () 
     {
         if (Input.touchSupported)
@@ -120,4 +125,53 @@ public class BallDragger : MonoBehaviour {
         }
         return false;
     }
+
+    //#region ball darg event--------------------------------------
+
+    //void OnDragBegin(BallDraggerData data)
+    //{
+    //    if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
+    //    {
+    //        m_constraint.enabled = true;
+    //        m_rigidbody.useGravity = false;
+    //        m_rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
+    //        //collider.isTrigger = true;
+    //        screenPoint = Pools.SceneCamera.WorldToScreenPoint(transform.position);
+    //        offset = transform.position - Pools.SceneCamera.ScreenToWorldPoint(new Vector3(data.Position.x, data.Position.y, screenPoint.z));
+    //        GameManager.Rules.State = GlobalState.DRAG_WHITEBALL;
+    //        m_CurDragPosition = m_rigidbody.position;
+    //        Pools.Cue.Hide();
+    //        Pools.AllBallsKinematic();
+    //    }
+    //}
+
+    //void OnDragEnd(BallDraggerData data)
+    //{
+    //    if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
+    //    {
+    //        m_rigidbody.useGravity = true;
+    //        m_rigidbody.constraints = RigidbodyConstraints.None;
+    //        m_constraint.enabled = false;
+    //        m_CurDragPosition = m_rigidbody.position;
+    //        Pools.Cue.Show();
+    //        //collider.isTrigger = false;
+    //        GameManager.Rules.ReversePrevState();
+    //        Pools.AllBallsNonKinematic();
+    //    }
+    //}
+
+
+    //void OnDrag(BallDraggerData data)
+    //{
+    //    if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
+    //    {
+    //        Vector3 curScreenPoint = new Vector3(data.Position.x, data.Position.y, screenPoint.z);
+    //        Vector3 curPosition = Pools.SceneCamera.ScreenToWorldPoint(curScreenPoint) + offset;
+    //        curPosition.y = transform.position.y;
+    //        //if(m_constraint.PointInTheArea(curPosition))
+    //        curPosition = MathTools.Clamp3(curPosition, m_constraint.min, m_constraint.max);
+    //        m_CurDragPosition = curPosition;
+    //    }
+    //}
+    //#endregion
 }

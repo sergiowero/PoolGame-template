@@ -23,7 +23,8 @@ public enum PocketType
 {
     None = 0,
     Punishment = 1,
-    Reward = 2
+    Reward = 2, 
+    BlockOff
 }
 
 [System.Flags]
@@ -50,6 +51,8 @@ public enum BallType
     BOMB = 70,
     ABSORB = 71,
     SINGULARITY = 72,
+    JIANGYOU = 73,
+    DEMON = 74,
     WHITE = 0
 }
 
@@ -74,7 +77,12 @@ public abstract class PoolRulesBase : MonoBehaviour
     public GlobalState State 
     { 
         get { return m_State;}
-        set { m_PrevState = m_State; m_State = value; }
+        set
+        {
+            m_PrevState = m_State; 
+            m_State = value;
+            BaseUIController.cueOperateArea.ChangeOperationType(value);
+        }
     }
     public void ReversePrevState()
     {
@@ -196,6 +204,8 @@ public abstract class PoolRulesBase : MonoBehaviour
     #endregion
 
     #region Abstract methods......................
+    public abstract void CueBallHitRail();
+
     public abstract void SetPlayers(params IPlayer[] players);
 
     public abstract void BallHitRail();

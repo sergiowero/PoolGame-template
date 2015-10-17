@@ -19,7 +19,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_4_6_0;UNITY_4_6;UNITY_ANDROID;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;UNITY_ANDROID_API;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_6_0;UNITY_4_6;UNITY_ANDROID;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;ENABLE_MONO;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_WP8SUPPORT;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;ENABLE_CACHING;ENABLE_CLOTH;UNITY_ANDROID_API;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;DEVELOPMENT_BUILD;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN;UNITY_TEAM_LICENSE;UNITY_PRO_LICENSE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -64,8 +64,95 @@
      <Compile Include="Assets\Scripts\Misc\MyQualitySettings.cs" />
      <Compile Include="Assets\Scripts\Misc\RotateDevice.cs" />
      <Compile Include="Assets\Scripts\Misc\SetFramerate.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Authentication\Credentials.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Authentication\Digest.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Authentication\DigestStore.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Caching\HTTPCacheFileInfo.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Caching\HTTPCacheFileLock.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Caching\HTTPCacheMaintananceParams.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Caching\HTTPCacheService.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Cookies\Cookie.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Cookies\CookieJar.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\CRC32.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\Deflate.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\DeflateStream.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\GZipStream.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\InfTree.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\Inflate.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\Tree.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\Zlib.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\ZlibBaseStream.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\ZlibCodec.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\ZlibConstants.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Decompression\ZlibStream.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Extensions\Extensions.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Extensions\KeyValuePair.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Extensions\KeyValuePairList.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Extensions\WWWAuthenticateHeaderParser.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\HTTPFieldData.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\HTTPFormBase.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\HTTPFormUsage.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\Implementations\HTTPMultiPartForm.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\Implementations\HTTPUrlEncodedForm.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\Forms\Implementations\UnityForm.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPConnection.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPConnectionStates.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPManager.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPMethods.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPProtocolFactory.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPProxy.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPRange.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPRequest.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPRequestStatus.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPResponse.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\HTTPUpdateDelegator.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\Cryptography\MD5CryptoServiceProvider.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\Directory.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\File.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\FileEnums.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\FileHelper.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\FileStream.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\IO\Infos.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\PlatformSupport\Threading\Thread.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\WebSocket\Frames\WebSocketFrameReader.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\WebSocket\Frames\WebSocketFrameTypes.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\WebSocket\Frames\WebSocketFrameWriters.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\WebSocket\WebSocket.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Best HTTP (Pro)\BestHTTP\WebSocket\WebSocketResponse.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Http\HttpClient.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Http\HttpRequestHandler.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\AppUserInfo.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\Callback.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\Client.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\Config.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\CustomRoomMessage.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\ErrorCode.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\FriendPlayer.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\HttpServer.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\LobbyInfo.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\MemberCustomData.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\MessageTypeId.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\OtherPlayer.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\RoomCustomData.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\RoomInfo.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\Singleton.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\SocketClient.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\SocketClientExt.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\SocketServer.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\Toolkit.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\PVP\UserInfo.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\AbstractHttpProtocol.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\AbstractProtobufMeta.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\AbstractSocketProtobuf.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\HttpProtocolT1T2.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\PVPProtobuf.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\PVPProtobuf_Token.cs" />
+     <Compile Include="Assets\Scripts\PVPSdk\Protobuf\ProtobufMeta.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolBalls\AbsorbBall.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolBalls\BombBall.cs" />
+     <Compile Include="Assets\Scripts\Pool\PoolBalls\DemonBall.cs" />
+     <Compile Include="Assets\Scripts\Pool\PoolBalls\JiangYouBall.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolBalls\OBall.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolBalls\PoolBall.cs" />
      <Compile Include="Assets\Scripts\Pool\PoolBalls\SingularityBall.cs" />
@@ -88,6 +175,7 @@
      <Compile Include="Assets\Scripts\Pool\PoolTools\PoolRecycler.cs" />
      <Compile Include="Assets\Scripts\Pool\Pools.cs" />
      <Compile Include="Assets\Scripts\Test\Testttt.cs" />
+     <Compile Include="Assets\Scripts\Test\Testttt1.cs" />
      <Compile Include="Assets\Scripts\Tools\AnimationEventTools.cs" />
      <Compile Include="Assets\Scripts\Tools\EventTriggerListener.cs" />
      <Compile Include="Assets\Scripts\Tools\MathTools.cs" />
@@ -97,11 +185,11 @@
      <Compile Include="Assets\Scripts\UI\BaseUIController.cs" />
      <Compile Include="Assets\Scripts\UI\CountdownOutline.cs" />
      <Compile Include="Assets\Scripts\UI\CueAndGuidelines.cs" />
-     <Compile Include="Assets\Scripts\UI\CueOperateArea.cs" />
      <Compile Include="Assets\Scripts\UI\FireSlider.cs" />
      <Compile Include="Assets\Scripts\UI\GridImagesTest.cs" />
      <Compile Include="Assets\Scripts\UI\LaunchUIController.cs" />
      <Compile Include="Assets\Scripts\UI\MatchButtons.cs" />
+     <Compile Include="Assets\Scripts\UI\OperateArea.cs" />
      <Compile Include="Assets\Scripts\UI\Players\AIPlayer.cs" />
      <Compile Include="Assets\Scripts\UI\Players\AIPlayer8Ball.cs" />
      <Compile Include="Assets\Scripts\UI\Players\BasePlayer.cs" />
@@ -120,6 +208,7 @@
      <Compile Include="Assets\Scripts\UI\SidingAnchor.cs" />
      <Compile Include="Assets\Scripts\UI\TextArea.cs" />
      <Compile Include="Assets\Scripts\UI\TextTips.cs" />
+     <Compile Include="Assets\Scripts\UI\UISupport\FollowWorldObject.cs" />
      <Compile Include="Assets\Scripts\UI\UISupport\ImageTwinkle.cs" />
      <None Include="Assets\MyTest\TestShader.shader" />
      <None Include="Assets\MyTest\MyShader.shader" />
@@ -135,8 +224,11 @@
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Program Files/Unity4/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.0/UnityEngine.UI.dll</HintPath>
  </Reference>
- <Reference Include="Photon3Unity3D">
- <HintPath>E:/GameApp/PoolGame/Assets/Plugins/Photon3Unity3D.dll</HintPath>
+ <Reference Include="protobuf-net">
+ <HintPath>E:/GameApp/PoolGame/Assets/Plugins/protobuf-net.dll</HintPath>
+ </Reference>
+ <Reference Include="TcpClientImplementation">
+ <HintPath>E:/GameApp/PoolGame/Assets/Plugins/TcpClientImplementation.dll</HintPath>
  </Reference>
  <Reference Include="Debugger">
  <HintPath>E:/GameApp/PoolGame/Assets/Scripts/Debugger/Debugger.dll</HintPath>

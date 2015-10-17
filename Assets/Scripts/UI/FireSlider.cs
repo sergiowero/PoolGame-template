@@ -4,8 +4,8 @@ using System.Collections;
 using UnityEngine.EventSystems;
 
 public class FireSlider : MonoBehaviour {
-    public static System.Action<float> OnSliderValueChange;
-    public static System.Action OnSliderRelease;
+    public static Delegate1Args<float> OnSliderValueChange;
+    public static Delegate0Args OnSliderRelease;
 
     [SerializeField]
     private Image m_Background;
@@ -45,6 +45,7 @@ public class FireSlider : MonoBehaviour {
         p.y = Mathf.Clamp(p.y, -m_MaxPower, 0);//y position is negative
         m_SliderTrans.localPosition = p;
         float percentage = p.y / -m_MaxPower;
+        DiscreteValue(ref percentage);
         //float power = Mathf.Lerp(0, 1, percentage);
         //Debug.Log("power : " + power);
         m_Background.color = Color.Lerp(m_MinColor, m_MaxColor, percentage);
@@ -65,5 +66,10 @@ public class FireSlider : MonoBehaviour {
         }
         iTween.MoveTo(m_SliderButton.gameObject, iTween.Hash("y", 0, "time", m_FadeTime, "islocal", true));
         iTween.ColorTo(m_Background.gameObject, iTween.Hash("color",m_MinColor, "time", m_FadeTime, "includechildren", false));
+    }
+
+    private void DiscreteValue(ref float value)
+    {
+        value = Mathf.Pow(value, 1.1f);
     }
 }

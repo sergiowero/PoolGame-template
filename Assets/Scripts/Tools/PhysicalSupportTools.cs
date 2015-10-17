@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 interface IPhysicalSupport
@@ -163,7 +164,7 @@ class MaxSpeedLimit : IPhysicalSupport
         }
     }
 }
-#endregion
+#endregion //MaxSpeedLimit
 
 #region PhysicalDrag------------------------------------------------------------------------------
 class PhysicalDrag : IPhysicalSupport
@@ -222,12 +223,10 @@ class PhysicalDrag : IPhysicalSupport
             return;
 
         m_AngularVelocity = m_Rigidbody.angularVelocity;
-#if UNITY_EDITOR
-        float f = Mathf.Abs(m_AngularVelocity.y) - ConstantData.GetPoolDatas().BallAngularDrag * Time.fixedDeltaTime * (m_Velocity.sqrMagnitude < .1f ? 5 : 1);
-#else
-        float f = m_AngularVelocity.y - m_AngularVelocityDrag * Time.fixedDeltaTime;
-#endif
-        if(f <= 0)
+        float a = (Mathf.Abs(m_AngularVelocity.y) < 10) ? 1 : m_AngularVelocity.magnitude * .1f;
+        float d = ConstantData.GetPoolDatas().BallAngularDrag * Time.fixedDeltaTime * a;
+        float f = Mathf.Abs(m_AngularVelocity.y) - d;
+        if (f <= 0)
         {
             m_AngularVelocity.y = 0;
         }
@@ -236,23 +235,11 @@ class PhysicalDrag : IPhysicalSupport
             m_AngularVelocity.y = m_AngularVelocity.y < 0 ? -f : f;
         }
         m_Rigidbody.angularVelocity = m_AngularVelocity;
-//#if UNITY_EDITOR
-//        float f = m_AngularVelocity.magnitude - ConstantData.GetPoolDatas().BallAngularDrag * (m_Velocity.sqrMagnitude < .1f ? 3 : 1) * Time.fixedDeltaTime;
-//#else
-//        float f = m_AngularVelocity.magnitude - m_AngularVelocityDrag * Time.fixedDeltaTime;
-//#endif
-        //if (f <= 0)
-        //{
-        //    m_Rigidbody.angularVelocity = Vector3.zero;
-        //}
-        //else
-        //{
-        //    m_Rigidbody.angularVelocity = m_AngularVelocity.normalized * f;
-        //}
     }
 }
-#endregion
+#endregion //PhysicalDrag
 
+#region AngularVelocityCorrection------------------------------------------------------------------
 class AngularVelocityCorrection : IPhysicalSupport
 {
     Rigidbody m_Rigidbody;
@@ -281,3 +268,4 @@ class AngularVelocityCorrection : IPhysicalSupport
         }
     }
 }
+#endregion //AngularVelocityCorrection

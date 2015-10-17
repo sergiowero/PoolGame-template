@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SidingAnchor : MonoBehaviour {
 
-    public System.Action OnMovingDown;
+    public Delegate0Args OnMovingDown;
 
     [Range(0, 1)]
     [SerializeField]

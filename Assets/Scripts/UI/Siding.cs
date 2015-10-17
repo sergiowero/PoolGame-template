@@ -45,12 +45,21 @@ public class Siding : MonoBehaviour
             m_SideballO.gameObject.SetActive(false);
             m_BlackMask.gameObject.SetActive(false);
             m_SidingAnchor.OnMovingDown = AnchorMoveDown;
+            //PoolRulesBase.onFireBall += ResetAnchorOffset;
+            PoolRulesBase.onNewTurn += ResetAnchorOffset;
             m_VerticalDegreeSlider.value = 0;
         }
         else
         {
             Debug.LogError("there two siding object in the scene!");
         }
+    }
+
+    void OnDestroy()
+    {
+        m_SidingAnchor.OnMovingDown = null;
+        //PoolRulesBase.onFireBall -= ResetAnchorOffset;
+        PoolRulesBase.onNewTurn += ResetAnchorOffset;
     }
 
     public void OnToggleClick()
@@ -151,11 +160,11 @@ public class Siding : MonoBehaviour
         m_VerticalDegreeSlider.value = 0;
     }
 
-    public static void ResetAnchorOffset()
+    private void ResetAnchorOffset(int i)
     {
         m_Instance._SidingAnchorOffset(Vector2.zero);
         m_Instance._ResetVerticalDegreeSlider();
-        Pools.Cue.ResetSideOffset();
+        Pools.Cue.Siding(Vector3.zero);
     }
 
     public void ChangeVerticalDegree(float value)

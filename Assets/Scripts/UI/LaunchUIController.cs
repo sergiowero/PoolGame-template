@@ -43,8 +43,9 @@ public class LaunchUIController : MonoBehaviour
         for (int count = levelIndex.Count; i < count; i++)
         {
             //mission progress...
-            if(LevelDataIndex.Comp(m_MissionProgress, levelIndex[i].FileName) == -1)
-                break;
+            //Open all missions
+            //if(LevelDataIndex.Comp(m_MissionProgress, levelIndex[i].FileName) == -1)
+                //break;
 
             LevelData data = levelIndex[i];
             GridImagesTest oo = SupportTools.AddChild<GridImagesTest>(m_LayoutRoot.gameObject, "TestRes/Image");

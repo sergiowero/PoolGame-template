@@ -12,15 +12,15 @@ public class WhiteBall : PoolBall
     private Constraint m_constraint;
     private PoolBall m_targetBall;
     private Vector3 m_targetPos;
-    [SerializeField]
-    private Vector3 m_HitPoint;
 
-    //private bool m_fired=false;
     public LayerMask layermask;
     public bool Foul = true;
 
     [SerializeField]
     private Vector3 m_TestVelocity;
+
+    [SerializeField]
+    private bool m_UseTracker;
 
 
     public Vector3 GetPosition()
@@ -38,68 +38,17 @@ public class WhiteBall : PoolBall
     public override void Start()
     {
         base.Start();
-        InitBallDragger();
         m_constraint = gameObject.GetComponent<Constraint>();
         m_constraint.enabled = false;
         m_constraint.adjustment = GetRadius();
         Reset();
-    }
 
-
-    #region ball darg event--------------------------------------
-    private void InitBallDragger()
-    {
-        m_BallDragger = gameObject.GetComponent<BallDragger>();
-        if (!m_BallDragger)
-            m_BallDragger = gameObject.AddComponent<BallDragger>();
-        m_BallDragger.layermask.value = gameObject.layer;
-        m_BallDragger.dragBegin = OnDragBegin;
-        m_BallDragger.drag = OnDrag;
-        m_BallDragger.dragEnd = OnDragEnd;
-    }
-
-    void OnDragBegin(BallDraggerData data)
-    {
-        if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
+        if(m_UseTracker)
         {
-            m_constraint.enabled = true;
-            m_rigidbody.useGravity = false;
-            screenPoint = Pools.SceneCamera.WorldToScreenPoint(gameObject.transform.position);
-            offset = gameObject.transform.position - Pools.SceneCamera.ScreenToWorldPoint(new Vector3(data.Position.x, data.Position.y, screenPoint.z));
-            GameManager.Rules.State = GlobalState.DRAG_WHITEBALL;
-            Pools.Cue.Hide();
+            Debugger.Tracker t = Debugger.DBERP.GetComponentWithType(Debugger.DebuggerType.Tracker, gameObject) as Debugger.Tracker;
+            t.SetTransform(gameObject.transform);
         }
     }
-
-    void OnDragEnd(BallDraggerData data)
-    {
-        if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
-        {
-            m_rigidbody.useGravity = true;
-            m_constraint.enabled = false;
-            Pools.Cue.Show();
-            collider.isTrigger = false;
-            GameManager.Rules.ReversePrevState();
-        }
-    }
-
-    void OnDrag(BallDraggerData data)
-    {
-        if (GameManager.Rules.HandleWhiteBall && GameManager.Rules.State != GlobalState.ROLLING)
-        {
-            Vector3 curScreenPoint = new Vector3(data.Position.x, data.Position.y, screenPoint.z);
-            Vector3 curPosition = Pools.SceneCamera.ScreenToWorldPoint(curScreenPoint) + offset;
-            curPosition.y = transform.position.y;
-
-            Collider[] contantacts = Physics.OverlapSphere(curPosition, GetRadius(), layermask.value);
-            if (contantacts.Length == 0)
-            {
-                transform.position = curPosition;
-                collider.isTrigger = true;
-            }
-        }
-    }
-    #endregion
 
     public void setTarget(PoolBall ball, Vector3 targetPos)
     {
@@ -110,15 +59,18 @@ public class WhiteBall : PoolBall
             m_targetPos.y = transform.position.y;
         }
     }
+
     public override void OnCollisionEnter(Collision col)
     {
-        //string name = col.gameObject.name;
-        //if (!name.Contains("surface") && gameObject.activeInHierarchy)
-        //    StartCoroutine("TouchTable", 0);
+        if (GameManager.Rules.State == GlobalState.DRAG_WHITEBALL)
+            return;
+
         #region Might be useful
         if (col.gameObject.name.Contains("Rail"))
         {
             AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            GameManager.Rules.CueBallHitRail();
+            GameManager.Rules.BallHitRail();
         }
         #endregion
         if (col.transform.CompareTag("Ball"))
@@ -143,64 +95,28 @@ public class WhiteBall : PoolBall
     public void OnDrawGizmos()
     {
         if(Application.isPlaying)
+        {
             Gizmos.DrawRay(m_rigidbody.position, m_TestVelocity);
+        }
     }
-
-
-
-    //void FixedUpdate()
-    //{
-    //    if (m_state == State.ROLL)
-    //    {
-    //        Vector3 direction = m_rigidbody.position - m_LastPosition;
-    //        RaycastHit hit;
-    //        if (Physics.SphereCast(m_LastPosition, m_Radius, direction, out hit, direction.magnitude, 1 << LayerMask.NameToLayer("Ball")))
-    //        {
-    //            m_rigidbody.position = hit.point + hit.normal.normalized * m_Radius;
-    //        }
-    //    }
-    //    m_LastPosition = m_rigidbody.position;
-    //}
 
     public override void Reset()
     {
         base.Reset();
-        transform.position = Pools.CueBallOrigin.position;
-        //SupportTools.SetPosition(gameObject, Pools.CueBallOrigin.position, SupportTools.AxisIgnore.IgnoreY);
+        //transform.position = Pools.CueBallOrigin.position;
+        Vector3 p = Pools.CueBallOrigin.position;
+        Pools.PutBallToThePoint(this, ref p);
     }
 
-    public void fireBall(float powerScalar)
+    public void fireBall(float powerScalar, Vector3 fireDir, Vector3 hitPoint)
     {
-        //if (powerScalar > .3f)
-        //{
-        //    m_rigidbody.constraints = RigidbodyConstraints.FreezePositionY;
-        //    m_rigidbody.useGravity = false;
-        //    StartCoroutine("TouchTable", powerScalar * .1f);
-        //}
         AudioHelper.m_Instance.onFireBall();
         GameManager.Rules.OnBallFired();
         m_slowTime = 0;
-        m_rigidbody.AddForceAtPosition(Pools.Cue.GetFireDirection() * powerScalar * ConstantData.GetPoolDatas().MaxImpulse, m_HitPoint, ForceMode.Impulse);
+
+        Vector3 fireForce = fireDir * powerScalar * ConstantData.GetPoolDatas().MaxImpulse;
+        m_rigidbody.AddForceAtPosition(fireForce, hitPoint, ForceMode.Impulse);
         m_state = State.ROLL;
         OpenDrag();
-        ballTorque = Vector3.zero;
-        Siding.ResetAnchorOffset();
-    }
-
-    IEnumerator TouchTable(float time)
-    {
-        yield return new WaitForSeconds(time);
-        m_rigidbody.constraints = RigidbodyConstraints.None;
-        m_rigidbody.useGravity = true;
-    }
-
-    public void SetTorque(Vector3 torque)
-    {
-        ballTorque = torque;
-    }
-
-    public void SetHitPoint(Vector3 point)
-    {
-        m_HitPoint = point;
     }
 }

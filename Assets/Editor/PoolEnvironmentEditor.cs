@@ -33,6 +33,57 @@ public class PoolEnvironmentEditor : EditorWindow
             window.Close();
     }
 
+    [MenuItem("Window/游戏环境编辑/debug mode")]
+    static void PoolDebugMode()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.Log("use this in the editor non-playing mode");
+            return;
+        }
+
+        PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
+        foreach(PoolBall p in balls)
+        {
+            if(p.GetBallID() != 0 && p.GetBallID() != 8)
+            {
+                p.Hide();
+            }
+        }
+        PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
+        foreach(PocketTrigger p in triggers)
+        {
+            p.BlockOffEditor();
+        }
+
+        GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.Standard;
+    }
+
+    [MenuItem("Window/游戏环境编辑/play mode")]
+    static void PoolPlayMode()
+    {
+        if (Application.isPlaying)
+        {
+            Debug.Log("use this in the editor non-playing mode");
+            return;
+        }
+
+        PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
+        foreach (PoolBall p in balls)
+        {
+            if (p.GetBallID() != 0 && p.GetBallID() != 8)
+            {
+                p.Display();
+            }
+        }
+        PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
+        foreach (PocketTrigger p in triggers)
+        {
+            p.CollapseEditor();
+        }
+        GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.None;
+    }
+
     void Awake()
     {
         if (!Application.isPlaying)

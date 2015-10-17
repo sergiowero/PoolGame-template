@@ -7,19 +7,23 @@ public class GameManager : MonoBehaviour
 
     public int m_TargetFream = 300;
 
+#if UNITY_EDITOR
     [SerializeField]
-    private GameType m_DebugGameType;
+    public GameType m_DebugGameType;
+#endif//#if UNITY_EDITOR 13
     [SerializeField]
     private LevelData m_DebugLevelData;
 
     void Awake()
     {
         Application.targetFrameRate = m_TargetFream;
+#if UNITY_EDITOR
         if (m_DebugGameType != GameType.None)
         {
             ConstantData.GType = m_DebugGameType;
             LevelDataIndex.CurrentLevel = m_DebugLevelData;
         }
+#endif //#if UNITY_EDITOR 20
     }
 
     void Start()

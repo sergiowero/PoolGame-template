@@ -33,4 +33,22 @@ public class BallRefLightRenderer : MonoBehaviour {
         m_Position = transform.position + m_Offset;
         m_RefLight.position = m_Position;
     }
+
+    public void Close()
+    {
+        if(m_RefLight)
+        {
+            m_RefLight.gameObject.SetActive(false);
+            enabled = false;
+        }
+    }
+
+    public void Open()
+    {
+        if(m_RefLight)
+        {
+            m_RefLight.gameObject.SetActive(true);
+            enabled = true;
+        }
+    }
 }

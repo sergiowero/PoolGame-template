@@ -9,7 +9,7 @@ public class ConstantData
 
     public const float AdjustingCueScalar = 0.3f;
 
-    public const float TurnWaitTime = .5f;
+    public const float TurnWaitTime = .1f;
 
     public const float TimePerRoundLow = 30;
 
@@ -33,6 +33,7 @@ public class ConstantData
 
     public const int MissionNoBallHittedPunishment = 1;
 
+    #region Ball points......
     public const int MissionPottedPoint = 100;
 
     public const int MissionSingularityPottedPoint = 300;
@@ -46,6 +47,11 @@ public class ConstantData
     public const int MissionRedBallPoint = 100;
 
     public const int MissionBlueBallPoint = 200;
+
+    public const int MissionDemonBallPoint = 0;
+
+    public const int MissionJiangYouBallPoint = 0;
+    #endregion //Ball points......
 
     public const int MissionBombBallDuration = 90;
 

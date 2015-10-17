@@ -50,6 +50,11 @@ public class MathTools
         return BaseUIController.GetUICamera().ScreenToWorldPoint(sp);
     }
 
+    //public static Vector3 GetWorldDeltaWithPixelDelta(Vector3 pixelDelta)
+    //{
+    //    BaseUIController.GetUICamera().
+    //}
+
     /// <summary>
     /// Get Multiplicative of n nearest x
     /// </summary>
@@ -75,4 +80,20 @@ public class MathTools
         int xx = Mathf.RoundToInt(x);
         return Round2Number(xx, n);
     }
+
+    /// <summary>
+    /// Clamp the vector 3
+    /// </summary>
+    /// <param name="v"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static Vector3 Clamp3(Vector3 v, Vector3 min, Vector3 max)
+    {
+        v.x = Mathf.Clamp(v.x, min.x, max.x);
+        v.y = Mathf.Clamp(v.y, min.y, max.y);
+        v.z = Mathf.Clamp(v.z, min.z, max.z);
+        return v;
+    }
+
 }

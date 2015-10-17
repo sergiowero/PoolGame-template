@@ -112,6 +112,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     {
         PoolRulesBase.onGameOver += GameOver;
         BombBall.GameoverWithBoom += GameOver;
+        DemonBall.GameOverWithPotted += GameOver;
         PoolRulesBase.onFireBall += FireBall;
         m_LevelName.text = "Level " + LevelDataIndex.CurrentLevel.FileName;
         m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
@@ -128,6 +129,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     {
         PoolRulesBase.onGameOver -= GameOver;
         BombBall.GameoverWithBoom -= GameOver;
+        DemonBall.GameOverWithPotted -= GameOver;
         PoolRulesBase.onFireBall -= FireBall;
     }
 

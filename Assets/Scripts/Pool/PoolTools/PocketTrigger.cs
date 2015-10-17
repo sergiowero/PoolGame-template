@@ -17,6 +17,9 @@ public class PocketTrigger : MonoBehaviour
     public static PocketIndexes PunitivePocket;
     public static PocketIndexes RewardPocket;
 
+    [SerializeField]
+    private bool m_debugmode = false;
+
     void Awake()
     {
         m_Punishment = transform.FindChild("PunishmentSprite").GetComponent<SpriteRenderer>();
@@ -25,7 +28,7 @@ public class PocketTrigger : MonoBehaviour
         m_RealPosition = transform.FindChild("RealPosition");
         m_Punishment.gameObject.SetActive(false);
         m_Reward.gameObject.SetActive(false);
-        m_Block.gameObject.SetActive(false);
+        if (!m_debugmode)  m_Block.gameObject.SetActive(false);
         m_RefTrans.GetComponent<PoolRecycler>().SetTrigger(this);
     }
 
@@ -56,6 +59,21 @@ public class PocketTrigger : MonoBehaviour
         m_Block.gameObject.SetActive(true);
     }
 
+#if UNITY_EDITOR
+    [ContextMenu("BlockOff")]
+    public void BlockOffEditor()
+    {
+        transform.FindChild("BlockOff").gameObject.SetActive(true);
+        m_debugmode = true;
+    }
+
+    [ContextMenu("Collapse")]
+    public void CollapseEditor()
+    {
+        transform.FindChild("BlockOff").gameObject.SetActive(false);
+        m_debugmode = false;
+    }
+#endif //#if UNITY_EDITOR
     public void OnCollisionEnter(Collision collision)
     {
         if(collision.transform.CompareTag("Ball"))

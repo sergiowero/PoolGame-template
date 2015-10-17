@@ -32,28 +32,12 @@ public class PoolRulesMission : PoolRulesBase
 
     protected override void Start()
     {
-        List<LevelData.DisplayDatas> ld = LevelDataIndex.CurrentLevel.BallsDrawList;
-        List<LevelData.PositionDatas> lp = LevelDataIndex.CurrentLevel.BallsPosition;
-        List<LevelData.OtherObjectDatas> lo = LevelDataIndex.CurrentLevel.OtherObjectsPosition;
-        for (int i = 0, count = ld.Count; i < count; i++ )
-        {
-            if (ld[i].ID == 0) continue;
-            Pools.Balls[ld[i].ID].Reset();
-            if(ld[i].Draw)
-                m_TargetBalls.Add(ld[i].ID);
-            else
-            {
-                Pools.Balls[ld[i].ID].Hide();
-            }
-        }
-        for (int i = 0, count = lp.Count; i < count; i++ )
-        {
-            Pools.Balls[lp[i].ID].transform.position = lp[i].Positon;
-        }
+        Pools.DisableStandardBalls();
+        List<LevelData.BallData> lp = LevelDataIndex.CurrentLevel.ballDatas;
         Transform ooRoot = GameObject.Find("8Ball/OtherObjects").transform;
-        for (int i = 0, count = lo.Count; i < count; i++ )
+        for (int i = 0, count = lp.Count; i < count; i++)
         {
-            LevelData.OtherObjectDatas d = lo[i];
+            LevelData.BallData d = lp[i];
             GameObject o = Resources.Load(d.Type.ToString()) as GameObject;
             GameObject oo = Instantiate(o) as GameObject;
             oo.transform.SetParent(ooRoot);
@@ -62,11 +46,14 @@ public class PoolRulesMission : PoolRulesBase
             PoolBall pb = oo.GetComponent<PoolBall>();
             pb.SetBallID(d.ID);
             pb.ballType = d.Type;
-            m_TargetBalls.Add(d.ID);
+            if(pb.ballType != BallType.JIANGYOU && pb.ballType != BallType.DEMON)
+                m_TargetBalls.Add(d.ID);
             Pools.CustomBalls.Add(pb.GetBallID(), pb);
         }
+        Pools.CueBall.transform.position = LevelDataIndex.CurrentLevel.cueBallData.Position;
         PocketTrigger.MarkPocketType(LevelDataIndex.CurrentLevel.StartPunishmentPocket, LevelDataIndex.CurrentLevel.StartRewardPocket);
         PocketTrigger.Block(LevelDataIndex.CurrentLevel.BlockPockets);
+        m_Player.ShotsRemain = LevelDataIndex.CurrentLevel.shotCount;
         TurnBegin();
     }
 
@@ -187,17 +174,24 @@ public class PoolRulesMission : PoolRulesBase
             score = ConstantData.MissionBlueBallPoint;
         else if (ball.ballType == BallType.YELLOWCUSTOM)
             score = ConstantData.MissionYellowBallPoint;
-        m_Player.Link++;
-        m_Player.AddScore(score, PocketTrigger.GetPocketWithIndexes(pocket));
+        else if (ball.ballType == BallType.JIANGYOU)
+            score = ConstantData.MissionJiangYouBallPoint;
+        else if (ball.ballType == BallType.DEMON)
+            score = ConstantData.MissionDemonBallPoint;
+        if(score > 0)
+        {
+            m_Player.Link++;
+            m_Player.AddScore(score, PocketTrigger.GetPocketWithIndexes(pocket));
+        }
 
         if (m_Player.Link >= 5)
         {
             BaseUIController.GenerateTips("Great!");
         }
 
-
         m_Player.PottedCount++;
-        m_TargetBalls.Remove(ball.GetBallID());
+        if (m_TargetBalls.Contains(ball.GetBallID())) 
+            m_TargetBalls.Remove(ball.GetBallID());
     }
 
     protected void OnSingularityBreakBall(PoolBall ball)
@@ -236,5 +230,9 @@ public class PoolRulesMission : PoolRulesBase
     public override bool CheckGameOver()
     {
         return m_TargetBalls.Count == 0 || m_Player.ShotsRemain == 0;
+    }
+
+    public override void CueBallHitRail()
+    {
     }
 }

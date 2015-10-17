@@ -93,6 +93,22 @@ public class Pools : MonoBehaviour
             });
     }
 
+    private void _DisableStandardBalls()
+    {
+        for(int i = 1; i <= 15; i++)
+        {
+            m_Balls[i].gameObject.SetActive(false);
+        }
+    }
+
+    private void _EnableStandardBalls()
+    {
+        for(int i = 1; i <= 15; i ++)
+        {
+            m_Balls[i].gameObject.SetActive(true);
+        }
+    }
+
     private PoolBall[] _GetBallsArray()
     {
         PoolBall[] balls = new PoolBall[m_Balls.Count];
@@ -112,6 +128,40 @@ public class Pools : MonoBehaviour
             cBalls[i++] = v.Value;
         }
         return cBalls;
+    }
+
+    private void _AllBallsKinematic(bool cueBallKinematic)
+    {
+        for(int i = cueBallKinematic ? 0 : 1; i <= 15; i ++)
+        {
+            m_Balls[i].rigidbody.isKinematic = true;
+        }
+        foreach(var v in m_CustomBalls)
+        {
+            v.Value.rigidbody.isKinematic = true;
+        }
+    }
+
+    private void _AllBallsNonKinematic()
+    {
+        for (int i = 0; i <= 15; i++)
+        {
+            m_Balls[i].rigidbody.isKinematic = false;
+        }
+        foreach (var v in m_CustomBalls)
+        {
+            v.Value.rigidbody.isKinematic = false;
+        }
+    }
+
+    public static void AllBallsKinematic(bool cueBallKinematic = false)
+    {
+        m_Instance._AllBallsKinematic(cueBallKinematic);
+    }
+
+    public static void AllBallsNonKinematic()
+    {
+        m_Instance._AllBallsNonKinematic();
     }
 
     public static void ResetAllBalls(bool pottedOnly, bool black8Origin)
@@ -185,7 +235,6 @@ public class Pools : MonoBehaviour
             if(cols[i].name.Contains("WhiteBall"))
             {
                 PutBallToThePoint(cols[i].GetComponent<WhiteBall>(), ref p2);
-                Pools.Cue.ResetPosition();
             }
             else
             {
@@ -194,22 +243,24 @@ public class Pools : MonoBehaviour
         }
     }
 
-    private static void PutBallToThePoint(PoolBall ball, ref Vector3 p)
+    public static void PutBallToThePoint(PoolBall ball, ref Vector3 p)
     {
         float r = ball.GetRadius();
-        while (Physics.OverlapSphere(p, r, 1 << LayerMask.NameToLayer("Ball")).Length != 0)
+        while (Physics.OverlapSphere(p, r, 1 << LayerMask.NameToLayer("Ball") | 1 << LayerMask.NameToLayer("WhiteBall")).Length != 0)
         {
             p.x -= r;
         }
-        SupportTools.SetPosition(ball.gameObject, p, SupportTools.AxisIgnore.IgnoreY);
+        SupportTools.SetPosition(ball.gameObject, p, SupportTools.AxisIgnore.IgnoreY, true);
         p.x -= r;
     }
 
-    void OnGUI()
+    public static void DisableStandardBalls()
     {
-        if(GUILayout.Button("Reset ball"))
-        {
-            ResetAllBalls(true, true);
-        }
+        m_Instance._DisableStandardBalls();
+    }
+
+    public static void EnableStandardBalls()
+    {
+        m_Instance._EnableStandardBalls();
     }
 }

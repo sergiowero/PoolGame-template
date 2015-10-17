@@ -9,6 +9,8 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected bool m_WhiteHitBall = false;
 
+    protected bool m_CueBallHitRail = false;
+
     protected bool m_UseGuidelines;
 
     protected int m_HittingRailBallsCount;
@@ -65,18 +67,18 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected override void CustomUpdate()
     {
-        //if (m_Countdown)
-        //{
-        //    m_Time -= Time.deltaTime;
-        //    CurrentPlayer.Countdown(m_Time / m_TimePerRound);
-        //    if (m_Time <= 0)
-        //    {
-        //        m_Countdown = false;
-        //        m_TimeOut = true;
-        //        //check the result immediately
-        //        StartCoroutine(CheckResultAndChangeTurn(0));
-        //    }
-        //}
+        if (m_Countdown)
+        {
+            m_Time -= Time.deltaTime;
+            CurrentPlayer.Countdown(m_Time / m_TimePerRound);
+            if (m_Time <= 0)
+            {
+                m_Countdown = false;
+                m_TimeOut = true;
+                //check the result immediately
+                StartCoroutine(CheckResultAndChangeTurn(0));
+            }
+        }
     }
 
     public override void SetPlayers(params IPlayer[] players)
@@ -94,9 +96,15 @@ public class PoolRulesStandard : PoolRulesBase
         base.TurnBegin();
         m_Time = m_TimePerRound;
         m_Countdown = true;
+        m_CueBallHitRail = false;
         m_WhiteHitBall = false;
         m_WhiteHitBallType = BallType.NONE;
         m_HittingRailBallsCount = 0;
+        if(m_HandleWhiteball)
+        {
+            GameManager.Rules.State = GlobalState.DRAG_WHITEBALL;
+        }
+
         for (int i = 0, length = m_Players.Length; i < length; i++)
         {
             m_Players[i].UpdateBallIcon();
@@ -117,6 +125,7 @@ public class PoolRulesStandard : PoolRulesBase
         else //not yet
         {
             m_HandleWhiteball = HandleFouls();
+
             if (m_HandleWhiteball || !AnyBallWithTypeEnterPocket(CurrentPlayer.TargetBallType))
             {
                 //change player(if there is more than 2 players in the game)
@@ -138,7 +147,8 @@ public class PoolRulesStandard : PoolRulesBase
 
     public override void BallHitRail()
     {
-        m_HittingRailBallsCount++;
+        if(m_WhiteHitBall)
+            m_HittingRailBallsCount++;
     }
 
     public override bool CheckGameOver()
@@ -175,14 +185,16 @@ public class PoolRulesStandard : PoolRulesBase
         if (FirstRound)
         {
             //if there is no at least 4 balls hit the wall
-            if (m_HittingRailBallsCount < 4 && m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("开球局必须有至少4个球碰到岸边");
+            if (m_HittingRailBallsCount < 4 && !m_CueBallHitRail &&m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("开球局必须有至少4个球或者白球碰到岸边");
         }
         else
         {
-            //if no ball hit the rail and no ball enter the pocket after shotting
-            if (m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0 && m_WhiteHitBallType == BallType.NONE) return BaseUIController.text.Show("白球没到打到球");
+            //if (m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0 && m_WhiteHitBallType == BallType.NONE) return BaseUIController.text.Show("白球没到打到球");
+            //if cue ball desn't hit any balls after shotting
+            if (!m_WhiteHitBall) return BaseUIController.text.Show("白球没打到球");
             //if white ball doesn't hit the target type ball
-            if (m_WhiteHitBallType != CurrentPlayer.TargetBallType && CurrentPlayer.TargetBallType != BallType.NONE) return BaseUIController.text.Show("你必须打中正确的花色球");
+            if ((m_WhiteHitBallType != CurrentPlayer.TargetBallType && CurrentPlayer.TargetBallType != BallType.NONE)
+                || (CurrentPlayer.TargetBallType == BallType.NONE && m_WhiteHitBallType == BallType.BLACK)) return BaseUIController.text.Show("你必须打中正确的花色球");
             //it must be at least once that ball hitted the rail after first hitted
             if (m_WhiteHitBallType != BallType.NONE && m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("目标球必须击中岸边至少一次");
         }
@@ -217,5 +229,11 @@ public class PoolRulesStandard : PoolRulesBase
             CurrentPlayer.TargetBallType = ball.ballType;
             OpponentPlayer.TargetBallType = ball.ballType == BallType.SOLID ? BallType.STRIPE : BallType.SOLID;
         }
+    }
+
+    public override void CueBallHitRail()
+    {
+        if(m_WhiteHitBall)
+            m_CueBallHitRail = true;
     }
 }

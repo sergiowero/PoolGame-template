@@ -19,49 +19,49 @@ public class BallStorageRack : MonoBehaviour {
     private Vector3 m_Force;
 
     private float m_Time;
+    [SerializeField]
+    private float m_TimeInterval = 1;
 
     private Queue<Rigidbody> m_BallQueue = new Queue<Rigidbody>();
 
-    private bool m_Down = false;
+    //private bool m_Down = false;
 
     void Awake()
     {
         m_Force = (m_ForcePointTrans.position - m_InitTrans.position).normalized * m_BallInitForceStrength;
+        m_Time = m_TimeInterval;
     }
 
     void Update()
     {
-        if(!m_Down)
+        if (m_BallQueue.Count > 0)
         {
             m_Time -= Time.deltaTime;
             if (m_Time < 0)
             {
-                m_Down = true;
+                Rigidbody rb = m_BallQueue.Dequeue();
+                WhiteBall cueball;
+                if ((cueball = rb.GetComponent<WhiteBall>()) && cueball.BallState != PoolBall.State.POTTED) //cueball has already reset
+                {
+                    return;
+                }
+                rb.GetComponent<PoolBall>().LightRenderer.Open();
+                rb.collider.enabled = true;
+                rb.isKinematic = false;
+                rb.useGravity = true;
+                rb.velocity = m_Force;
+                rb.renderer.enabled = true;
+                rb.gameObject.AddComponent<RackBallCollision>();
+                PhysicalSupportTools.MaxSpeedLimitTo(rb.gameObject, m_BallMaxSpeed);
+                m_Time = m_TimeInterval;
             }
-        }
-
-        if (m_BallQueue.Count != 0 && m_Down)
-        {
-            Rigidbody rb = m_BallQueue.Dequeue();
-            WhiteBall cueball;
-            if ((cueball = rb.GetComponent<WhiteBall>()) && cueball.BallState == PoolBall.State.IDLE)
-            {
-                return;
-            }
-            rb.collider.enabled = true;
-            rb.isKinematic = false;
-            rb.useGravity = true;
-            rb.velocity = m_Force;
-            rb.gameObject.AddComponent<RackBallCollision>();
-            PhysicalSupportTools.MaxSpeedLimitTo(rb.gameObject, m_BallMaxSpeed);
-            m_Time = 1;
-            m_Down = false;
         }
     }
 
     public void Add(PoolBall ball)
     {
         ball.AudioEnable = true;
+        ball.LightRenderer.Close();
         Rigidbody rb = ball.rigidbody;
         rb.position = m_InitTrans.position;
         rb.velocity = Vector3.zero;
@@ -69,6 +69,7 @@ public class BallStorageRack : MonoBehaviour {
         rb.useGravity = false;
         rb.isKinematic = true;
         rb.collider.enabled = false;
+        rb.renderer.enabled = false;
         m_BallQueue.Enqueue(rb);
     }
 
@@ -81,7 +82,7 @@ public class BallStorageRack : MonoBehaviour {
     {
         if(Application.isPlaying)
         {
-            Gizmos.color = m_Down ? Color.green : Color.red;
+            Gizmos.color = m_BallQueue.Count > 0 ? Color.green : Color.red;
             Gizmos.DrawCube(transform.position, Vector3.one * .2f);
         }
     }

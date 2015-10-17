@@ -49,7 +49,7 @@ public class SupportTools
         return t;
     }
 
-    public static void SetPosition(GameObject o, Vector3 position, SupportTools.AxisIgnore ignore)
+    public static void SetPosition(GameObject o, Vector3 position, SupportTools.AxisIgnore ignore, bool useRigibody = false)
     {
         Vector3 v = o.transform.position;
         if((ignore & AxisIgnore.IgnoreX) == 0)
@@ -65,7 +65,7 @@ public class SupportTools
             v.z = position.z;
         }
         Rigidbody r = o.GetComponent<Rigidbody>();
-        if (r) r.position = v;
+        if (r && useRigibody) r.MovePosition(v);
         else o.transform.position = v;
     }
 }
