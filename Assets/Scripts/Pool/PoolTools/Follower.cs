@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[ExecuteInEditMode]
 public class Follower : MonoBehaviour {
 
     protected Quaternion m_Rotation;
@@ -37,13 +36,13 @@ public class Follower : MonoBehaviour {
 
     public void Close()
     {
-        m_Trans.gameObject.SetActive(false);
+        transform.gameObject.SetActive(false);
         enabled = false;
     }
 
     public void Open()
     {
-        m_Trans.gameObject.SetActive(true);
+        transform.gameObject.SetActive(true);
         enabled = true;
     }
 

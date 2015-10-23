@@ -302,7 +302,7 @@ public class PoolBall : MonoBehaviour
         transform.FindChild("Shadow").gameObject.SetActive(false);
         GetComponent<BallShadowRenderer>().enabled = false;
         transform.FindChild("RefLight").gameObject.SetActive(false);
-        GetComponent<Follower>().enabled = false;
+        transform.FindChild("Focus").gameObject.SetActive(false);
         m_state = State.HIDE;
     }
 
@@ -317,7 +317,7 @@ public class PoolBall : MonoBehaviour
         GetComponent<BallShadowRenderer>().enabled = true;
         m_state = State.IDLE;
         transform.FindChild("RefLight").gameObject.SetActive(true);
-        GetComponent<Follower>().enabled = true;
+        transform.FindChild("Focus").gameObject.SetActive(true);
     }
 
     public bool IsBallDisable()

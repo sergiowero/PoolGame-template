@@ -24,6 +24,12 @@ public class GameManager : MonoBehaviour
             LevelDataIndex.CurrentLevel = m_DebugLevelData;
         }
 #endif //#if UNITY_EDITOR 20
+        PoolRulesBase.onGameOver += OnGameOver;
+    }
+
+    void OnDestroy()
+    {
+        PoolRulesBase.onGameOver -= OnGameOver;
     }
 
     void Start()
@@ -48,5 +54,10 @@ public class GameManager : MonoBehaviour
                 break;
         }
         Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
+    }
+
+    private void OnGameOver(IPlayer player)
+    {
+        Rules.State = GlobalState.GAMEOVER;
     }
 }

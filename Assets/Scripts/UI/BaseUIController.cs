@@ -36,6 +36,14 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private GameObject m_BlackMask;
 
+    public Image hitpoint;
+    public Image targetPall;
+    public Image targetPocket;
+    public Image dropPosition;
+
+    public static BaseUIController Instance { get { return m_Instance; } }
+
+
     public static TextArea text { get { return m_Instance.m_Text; } }
     public static OperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
     public static FireSlider fireSlider { get { return m_Instance.m_FireSlider; } }

@@ -8,7 +8,8 @@ public enum GlobalState
     NONE = 1 << 0,
     ROLLING = 1 << 1,
     DRAG_WHITEBALL = 1 << 2,
-    IDLE = 1 << 3
+    IDLE = 1 << 3,
+    GAMEOVER = 1 << 4
 }
 
 public enum CallPockets
