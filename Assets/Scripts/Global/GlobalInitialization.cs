@@ -17,13 +17,15 @@ public sealed class GlobalInitialization : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));
 #endif
+        ConstantData.missionRecords = LoadRecords<MissionRecords>(ConstantData.MissionLevelDataRecordPath);
+        ConstantData.quickFireRecords = LoadRecords<QuickFirePlayer.PlayerData>(ConstantData.QuickFireGameRecordPath);
     }
 
     #region IEnumerator
     IEnumerator LoadPoolAsset(Delegate1Args<PoolDataAsset> onloaded)
     {
-        WWW www = new WWW(StreamTools.GetStreamingAssetsPath(true) + ConstantData.PoolDataAssetsFile);
-        Debug.Log("load file : " + StreamTools.GetStreamingAssetsPath(true) + ConstantData.PoolDataAssetsFile);
+        WWW www = new WWW(ConstantData.PoolDataAssetsFile);
+        Debug.Log("load file : " + ConstantData.PoolDataAssetsFile);
         yield return www;
         if (string.IsNullOrEmpty(www.error))
         {
@@ -45,4 +47,15 @@ public sealed class GlobalInitialization : MonoBehaviour
     }
 #endif
     #endregion
+
+    private T LoadRecords<T>(string path)  where T : new()
+    {
+        T t = StreamTools.DeserializeObject<T>(path);
+        if(t == null)
+        {
+            Debug.Log("File : " + path + " does not exist, now create.");
+            t = new T();
+        }
+        return t;
+    }
 }

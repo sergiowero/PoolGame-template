@@ -1,15 +1,28 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
 
 public class Testttt : MonoBehaviour
 {
-    void Update()
+    [SerializeField]
+    private Rigidbody m_Ri;
+
+    [SerializeField]
+    private Collider m_C;
+
+    void OnGUI()
     {
-        if(Physics.SphereCast(new Ray(transform.position, transform.forward), 1))
+        if(GUILayout.Button("Test ray case"))
         {
-            Debug.Log(1);
+            Ray ray = new Ray(transform.position, transform.forward);
+            m_C.enabled = false;
+            if(Physics.Raycast(ray))
+            {
+                Debug.Log("hit");
+            }
+            m_C.enabled = true;
         }
     }
 }

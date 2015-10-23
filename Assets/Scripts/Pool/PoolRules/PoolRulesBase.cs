@@ -61,7 +61,8 @@ public enum GameType
     None = 0,
     Standard = 1,
     QuickFire = 2,
-    Mission = 3
+    Mission = 3,
+    AI = 4
 }
 
 public abstract class PoolRulesBase : MonoBehaviour
@@ -79,8 +80,9 @@ public abstract class PoolRulesBase : MonoBehaviour
         get { return m_State;}
         set
         {
-            m_PrevState = m_State; 
+            m_PrevState = m_State;
             m_State = value;
+            //if (ConstantData.GType == GameType.Standard)
             BaseUIController.cueOperateArea.ChangeOperationType(value);
         }
     }

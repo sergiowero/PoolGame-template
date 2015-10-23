@@ -25,11 +25,6 @@ public class PoolRulesMission : PoolRulesBase
         SingularityBall.SingularityBreakBall -= OnSingularityBreakBall;
     }
 
-    void OnGUI()
-    {
-        GUILayout.Label(m_Player.Data.ToString());
-    }
-
     protected override void Start()
     {
         Pools.DisableStandardBalls();

@@ -18,14 +18,13 @@ public class OperateArea : MonoBehaviour {
     /// <summary>
     /// Active default
     /// </summary>
-    class PointerOperation : IAreaOperation
+    public class PointerOperation : IAreaOperation
     {
         private Vector2 poolBallsp;
         private Vector2 lastTouchsp;
 
         public void DragBegin(Vector2 position)
         {
-            Debug.Log("DragBegin");
             poolBallsp = Pools.CueBall.GetScreenPosition();
             lastTouchsp = position;
         }
@@ -37,7 +36,6 @@ public class OperateArea : MonoBehaviour {
             //    lastTouchsp = position;
             //    return;
             //}
-            Debug.Log("Drag");
             Vector3 v1 = lastTouchsp - poolBallsp, v2 = position - poolBallsp;
             float ag = Mathf.Acos(Vector3.Dot(v1.normalized, v2.normalized)) * Mathf.Rad2Deg;
             if (float.IsNaN(ag) || float.IsInfinity(ag) || ag == 0)
@@ -51,34 +49,37 @@ public class OperateArea : MonoBehaviour {
 
         public void DragEnd(Vector2 position)
         {
-            Debug.Log("DebugEnd");
         }
 
         public void Click(Vector2 position)
         {
-            Debug.Log("Click");
             PointerAt(position);
         }
 
         public void PointerAt(Vector3 point)
         {
-            Debug.Log("PointerAt");
-            Vector3 vec = point - Pools.CueBall.GetScreenPosition(),
+            Vector2 vec = point - Pools.CueBall.GetScreenPosition(),
                 dir = BaseUIController.cueAndLines.GetPointerDirection();
             float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
             PointerAtAngle(angle, Vector3.Cross(vec, dir).z < 0);
         }
 
+        public float GetRotationAngleAtWorld(Vector3 point)
+        {
+            Vector2 vec = Pools.SceneCamera.WorldToScreenPoint(point) - Pools.CueBall.GetScreenPosition(),
+                dir = BaseUIController.cueAndLines.GetPointerDirection();
+            float angle = Mathf.Acos(Vector3.Dot(vec.normalized, dir.normalized)) * Mathf.Rad2Deg;
+            return angle * (Vector3.Cross(vec, dir).z < 0 ? -1 : 1);
+        }
+
         public void PointerAtWorld(Vector3 point)
         {
-            Debug.Log("PointerAtWorld");
             Vector3 v = Pools.SceneCamera.WorldToScreenPoint(point);
             PointerAt(v);
         }
 
         public void PointerAtAngle(float angle, bool anticlockwise)
         {
-            Debug.Log("PointerAtAngle");
             //pass too small angle                                              /*this is meaningless*/
             if (float.IsNaN(angle) || float.IsInfinity(angle)/* || angle < 1*/)
                 return;
@@ -98,7 +99,7 @@ public class OperateArea : MonoBehaviour {
     /// <summary>
     /// Active when cueball can be dragged
     /// </summary>
-    class DragOperation : IAreaOperation
+    public class DragOperation : IAreaOperation
     {
         private Vector3 ballDelta = new Vector3();
 
@@ -171,7 +172,8 @@ public class OperateArea : MonoBehaviour {
             constraint.enabled = true;
             cueBall.rigidbody.useGravity = false;
             cueBall.rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
-            Pools.AllBallsKinematic();
+            cueBall.collider.isTrigger = true;
+            //Pools.AllBallsKinematic();
         }
 
         public void End()
@@ -184,7 +186,8 @@ public class OperateArea : MonoBehaviour {
             cueBall.rigidbody.useGravity = true;
             cueBall.rigidbody.constraints = RigidbodyConstraints.None;
             constraint.enabled = false;
-            Pools.AllBallsNonKinematic();
+            cueBall.collider.isTrigger = false;
+            //Pools.AllBallsNonKinematic();
         }
 
         private bool RayCast(Vector2 p)
@@ -218,8 +221,8 @@ public class OperateArea : MonoBehaviour {
     private Delegate1Args<Vector2> m_OnClick;
 
 
-    private PointerOperation m_PointerOperation;
-    private DragOperation m_DragOperation;
+    public PointerOperation pointerOperation;
+    public DragOperation dragOperation;
     private DontDoAnyOperation m_DontDoAnyOperation;
 
     private bool m_Dragging = false;
@@ -233,10 +236,10 @@ public class OperateArea : MonoBehaviour {
 
     void Start()
     {
-        m_PointerOperation = new PointerOperation();
-        m_DragOperation = new DragOperation();
+        pointerOperation = new PointerOperation();
+        dragOperation = new DragOperation();
         m_DontDoAnyOperation = new DontDoAnyOperation();
-        SetOpeartion(m_PointerOperation);
+        SetOpeartion(pointerOperation);
         BaseUIController.hand.followObject = Pools.CueBall.transform;
     }
 
@@ -250,22 +253,22 @@ public class OperateArea : MonoBehaviour {
         BaseUIController.cueAndLines.gameObject.SetActive(true);
         if (GameManager.Rules.FirstRound)
             Pools.Cue.Reset(); 
-        else
-        {
-            for (int i = 0; i < 16; i++)
-            {
-                PoolBall ball = Pools.Balls[i];
-                if (ball.ballType == BallType.WHITE || ball.ballType == BallType.BLACK) 
-                    continue;
+        //else
+        //{
+        //    for (int i = 0; i < 16; i++)
+        //    {
+        //        PoolBall ball = Pools.Balls[i];
+        //        if (ball.ballType == BallType.WHITE || ball.ballType == BallType.BLACK) 
+        //            continue;
 
-                if (ball != null && ball.gameObject.activeInHierarchy && ball.BallState == PoolBall.State.IDLE)
-                {
-                    m_PointerOperation.PointerAtWorld(ball.transform.position);
-                    return;
-                }
-            }
-            m_PointerOperation.PointerAtAngle(0, true);
-        }
+        //        if (ball != null && ball.gameObject.activeInHierarchy && ball.BallState == PoolBall.State.IDLE)
+        //        {
+        //            //pointerOperation.PointerAtWorld(ball.transform.position);
+        //            return;
+        //        }
+        //    }
+        //    //pointerOperation.PointerAtAngle(0, true);
+        //}
     }
 
     public void ChangeOperationType(GlobalState state)
@@ -274,10 +277,10 @@ public class OperateArea : MonoBehaviour {
         switch (state)
         {
             case GlobalState.DRAG_WHITEBALL:
-                SetOpeartion(m_DragOperation);
+                SetOpeartion(dragOperation);
                 break;
             case GlobalState.IDLE:
-                SetOpeartion(m_PointerOperation);
+                SetOpeartion(pointerOperation);
                 break;
             default:
                 SetOpeartion(m_DontDoAnyOperation);

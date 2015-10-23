@@ -24,7 +24,7 @@ public class BasePlayer : MonoBehaviour, IPlayer
     public int playerID { get; set; }
     protected CountdownOutline m_Outline;
     protected Image m_Avatar;
-    protected Text m_PlayerName;
+    public Text playerName;
     [SerializeField]
     protected GridLayoutGroup m_SlotsRoot;
 
@@ -32,10 +32,10 @@ public class BasePlayer : MonoBehaviour, IPlayer
     {
         m_Outline = transform.FindChild("Outline").GetComponent<CountdownOutline>();
         m_Avatar = transform.FindChild("Avatar").GetComponent<Image>();
-        m_PlayerName = transform.FindChild("PlayerName").GetComponent<Text>();
+        playerName = transform.FindChild("PlayerName").GetComponent<Text>();
         m_TargetBallType = BallType.NONE;
         playerID = GetInstanceID();
-        m_PlayerName.text = name;
+        playerName.text = name;
     }
 
     protected void AddBalls(int min, int max)
@@ -45,7 +45,7 @@ public class BasePlayer : MonoBehaviour, IPlayer
             if(!Pools.Balls[i].IsBallDisable())
             {
                 m_TargetBalls.Add(Pools.Balls[i]);
-                Image o = SupportTools.AddChild<Image>(m_SlotsRoot.gameObject, "TestRes/Slot");
+                Image o = SupportTools.AddChild<Image>(m_SlotsRoot.gameObject, "UI/BattleScene/Slot");
                 o.sprite = Resources.Load<Sprite>("BallsIcon/" + i.ToString());
                 o.transform.name = i.ToString();
             }
@@ -96,5 +96,10 @@ public class BasePlayer : MonoBehaviour, IPlayer
     {
         m_Outline.enabled = false;
     }
+
+    /// <summary>
+    /// use for the network and aiplayer
+    /// </summary>
+    public virtual void PlayerUpdate() { }
 }		
 

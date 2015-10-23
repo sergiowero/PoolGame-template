@@ -35,7 +35,7 @@ public class LayoutConfiguration : HOConfigurationReader {
         }
         else
         {
-            DestroyObject(this.gameObject);
+            Destroy(this);
         }
     }
 

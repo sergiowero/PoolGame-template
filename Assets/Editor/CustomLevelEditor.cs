@@ -3,7 +3,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace LevelEditor
+namespace PoolsEditor
 {
     public class CustomLevelEditor : EditorWindow
     {
@@ -131,7 +131,7 @@ namespace LevelEditor
             m_CueBall = new TouchObject() { transform = trans, texture = tex, id = 0, type = BallType.WHITE };
             HideStandardBalls();
 
-            string ss = "Table_new/Colliders/pocket_";
+            string ss = "Table/Colliders/pocket_";
             m_Pockets[0] = new Pocket(m_LeftTop, m_PocketTexture, GameObject.Find(ss + "TopLeft"), PocketIndexes.TopLeft);
             m_Pockets[1] = new Pocket(m_Top, m_PocketTexture, GameObject.Find(ss + "TopCenter"), PocketIndexes.TopCenter);
             m_Pockets[2] = new Pocket(m_RightTop, m_PocketTexture, GameObject.Find(ss + "TopRight"), PocketIndexes.TopRight);
@@ -142,8 +142,9 @@ namespace LevelEditor
             GameObject o1 = GameObject.FindObjectOfType<WhiteBall>().gameObject;
             Constraint c = o1.GetComponent<Constraint>();
             m_R = o1.GetComponent<SphereCollider>().radius * o1.transform.lossyScale.x;
-            TableMin = new Vector2(c.xAxis.x + m_R, c.zAxis.x + m_R);
-            TableMax = new Vector2(c.xAxis.y - m_R, c.zAxis.y - m_R);
+
+            TableMin = new Vector2(c.min.x + m_R, c.min.z + m_R);
+            TableMax = new Vector2(c.max.x - m_R, c.max.z - m_R);
             XSize = TableMax.x - TableMin.x;
             YSize = TableMax.y - TableMin.y;
             m_Aspect = YSize / XSize;

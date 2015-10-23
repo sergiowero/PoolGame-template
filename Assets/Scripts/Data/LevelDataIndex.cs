@@ -61,7 +61,7 @@ public class LevelDataIndex : ScriptableObject
         m_Indexes = new List<LevelData>();
     }
 
-    public static int Comp(string l, string r)
+    public int Comp(string l, string r)
     {
         string[] leftNum = l.Split('-');
         string[] rightNum = r.Split('-');
@@ -88,11 +88,29 @@ public class LevelDataIndex : ScriptableObject
         return 0;
     }
 
-    public static int Comp(LevelData l, LevelData r)
+    public int Comp(LevelData l, LevelData r)
     {
         string left = l.FileName;
         string right = r.FileName;
         return Comp(left, right);
+    }
+
+    public int GetChapter(string levelDataName)
+    {
+        return int.Parse(levelDataName.Split('-')[0]);
+    }
+
+    public IList<LevelData> DumpLevelDatasWithChapter(int chapter)
+    {
+        List<LevelData> list = new List<LevelData>();
+        for (int i = 0; i < m_Indexes.Count; i++)
+        {
+            if(int.Parse(m_Indexes[i].FileName.Split('-')[0]) == chapter)
+            {
+                list.Add(m_Indexes[i]);
+            }
+        }
+        return list;
     }
 }
 

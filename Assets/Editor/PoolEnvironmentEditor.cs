@@ -2,256 +2,286 @@
 using UnityEditor;
 using System.Collections;
 
-public class PoolEnvironmentEditor : EditorWindow
+namespace PoolsEditor
 {
-    PoolDataAsset m_DataAsset, m_DataAssetTemp;
-
-    string filePath;
-
-    string s1 = "", s2 = "", s3 = "", s4 = "", s5 = "";
-    float f = 0;
-    GUISkin skin;
-
-
-    PhysicMaterial m_Railpm, m_Ballpm;
-
-    static PoolEnvironmentEditor window;
-
-    bool awakeAtPlaying = false;
-
-    [MenuItem("Window/游戏环境编辑/打开")]
-    static void Init()
+    public class PoolEnvironmentEditor : EditorWindow
     {
-        window = (PoolEnvironmentEditor)EditorWindow.GetWindow(typeof(PoolEnvironmentEditor), false, "Pool Editor");
-        window.Show();
-    }
+        PoolDataAsset m_DataAsset, m_DataAssetTemp;
 
-    [MenuItem("Window/游戏环境编辑/关闭")]
-    static void CloseWindow()
-    {
-        if (window)
-            window.Close();
-    }
+        string filePath;
 
-    [MenuItem("Window/游戏环境编辑/debug mode")]
-    static void PoolDebugMode()
-    {
-        if (Application.isPlaying)
+        string s1 = "", s2 = "", s3 = "", s4 = "", s5 = "";
+        float f = 0;
+        GUISkin skin;
+
+
+        PhysicMaterial m_Railpm, m_Ballpm;
+
+        static PoolEnvironmentEditor window;
+
+        bool awakeAtPlaying = false;
+
+        [MenuItem("Window/游戏环境编辑/打开")]
+        static void Init()
         {
-            Debug.Log("use this in the editor non-playing mode");
-            return;
+            window = (PoolEnvironmentEditor)EditorWindow.GetWindow(typeof(PoolEnvironmentEditor), false, "Pool Editor");
+            window.Show();
         }
 
-        PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
-        foreach(PoolBall p in balls)
+        [MenuItem("Window/游戏环境编辑/关闭")]
+        static void CloseWindow()
         {
-            if(p.GetBallID() != 0 && p.GetBallID() != 8)
+            if (window)
+                window.Close();
+        }
+
+        [MenuItem("Window/游戏环境编辑/debug mode")]
+        static void PoolDebugMode()
+        {
+            if (Application.isPlaying)
             {
-                p.Hide();
+                Debug.Log("use this in the editor non-playing mode");
+                return;
             }
-        }
-        PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
-        foreach(PocketTrigger p in triggers)
-        {
-            p.BlockOffEditor();
-        }
 
-        GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.Standard;
-    }
-
-    [MenuItem("Window/游戏环境编辑/play mode")]
-    static void PoolPlayMode()
-    {
-        if (Application.isPlaying)
-        {
-            Debug.Log("use this in the editor non-playing mode");
-            return;
-        }
-
-        PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
-        foreach (PoolBall p in balls)
-        {
-            if (p.GetBallID() != 0 && p.GetBallID() != 8)
+            PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
+            foreach (PoolBall p in balls)
             {
-                p.Display();
-            }
-        }
-        PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
-        foreach (PocketTrigger p in triggers)
-        {
-            p.CollapseEditor();
-        }
-        GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.None;
-    }
-
-    void Awake()
-    {
-        if (!Application.isPlaying)
-        {
-            awakeAtPlaying = false;
-            return;
-        }
-
-        awakeAtPlaying = true;
-        skin = Resources.Load<GUISkin>("GUISkin/PoolGUISkin");
-        m_DataAsset = ConstantData.GetPoolDatas();
-        m_DataAssetTemp = StreamTools.Clone<PoolDataAsset>(m_DataAsset);
-
-        m_Railpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Wall.physicMaterial");
-        m_Ballpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Ball.physicMaterial");
-        if (m_Railpm == null || m_Ballpm == null)
-        {
-            Debug.LogError("Physic material is null");
-        }
-        m_Railpm.bounciness = m_DataAsset.RailBounciness;
-        m_Ballpm.bounciness = m_DataAsset.BallBounciness;
-    }
-
-    void OnDestroy()
-    {
-        if (m_Railpm) m_Railpm.bounciness = Mathf.Clamp01(m_DataAssetTemp.RailBounciness);
-        if (m_Ballpm) m_Ballpm.bounciness = Mathf.Clamp01(m_DataAssetTemp.BallBounciness);
-    }
-
-    void OnGUI()
-    {
-        if (!awakeAtPlaying || !Application.isPlaying)
-        {
-            GUI.skin.label.fontSize = 16;
-            GUI.color = Color.white;
-            GUILayout.Label("请在运行游戏时打开此窗口");
-            return;
-        }
-
-        GUI.skin = skin;
-        /////////////////最大推力
-        GUI.BeginGroup(new Rect(10, 10, 400, 80));
-        SetValue("球杆的最大推力：",
-            () =>
-            {
-                if(float.TryParse(s1,out f))
+                if (p.GetBallID() != 0 && p.GetBallID() != 8)
                 {
-                    m_DataAsset.MaxImpulse = f;
+                    p.Hide();
+                }
+            }
+            PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
+            foreach (PocketTrigger p in triggers)
+            {
+                p.BlockOffEditor();
+            }
+
+            GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.Standard;
+        }
+
+        [MenuItem("Window/游戏环境编辑/play mode")]
+        static void PoolPlayMode()
+        {
+            if (Application.isPlaying)
+            {
+                Debug.Log("use this in the editor non-playing mode");
+                return;
+            }
+
+            PoolBall[] balls = GameObject.FindObjectsOfType<PoolBall>();
+            foreach (PoolBall p in balls)
+            {
+                if (p.GetBallID() != 0 && p.GetBallID() != 8)
+                {
+                    p.Display();
+                }
+            }
+            PocketTrigger[] triggers = GameObject.FindObjectsOfType<PocketTrigger>();
+            foreach (PocketTrigger p in triggers)
+            {
+                p.CollapseEditor();
+            }
+            GameObject.FindObjectOfType<GameManager>().m_DebugGameType = GameType.None;
+        }
+
+        [MenuItem("Window/游戏环境编辑/bind light follower ")]
+        static void BindLightFollower()
+        {
+            Transform[] ts = Selection.GetTransforms(SelectionMode.TopLevel);
+            foreach(Transform t in ts)
+            {
+                Transform lightRenderer = t.FindChild("RefLight");
+                Follower f = lightRenderer.GetComponent<Follower>();
+                if (!f) f = lightRenderer.gameObject.AddComponent<Follower>();
+                f.SetRefObject(t);
+                f.SetOffset(new Vector3(0, .16f, 0));
+                Follower ff = t.GetComponent<Follower>();
+                if (ff)
+                    DestroyImmediate(ff);
+            }
+        }
+
+        [MenuItem("Window/游戏环境编辑/bind focus follower ")]
+        static void BindFocusFollower()
+        {
+            Transform[] ts = Selection.GetTransforms(SelectionMode.TopLevel);
+            foreach (Transform t in ts)
+            {
+                Transform lightRenderer = t.FindChild("Focus");
+                lightRenderer.gameObject.SetActive(true);
+            }
+        }
+
+        void Awake()
+        {
+            if (!Application.isPlaying)
+            {
+                awakeAtPlaying = false;
+                return;
+            }
+
+            awakeAtPlaying = true;
+            skin = Resources.Load<GUISkin>("GUISkin/PoolGUISkin");
+            m_DataAsset = ConstantData.GetPoolDatas();
+            m_DataAssetTemp = StreamTools.Clone<PoolDataAsset>(m_DataAsset);
+
+            m_Railpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Wall.physicMaterial");
+            m_Ballpm = Resources.LoadAssetAtPath<PhysicMaterial>("Assets/PhysXMaterial/Ball.physicMaterial");
+            if (m_Railpm == null || m_Ballpm == null)
+            {
+                Debug.LogError("Physic material is null");
+            }
+            m_Railpm.bounciness = m_DataAsset.RailBounciness;
+            m_Ballpm.bounciness = m_DataAsset.BallBounciness;
+        }
+
+        void OnDestroy()
+        {
+            if (m_Railpm) m_Railpm.bounciness = Mathf.Clamp01(m_DataAssetTemp.RailBounciness);
+            if (m_Ballpm) m_Ballpm.bounciness = Mathf.Clamp01(m_DataAssetTemp.BallBounciness);
+        }
+
+        void OnGUI()
+        {
+            if (!awakeAtPlaying || !Application.isPlaying)
+            {
+                GUI.skin.label.fontSize = 16;
+                GUI.color = Color.white;
+                GUILayout.Label("请在运行游戏时打开此窗口");
+                return;
+            }
+
+            GUI.skin = skin;
+            /////////////////最大推力
+            GUI.BeginGroup(new Rect(10, 10, 400, 80));
+            SetValue("球杆的最大推力：",
+                () =>
+                {
+                    if (float.TryParse(s1, out f))
+                    {
+                        m_DataAsset.MaxImpulse = f;
+                    }
+                },
+                () =>
+                {
+                    m_DataAssetTemp.MaxImpulse = m_DataAsset.MaxImpulse;
+                    SerPool();
+                },
+                () =>
+                {
+                    m_DataAsset.MaxImpulse = m_DataAssetTemp.MaxImpulse;
+                });
+            s1 = GUI.TextField(new Rect(180, 5, 30, 20), s1);
+            GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.MaxImpulse + "</i></color>");
+            GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue><i>" + m_DataAssetTemp.MaxImpulse + "</i></color>");
+            GUI.EndGroup();
+
+
+            //////////////////球角度
+            GUI.BeginGroup(new Rect(10, 95, 400, 80));
+            SetValue("球的角度阻力：", () =>
+            {
+                if (float.TryParse(s2, out f))
+                {
+                    m_DataAsset.BallAngularDrag = f;
                 }
             },
-            () =>
+                () =>
+                {
+                    m_DataAssetTemp.BallAngularDrag = m_DataAsset.BallAngularDrag;
+                    SerPool();
+                },
+                () =>
+                {
+                    m_DataAsset.BallAngularDrag = m_DataAssetTemp.BallAngularDrag;
+                });
+            s2 = GUI.TextField(new Rect(180, 5, 30, 20), s2);
+            GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallAngularDrag + "</i></color>");
+            GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallAngularDrag + "</color>");
+            GUI.EndGroup();
+
+
+            //////////////////球阻力
+            GUI.BeginGroup(new Rect(10, 180, 400, 80));
+            SetValue("球的阻力：", () =>
             {
-                m_DataAssetTemp.MaxImpulse = m_DataAsset.MaxImpulse;
-                SerPool();
+                if (float.TryParse(s3, out f))
+                {
+                    m_DataAsset.BallDrag = f;
+                }
             },
-            () =>
-            {
-                m_DataAsset.MaxImpulse = m_DataAssetTemp.MaxImpulse;
-            });
-        s1 = GUI.TextField(new Rect(180, 5, 30, 20), s1);
-        GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.MaxImpulse + "</i></color>");
-        GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue><i>" + m_DataAssetTemp.MaxImpulse + "</i></color>");
-        GUI.EndGroup();
+                () =>
+                {
+                    m_DataAssetTemp.BallDrag = m_DataAsset.BallDrag;
+                    SerPool();
+                },
+                () =>
+                {
+                    m_DataAsset.BallDrag = m_DataAssetTemp.BallDrag;
+                });
+            s3 = GUI.TextField(new Rect(180, 5, 30, 20), s3);
+            GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallDrag + "</i></color>");
+            GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallDrag + "</color>");
+            GUI.EndGroup();
 
 
-        //////////////////球角度
-        GUI.BeginGroup(new Rect(10, 95, 400, 80));
-        SetValue("球的角度阻力：", () =>
-        {
-            if (float.TryParse(s2, out f))
+            /////////////////球弹性
+            GUI.BeginGroup(new Rect(10, 265, 400, 80));
+            SetValue("球与球的弹性(0-1)：", () =>
             {
-                m_DataAsset.BallAngularDrag = f;
-            }
-        },
-            () =>
-            {
-                m_DataAssetTemp.BallAngularDrag = m_DataAsset.BallAngularDrag;
-                SerPool();
+                if (float.TryParse(s4, out f) && f >= 0 && f <= 1)
+                {
+                    m_DataAsset.BallBounciness = f;
+                    if (m_Ballpm) m_Ballpm.bounciness = m_DataAsset.BallBounciness;
+                }
             },
-            () =>
-            {
-                m_DataAsset.BallAngularDrag = m_DataAssetTemp.BallAngularDrag;
-            });
-        s2 = GUI.TextField(new Rect(180, 5, 30, 20), s2);
-        GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallAngularDrag + "</i></color>");
-        GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallAngularDrag + "</color>");
-        GUI.EndGroup();
+                () =>
+                {
+                    m_DataAssetTemp.BallBounciness = m_DataAsset.BallBounciness;
+                    SerPool();
+                },
+                () =>
+                {
+                    m_DataAsset.BallBounciness = m_DataAssetTemp.BallBounciness;
+                    if (m_Ballpm)
+                        m_Ballpm.bounciness = m_DataAssetTemp.BallBounciness;
+                });
+            s4 = GUI.TextField(new Rect(180, 5, 30, 20), s4);
+            GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallBounciness + "</i></color>");
+            GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallBounciness + "</color>");
+            GUI.EndGroup();
 
 
-        //////////////////球阻力
-        GUI.BeginGroup(new Rect(10, 180, 400, 80));
-        SetValue("球的阻力：", () =>
-        {
-            if (float.TryParse(s3, out f))
+            /////////////////桌子边缘弹性
+            GUI.BeginGroup(new Rect(10, 350, 400, 80));
+            SetValue("球与桌子边缘的弹性\n(0-1)：", () =>
             {
-                m_DataAsset.BallDrag = f;
-            }
-        },
-            () =>
-            {
-                m_DataAssetTemp.BallDrag = m_DataAsset.BallDrag;
-                SerPool();
+                if (float.TryParse(s5, out f) && f >= 0 && f <= 1)
+                {
+                    m_DataAsset.RailBounciness = f;
+                    if (m_Railpm) m_Railpm.bounciness = m_DataAsset.RailBounciness;
+                }
             },
-            () =>
-            {
-                m_DataAsset.BallDrag = m_DataAssetTemp.BallDrag;
-            });
-        s3 = GUI.TextField(new Rect(180, 5, 30, 20), s3);
-        GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallDrag + "</i></color>");
-        GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallDrag + "</color>");
-        GUI.EndGroup();
+                () =>
+                {
+                    m_DataAssetTemp.RailBounciness = m_DataAsset.RailBounciness;
+                    SerPool();
+                },
+                () =>
+                {
+                    m_DataAsset.RailBounciness = m_DataAssetTemp.RailBounciness;
+                    if (m_Railpm)
+                        m_Railpm.bounciness = m_DataAssetTemp.RailBounciness;
+                });
+            s5 = GUI.TextField(new Rect(180, 5, 30, 20), s5);
+            GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.RailBounciness + "</i></color>");
+            GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.RailBounciness + "</color>");
+            GUI.EndGroup();
 
-
-        /////////////////球弹性
-        GUI.BeginGroup(new Rect(10, 265, 400, 80));
-        SetValue("球与球的弹性(0-1)：", () =>
-        {
-            if (float.TryParse(s4, out f) && f >= 0 && f <= 1)
-            {
-                m_DataAsset.BallBounciness = f;
-                if (m_Ballpm) m_Ballpm.bounciness = m_DataAsset.BallBounciness;
-            }
-        },
-            () =>
-            {
-                m_DataAssetTemp.BallBounciness = m_DataAsset.BallBounciness;
-                SerPool();
-            },
-            () =>
-            {
-                m_DataAsset.BallBounciness = m_DataAssetTemp.BallBounciness;
-                if (m_Ballpm)
-                    m_Ballpm.bounciness = m_DataAssetTemp.BallBounciness;
-            });
-        s4 = GUI.TextField(new Rect(180, 5, 30, 20), s4);
-        GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.BallBounciness + "</i></color>");
-        GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.BallBounciness + "</color>");
-        GUI.EndGroup();
-
-
-        /////////////////桌子边缘弹性
-        GUI.BeginGroup(new Rect(10, 350, 400, 80));
-        SetValue("球与桌子边缘的弹性\n(0-1)：", () =>
-        {
-            if (float.TryParse(s5, out f) && f >=0 && f <= 1)
-            {
-                m_DataAsset.RailBounciness = f;
-                if (m_Railpm) m_Railpm.bounciness = m_DataAsset.RailBounciness;
-            }
-        },
-            () =>
-            {
-                m_DataAssetTemp.RailBounciness = m_DataAsset.RailBounciness;
-                SerPool();
-            },
-            () =>
-            {
-                m_DataAsset.RailBounciness = m_DataAssetTemp.RailBounciness;
-                if (m_Railpm)
-                    m_Railpm.bounciness = m_DataAssetTemp.RailBounciness;
-            });
-        s5 = GUI.TextField(new Rect(180, 5, 30, 20), s5);
-        GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.RailBounciness + "</i></color>");
-        GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.RailBounciness + "</color>");
-        GUI.EndGroup();
-
-        #region Not use anymore
-        /* /////////////////水平加塞
+            #region Not use anymore
+            /* /////////////////水平加塞
         GUI.BeginGroup(new Rect(10, 435, 400, 80));
         SetValue("水平加塞比值：", () =>
         {
@@ -296,47 +326,49 @@ public class PoolEnvironmentEditor : EditorWindow
         GUI.Label(new Rect(10, 25, 200, 40), "当前应用的值：<color=darkblue><i>" + m_DataAsset.VerticalSidingStrength + "</i></color>");
         GUI.Label(new Rect(10, 50, 200, 40), "上一个值：<color=blue>" + m_DataAssetTemp.VerticalSidingStrength + "</color>");
         GUI.EndGroup();*/
-        #endregion
+            #endregion
 
-        ////////////////结束
-        GUI.BeginGroup(new Rect(10, 605, 400, 80));
-        if (GUI.Button(new Rect(10, 10, 100, 20), "保存所有"))
-        {
-            m_DataAssetTemp = m_DataAsset;
-            SerPool();
+            ////////////////结束
+            GUI.BeginGroup(new Rect(10, 605, 400, 80));
+            if (GUI.Button(new Rect(10, 10, 100, 20), "保存所有"))
+            {
+                m_DataAssetTemp = m_DataAsset;
+                SerPool();
+            }
+            if (GUI.Button(new Rect(120, 10, 100, 20), "还原所有"))
+            {
+                m_DataAsset = m_DataAssetTemp;
+                if (m_Railpm) m_Railpm.bounciness = m_DataAssetTemp.RailBounciness;
+                if (m_Ballpm) m_Ballpm.bounciness = m_DataAssetTemp.BallBounciness;
+            }
+            GUI.EndGroup();
+            GUI.skin = null;
         }
-        if (GUI.Button(new Rect(120, 10, 100, 20), "还原所有"))
-        {
-            m_DataAsset = m_DataAssetTemp;
-            if (m_Railpm) m_Railpm.bounciness = m_DataAssetTemp.RailBounciness;
-            if (m_Ballpm) m_Ballpm.bounciness = m_DataAssetTemp.BallBounciness;
-        }
-        GUI.EndGroup();
-        GUI.skin = null;
-    }
 
-    private void SerPool()
-    {
-        StreamTools.SerializeObject(m_DataAssetTemp, StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
-    }
+        private void SerPool()
+        {
+            StreamTools.SerializeObject(m_DataAssetTemp, StreamTools.GetStreamingAssetsPath() + ConstantData.PoolDataAssetsFile);
+        }
 
-    private void SetValue(string valueName, System.Action onApply, System.Action onSave, System.Action onReverse)
-    {
-        GUI.Box(new Rect(0, 0, 400, 80), valueName);
-        if (GUI.Button(new Rect(185, 50, 60, 20), "应用"))
+        private void SetValue(string valueName, System.Action onApply, System.Action onSave, System.Action onReverse)
         {
-            if (onApply != null)
-                onApply();
-        }
-        if (GUI.Button(new Rect(250, 50, 60, 20), "保存"))
-        {
-            if (onSave != null)
-                onSave();
-        }
-        if (GUI.Button(new Rect(315, 50, 60, 20), "还原"))
-        {
-            if (onReverse != null)
-                onReverse();
+            GUI.Box(new Rect(0, 0, 400, 80), valueName);
+            if (GUI.Button(new Rect(185, 50, 60, 20), "应用"))
+            {
+                if (onApply != null)
+                    onApply();
+            }
+            if (GUI.Button(new Rect(250, 50, 60, 20), "保存"))
+            {
+                if (onSave != null)
+                    onSave();
+            }
+            if (GUI.Button(new Rect(315, 50, 60, 20), "还原"))
+            {
+                if (onReverse != null)
+                    onReverse();
+            }
         }
     }
 }
+

@@ -110,6 +110,5 @@ public class PoolRulesQuickFire : PoolRulesBase
 
     public override void CueBallHitRail()
     {
-        throw new System.NotImplementedException();
     }
 }

@@ -67,18 +67,18 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected override void CustomUpdate()
     {
-        if (m_Countdown)
-        {
-            m_Time -= Time.deltaTime;
-            CurrentPlayer.Countdown(m_Time / m_TimePerRound);
-            if (m_Time <= 0)
-            {
-                m_Countdown = false;
-                m_TimeOut = true;
-                //check the result immediately
-                StartCoroutine(CheckResultAndChangeTurn(0));
-            }
-        }
+        //if (m_Countdown)
+        //{
+        //    m_Time -= Time.deltaTime;
+        //    CurrentPlayer.Countdown(m_Time / m_TimePerRound);
+        //    if (m_Time <= 0)
+        //    {
+        //        m_Countdown = false;
+        //        m_TimeOut = true;
+        //        //check the result immediately
+        //        StartCoroutine(CheckResultAndChangeTurn(0));
+        //    }
+        //}
     }
 
     public override void SetPlayers(params IPlayer[] players)
@@ -109,6 +109,7 @@ public class PoolRulesStandard : PoolRulesBase
         {
             m_Players[i].UpdateBallIcon();
         }
+        CurrentPlayer.Begin();
     }
 
     protected override IEnumerator CheckResultAndChangeTurn(float time)
@@ -121,6 +122,7 @@ public class PoolRulesStandard : PoolRulesBase
             {
                 onGameOver(CurrentPlayer);
             }
+            BaseUIController.MSettlement.StandardGameOver(CurrentPlayer);
         }
         else //not yet
         {
@@ -131,7 +133,6 @@ public class PoolRulesStandard : PoolRulesBase
                 //change player(if there is more than 2 players in the game)
                 CurrentPlayer.End();
                 m_CurPlayerIndex = MathTools.Roll(0, m_Players.Length, m_CurPlayerIndex + 1);
-                CurrentPlayer.Begin();
             }
 
             for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)

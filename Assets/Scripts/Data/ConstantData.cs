@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Text;
 
 public class ConstantData
@@ -63,8 +64,21 @@ public class ConstantData
 
     public const int PhysicalRecoverInterval = 30 * 60;
 
+    private static int _OutlineAndBallLayer = -1;
+    public static int OulineAndBallLayer
+    {
+        get 
+        { 
+            if(_OutlineAndBallLayer == -1)
+            {
+                _OutlineAndBallLayer = 1 << LayerMask.NameToLayer("Outline") | 1 << LayerMask.NameToLayer("Ball");
+            }
+            return _OutlineAndBallLayer;
+        }
+    }
+
     private static PoolDataAsset PoolDatas = null;
-    public static string PoolDataAssetsFile { get { return "PoolEnvironmentData/PoolPhysical.asset"; } }
+    public static string PoolDataAssetsFile { get { return StreamTools.GetStreamingAssetsPath(true) + "PoolEnvironmentData/PoolPhysical.asset"; } }
     public static string QuickFireGameRecordPath 
     {
         get 
@@ -86,7 +100,32 @@ public class ConstantData
 
     public static int MPhysical = 20;
 
+    public const int maxPhysical = 20;
+
     public static LevelDataIndex LevelDatas;
+
+    private static MissionRecords _MissionRecords;
+    public static MissionRecords missionRecords
+    {
+        set 
+        {
+            _MissionRecords = value;
+            StreamTools.SerializeObject(_MissionRecords, ConstantData.MissionLevelDataRecordPath);
+        }
+        get { return _MissionRecords; }
+    }
+
+    private static QuickFirePlayer.PlayerData _QuickFireRecords;
+
+    public static QuickFirePlayer.PlayerData quickFireRecords
+    {
+        set
+        {
+            _QuickFireRecords = value;
+            StreamTools.SerializeObject(_QuickFireRecords, ConstantData.QuickFireGameRecordPath);
+        }
+        get { return _QuickFireRecords; }
+    }
 
     public static PoolDataAsset GetPoolDatas()
     {
@@ -104,12 +143,10 @@ public class ConstantData
         return PoolDatas;
     }
 
-#if UNITY_ANDROID
     public static void SetPoolDatas(PoolDataAsset data)
     {
         PoolDatas = data;
     }
-#endif
 }
 
 [System.Serializable]

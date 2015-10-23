@@ -42,6 +42,7 @@ public class EternalNode : MonoBehaviour
                     ConstantData.MPhysical = 20;
                 }
             }
+            LaunchUIController.SetPhysical(ConstantData.MPhysical);
         }
     }
 
@@ -59,8 +60,8 @@ public class EternalNode : MonoBehaviour
         if(m_PhysicalRcoverTime > ConstantData.PhysicalRecoverInterval)
         {
             ConstantData.MPhysical++;
-            if (ConstantData.MPhysical > 20)
-                ConstantData.MPhysical = 20;
+            if (ConstantData.MPhysical > ConstantData.maxPhysical)
+                ConstantData.MPhysical = ConstantData.maxPhysical;
             m_PhysicalRcoverTime = 0;
             LaunchUIController.SetPhysical(ConstantData.MPhysical);
         }

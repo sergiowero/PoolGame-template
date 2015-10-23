@@ -1,307 +1,438 @@
-﻿//----------------------------
-// 涉及AI， 暂略
-//----------------------------
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
+public class AIPlayer : BasePlayer
+{
 
+    #region Collector
+    protected class AICollector
+    {
+        AIPlayer player;
 
+        public AICollector(AIPlayer _player)
+        {
+            player = _player;
+        }
 
+        public CollectedMessage Collect()
+        {
+            CollectedMessage msg = new CollectedMessage();
+            if(player.m_TargetBalls.Count == 0)
+            {
+                msg.ballList = Pools.GetSolidAndStripeBalls();
+            }
+            else
+            {
+                msg.ballList = player.m_TargetBalls;
+            }
+            return msg;
+        }
+    }
 
+    protected class CollectedMessage
+    {
+        public List<PoolBall> ballList;
 
+        public CollectedMessage()
+        {
+            ballList = new List<PoolBall>();
+        }
+    }
+    #endregion //Collector
 
+    #region Decider
+    protected class AIDecider
+    {
+        AIPlayer player;
+        CollectedMessage cMsg;
 
+        public AIDecider(AIPlayer _player)
+        {
+            player = _player;
+        }
 
+        public DecidedMessage Decide(CollectedMessage _cMsg)
+        {
+            cMsg = _cMsg;
+            DecidedMessage dMsg = new DecidedMessage();
 
-//using UnityEngine;
-//using System.Collections;
-//    //a simple "AI" it will simply fire the ball at the closest pin.
-//    //You could make this ai easier or harder by increasing or decreasing the xMax 
-//    public class AIPlayer : BasePlayer 
-//    {
-//        //the minimum power we are going to use.
-//        public float minPower = 0.25f;
-//        //the max maxpower to have
-//        public float maxPower = 1000f;
+            Dictionary<PoolBall, List<PocketTrigger>> considerBalls = GetConsiderBalls();
+            dMsg.drag = GameManager.Rules.State == GlobalState.DRAG_WHITEBALL;
+            PoolBall targetBall;
+            PocketTrigger targetPocket;
+            if (dMsg.drag)
+                dMsg.hitPoint = ConsiderHitPointWithDrag(considerBalls, out dMsg.cueballPosition, out targetBall, out targetPocket);
+            else
+            {
+                dMsg.cueballPosition = Pools.CueBall.GetPosition();
+                dMsg.hitPoint = ConsiderHitPoint(considerBalls, dMsg.cueballPosition, out targetBall, out targetPocket);
+            }
 
-//        //how long should we wait before firing the ball
-//        public float aiWaitTime = 1f;
+            if(dMsg.hitPoint != Vector3.zero)
+                dMsg.powerScale = ConsiderPowerScale(targetBall, targetPocket, dMsg.hitPoint, dMsg.cueballPosition);
+            else
+            {
+                dMsg.hitPoint = GetRandomHitPoint();
+                dMsg.powerScale = 1;
+            }
+            return dMsg;
+        }
 
+        private Vector3 ConsiderHitPointWithDrag(Dictionary<PoolBall, List<PocketTrigger>> considerBalls, out Vector3 cueBallPosition, out PoolBall targetBall, out PocketTrigger targetTrigger)
+        {
+            Debug.Log("AI : consider hit point with drag");
+            Dictionary<PoolBall, PocketTrigger> optimalBalls = FilterTheBestPocketForEachBall(considerBalls);
+            cueBallPosition = Vector3.zero;
+            targetTrigger = null;
+            targetBall = null;
+            if(optimalBalls.Count == 0)
+            {
+                return Vector3.zero;
+            }
+            else
+            {
+                foreach (KeyValuePair<PoolBall, PocketTrigger> kvp in optimalBalls)
+                {
+                    PoolBall ball = kvp.Key;
+                    PocketTrigger trigger = kvp.Value;
+                    Vector3 dir = ball.transform.position - trigger.pointerPosition;
+                    //白球摆成和目标球和袋口一条直线
+                    cueBallPosition = ball.transform.position + (dir.normalized * Mathf.Min(GetPlacedSpace(ball, ball.transform.position - trigger.pointerPosition), 5 * ball.GetRadius()));
+                    targetBall = ball;
+                    targetTrigger = trigger;
+                    //这里随机会跳出循环，代表随机取一个球的意思， optimalBalls.count 为了使概率平均
+                    if (Random.Range(1, optimalBalls.Count) == 1)
+                        break;
+                }
+                return ConsiderHitPoint(targetBall, targetTrigger);
+            }
+        }
 
+        private Dictionary<PoolBall, PocketTrigger> FilterTheBestPocketForEachBall(Dictionary<PoolBall, List<PocketTrigger>> considerBalls)
+        {
+            Dictionary<PoolBall, PocketTrigger> optimalBalls = new Dictionary<PoolBall, PocketTrigger>();
+            foreach (var v in considerBalls)
+            {
+                PoolBall ball = v.Key;
+                float bestDistance = float.MaxValue;
+                PocketTrigger bestPocket = null;
+                for (int i = 0, count = v.Value.Count; i < count; i++)
+                {
+                    PocketTrigger pocket = v.Value[i];
 
-//        //our target x position
-//        protected float m_targetX = 0;
+                    if (GetPlacedSpace(ball, ball.transform.position - pocket.pointerPosition) < ball.GetRadius() * 2)
+                        continue;
 
-//        //the target ball
-//        protected PoolBall m_targetBall;
+                    float distance = Vector3.Distance(ball.transform.position, pocket.pointerPosition);
+                    if (distance < bestDistance)
+                    {
+                        bestPocket = pocket;
+                        bestDistance = distance;
+                    }
+                }
+                optimalBalls.Add(ball, bestPocket);
+            }
+            return optimalBalls;
+        }
 
-//        //the white ball
-//        protected WhiteBall m_whiteBall;
+        private Vector3 ConsiderHitPoint(PoolBall ball, PocketTrigger trigger)
+        {
+            Vector3 vec = ball.transform.position - trigger.pointerPosition;
+            return ball.transform.position + vec.normalized * ball.GetRadius() * 2;
+        }
 
-//        //the pockets
-//        protected PoolRecycler[] m_pockets;
+        private Vector3 ConsiderHitPoint(Dictionary<PoolBall, List<PocketTrigger>> considerBalls, Vector3 cueBallPosition, out PoolBall targetBall, out PocketTrigger targetTrigger)
+        {
+            Debug.Log("AI : consider hit point");
+            Dictionary<PoolBall, PocketTrigger> optimalBalls = FilterTheBestPocketForEachBallWithCueBall(considerBalls, cueBallPosition);
+            //Dictionary<PoolBall, float> ballCuebalAngles = new Dictionary<PoolBall, float>();
+            List<float> angles = new List<float>();
+            List<PoolBall> balls = new List<PoolBall>();
+            float totleAngle = 0;
+            foreach(var v in optimalBalls)
+            {
+                PoolBall ball = v.Key;
+                PocketTrigger trigger = v.Value;
 
-//        //the target position
-//        protected Vector3 m_targetPos;
+                if (!trigger)
+                    continue;
 
-//        //the pool cue
-//        protected PoolCue m_poolCue;
+                float angle = MathTools.AngleBetween(ball.transform.position - cueBallPosition, trigger.pointerPosition - ball.transform.position);
+                totleAngle += angle;
+                balls.Add(ball);
+                angles.Add(angle);
+            }
+            float rand = Random.Range(0, totleAngle);
+            for (int i = 0, count = angles.Count; i < count; i++)
+            {
+                if(rand < angles[i])
+                {
+                    PoolBall k = balls[i];
+                    targetBall = k;
+                    targetTrigger = optimalBalls[k];
+                    return ConsiderHitPoint(targetBall, targetTrigger);
+                }
+            }
+            targetTrigger = null;
+            targetBall = null;
+            return Vector3.zero;
+        }
 
-//        //can we fire
-//        protected bool m_canFire=true;
+        private Dictionary<PoolBall, PocketTrigger> FilterTheBestPocketForEachBallWithCueBall(Dictionary<PoolBall, List<PocketTrigger>> considerBalls, Vector3 cueBallPosition)
+        {
+            Dictionary<PoolBall, PocketTrigger> optimalBalls = new Dictionary<PoolBall,PocketTrigger>();
+            foreach(var v in considerBalls)
+            {
+                PoolBall ball = v.Key;
+                float bestAngle = 70;
+                PocketTrigger bestPocket = null;
+                for(int i = 0, count = v.Value.Count; i < count; i++)
+                {
+                    PocketTrigger pocket = v.Value[i];
+                    // is any obstacle between the ball hit position and the cueball ?
+                    bool b1 = !CheckObastacleBetweenTargetPositionAndCueball(ball, ConsiderHitPoint(ball, pocket), cueBallPosition);
+                    if(b1)
+                    {
+                        float angle = MathTools.AngleBetween(ball.transform.position - cueBallPosition, pocket.pointerPosition - ball.transform.position);
+                        if(angle < bestAngle)
+                        {
+                            bestPocket = pocket;
+                            bestAngle = angle;
+                        }
+                    }
+                }
+                optimalBalls.Add(ball, bestPocket);
+            }
+            return optimalBalls;
+        }
 
-//        /// <summary>
-//        /// the layer mask
-//        /// </summary>
-//        public LayerMask layerMask;
+        private float GetPlacedSpace(PoolBall ball, Vector3 dir)
+        {
+            ball.collider.enabled = false;
+            ball.rigidbody.isKinematic = true;
+            RaycastHit hit;
+            float space = 0;
+            if (Physics.SphereCast(ball.transform.position, ball.GetRadius(), dir, out hit, ConstantData.OulineAndBallLayer))
+            {
+                space = (hit.transform.position - ball.transform.position).magnitude * .5f;
+            }
+            ball.collider.enabled = true;
+            ball.rigidbody.isKinematic = false;
+            return space;
+        }
 
-//        //have we fired the shot
-//        private bool m_firstShot=false;
+        private Dictionary<PoolBall, List<PocketTrigger>> GetConsiderBalls()
+        {
+            Dictionary<PoolBall, List<PocketTrigger>> considerableBalls = new Dictionary<PoolBall, List<PocketTrigger>>();
+            for (int i = 0; i < cMsg.ballList.Count; i++)
+            {
+                PoolBall ball = cMsg.ballList[i];
+                if (ball.BallState != PoolBall.State.IDLE)
+                    continue;
 
+                List<PocketTrigger> triggerList = new List<PocketTrigger>();
+                for (int j = 0; j < Pools.PocketTriggers.Count; j++)
+                {
+                    PocketTrigger trigger = Pools.PocketTriggers[j];
+                    //is any obstacle between the ball and the pocket ? 
+                    bool b1 = !CheckObastacleBetweenBallAndPocket(ball, trigger);
+                    if (b1)
+                    {
+                        triggerList.Add(trigger);
+                    }
+                }
+                if (triggerList.Count != 0)
+                {
+                    considerableBalls.Add(ball, triggerList);
+                }
+            }
+            return considerableBalls;
+        }
 
-//        public override void Awake()
-//        {
-//            base.Awake();
-//            m_balls = (PoolBall[])GameObject.FindObjectsOfType(typeof(PoolBall));
-//            m_pockets = (PoolRecycler[])GameObject.FindObjectsOfType(typeof(PoolRecycler));
+        private bool CheckObastacleBetweenBallAndPocket(PoolBall originBall, PocketTrigger pocket)
+        {
+            Vector3 dir = pocket.pointerPosition - originBall.transform.position;
+            RaycastHit[] hit = Physics.SphereCastAll(originBall.transform.position, originBall.GetRadius(),
+                dir, dir.magnitude, ConstantData.OulineAndBallLayer);
+            foreach (RaycastHit h in hit)
+            {
+                //Debug.Log("Obastacle between " + originBall.name + " and " + pocket.name + " : " + h.transform.name);
+                if (h.collider.name.CompareTo(originBall.name) != 0)
+                    return true;
+            }
+            return false;
+        }
 
-//            m_whiteBall = (WhiteBall)GameObject.FindObjectOfType(typeof(WhiteBall));
+        private bool CheckObastacleBetweenTargetPositionAndCueball(PoolBall ball, Vector3 targetPosition, Vector3 cueBallPosition)
+        {
+            Vector3 dir = targetPosition - cueBallPosition;
+            RaycastHit[] hit = Physics.SphereCastAll(cueBallPosition, Pools.CueBall.GetRadius(),
+                dir, dir.magnitude, ConstantData.OulineAndBallLayer);
+            foreach (RaycastHit h in hit)
+            {
+                //Debug.Log("Obastacle between hit point-" + GetHitPoint(ball, pocket) + " and cue ball : " + h.transform.name);
+                if (h.collider.name.CompareTo(ball.name) != 0)//the sphere always hit the cue ball
+                    return true;
+            }
+            return false;
+        }
 
-//            m_cue = (PoolCue)GameObject.FindObjectOfType(typeof(PoolCue));
+        private float ConsiderPowerScale(PoolBall ball, PocketTrigger trigger, Vector3 hitPoint, Vector3 cueBallPosition)
+        {
+            Vector3 targetBallPosition = ball.transform.position,
+            pocketPosition = trigger.pointerPosition;
 
-//            m_myTurn = playerIndex==0;
-//        }
-//        public void Update()
-//        {
-//            if(m_myTurn && m_gameOver==false)
-//            {
-//                StartCoroutine(fireBallIE());
-//            }
-//        }
-//        private float m_power;
+            float angle = MathTools.AngleBetween(hitPoint - cueBallPosition, pocketPosition - targetBallPosition);
+            float mag = (targetBallPosition - cueBallPosition).magnitude + (pocketPosition - targetBallPosition).magnitude;
+            return Mathf.Max(1, mag / Pools.GetTableSize().x * 1.5f);
+        }
 
-//        IEnumerator fireBallIE()
-//        {
-//            if (m_fired==false  && m_canFire)
-//            {
+        private Vector3 GetRandomHitPoint()
+        {
+            Debug.Log("AI : get random hit point");
+            int i = Random.Range(0, cMsg.ballList.Count - 1), j = Random.Range(0, Pools.PocketTriggers.Count - 1);
+            return ConsiderHitPoint(cMsg.ballList[i], Pools.PocketTriggers[j]);
+        }
+    }
 
-//                m_fired = true;
-//                m_canFire=false;
-//                yield return new WaitForSeconds(0.1f);
+    protected class DecidedMessage
+    {
+        public Vector3 hitPoint;
+        public Vector3 cueballPosition;
+        public float powerScale;
+        public bool drag;
+    }
+    #endregion //Decider
 
-//                StartCoroutine(findTarget ());
-//            }
-//        }
-//        IEnumerator findTarget()
-//        {
-//            yield return new WaitForSeconds(aiWaitTime);
-			
-//            if(m_gameOver==false)
-//            {
-//                findBallAndPocket ();
-//                findClosestAngleToBall();
-//                if(m_targetBall)
-//                {
-					
-//                    //we got a foul ball, lets try putting the ball in line with the line.
-//                    getNomBallsInWay();
-					
-//                    if(foul)
-//                    {
-//                        //findGoodFoulSpot();
-//                        m_power=30;
-//                    }
-//                    //always shoot 100% on the first shot!
-//                    if(m_firstShot==false)
-//                    {
-//                        m_power=100;
-//                        m_firstShot=true;
-//                    }
-//                    Vector3 targetPos = m_targetPos;
-					
-//                    targetPos.y = m_whiteBall.transform.position.y;
-					
-//                    m_cue.setTarget(m_targetBall,targetPos);
-					
-					
-//                    m_cue.setPowerAI(m_power);
-//                    m_whiteBall.setTarget(m_targetBall,targetPos);
-//                    m_whiteBall.transform.LookAt(m_targetBall.transform.position);
-//                    yield return new WaitForSeconds(1f);
-					
-//                    m_cue.fireBall();
-//                    m_canFire=true;
-//                }else{
-//                    Debug.Log ("FIND NEW TARGET" + Time.time);
-//                    StartCoroutine(findTarget ());
-//                }
-//            }
-//        }
+    #region Executor
+    protected class AIExecutor
+    {
+        AIPlayer player;
 
-//        void findGoodFoulSpot()
-//        {
-//            Vector3 dir = m_targetBall.transform.position - m_targetPos;
-//            dir.y=0;
-//            Vector3 whiteBallPos = m_targetBall.transform.position;
-//            float dist = m_whiteBall.sphereCollider.radius*45f;
-//            Vector3 offset = Vector3.zero;
-//            //float d0 = dist;
-//            bool noGoodPos = true;
-//            for(int i=0; i<5 && noGoodPos; i++)
-//            {
-//                offset+= dir.normalized * dist;
-//                Collider[] contantacts = Physics.OverlapSphere(whiteBallPos + offset,m_whiteBall.getRadius(),m_whiteBall.layermask.value);
-//                if(contantacts.Length==0)
-//                {
-//                    m_whiteBall.transform.position = whiteBallPos + offset;
-//                    noGoodPos=false;
-//                }
-//            }
+        DecidedMessage msg;
 
+        Vector3 startVector;
+        Vector3 endVector;
 
-//        }
-//        public Vector3 findClosestPocketToBall(PoolBall pb,
-//                                             ref float d0)
-//        {
-//            Vector3 rc = Vector3.zero;
-//            for(int j=0; j<m_pockets.Length; j++)
-//            {		
-//                float d1 = (m_pockets[j].getPosition() - pb.transform.position).magnitude;				
-//                if(d1<d0)
-//                {
-//                    rc = m_pockets[j].getPosition();
-//                    d0 = d1;
-//                }
-//            }
-//            return rc;
-//        }
+        float thinkingTime;
 
-//        public virtual void findBallAndPocket()
-//        {
-//        }
-//        public int getNomBallsInPath(PoolBall whiteBall,
-//                                     PoolBall targetBall,
-//                                     Vector3 pocketPos,
-//                                     float radius)
-//        {
-//            RaycastHit[] hits = null;
-//            int count = getNomBallsInWay(whiteBall.transform.position,
-//                                         targetBall.transform.position,
-//                                         radius,
-//                                         ref hits);
-//            count = getNomBallsInWay(targetBall.transform.position,
-//                                      pocketPos,
-//                                      radius,
-//                                      ref hits);
-//            return count;
-//        }
+        enum Step
+        {
+            None = 0,
+            Drag,
+            Change2Aim,
+            AdjustDirection,
+            Fire
+        }
+        Step step;
 
-//        public int getNomBallsInWay(Vector3 startPos, 
-//                                    Vector3 targetPos,
-//                                    float radius,
-//                                    ref RaycastHit[] hits)
-//        {
-//            Vector3 dir = targetPos - startPos;
-//            Ray ray = new Ray(startPos,dir.normalized);
-//            RaycastHit[] rch = Physics.SphereCastAll(ray,radius,dir.magnitude,layerMask.value);
-//            int count = rch.Length;
+        public AIExecutor(AIPlayer _player)
+        {
+            player = _player;
+            startVector = Vector3.zero;
+            endVector = Vector3.zero;
+            step = Step.None;
+        }
 
+        public void SetDecision(DecidedMessage _msg)
+        {
+            Debug.Log("Executor set decision");
+            msg = _msg;
+            thinkingTime = GenerateThinkingTime();
+            if(msg.drag)
+            {
+                step = Step.Drag;
+            }
+            else
+            {
+                step = Step.AdjustDirection;
+            }
+        }
 
-//            if(hits!=null)
-//            {
-//                for(int i=0; i<hits.Length; i++)
-//                {
-//                    bool isSame = false;
-//                    for(int j=0; j<rch.Length && isSame==false; j++)
-//                    {
-//                        if(hits[i].collider.name.Equals(rch[j].collider.name))
-//                        {
-//                            isSame=true;
-//                        }
-//                    }
-//                    if(isSame==false)
-//                    {
-//                        count++;
-//                    }
-//                }
+        public void Execute()
+        {
+            if(step != Step.None)
+            {
+                if(thinkingTime > 0)
+                    thinkingTime -= Time.deltaTime;
+                if(thinkingTime <= 0)
+                {
+                    switch(step)
+                    {
+                        case Step.Drag:
+                            iTween.MoveTo(Pools.CueBall.gameObject, msg.cueballPosition, .5f);
+                            thinkingTime = GenerateThinkingTime();
+                            step = Step.Change2Aim;
+                            break;
+                        case Step.Change2Aim:
+                            thinkingTime = GenerateThinkingTime();
+                            GameManager.Rules.State = GlobalState.IDLE;
+                            step = Step.AdjustDirection;
+                            break;
+                        case Step.AdjustDirection:
+                            float angle = BaseUIController.cueOperateArea.pointerOperation.GetRotationAngleAtWorld(msg.hitPoint);
+                            Vector3 v = new Vector3(startVector.x, Pools.Cue.transform.eulerAngles.y + angle, startVector.z);
+                            iTween.RotateTo(Pools.Cue.gameObject, v, .5f);
+                            thinkingTime = GenerateThinkingTime();
+                            step = Step.Fire;
+                            break;
+                        case Step.Fire:
+                            Debug.Log("AI fire, power scalar : " + msg.powerScale);
+                            Pools.Cue.SetPowerScalar(msg.powerScale);
+                            Pools.Cue.Fire();
+                            step = Step.None;
+                            break;
+                    }
+                }
+            }
+        }
 
-//            }
-//            hits = rch;
+        private float GenerateThinkingTime()
+        {
+            return Random.Range(.5f, 2);
+        }
+    }
+    #endregion //Executor
 
-//            return count;
-//        }
-//        //how much power should we give it, lets caculate how many balls are in path. Lets adjust the power acordingly. 
-//        //You might want to use a similar function for picking which ball to use -- IE looking at 
-//        public void getNomBallsInWay()
-//        {
-//            //Vector3 dir = m_targetBall.transform.position - m_whiteBall.transform.position;
-//            //Ray ray = new Ray(m_whiteBall.transform.position,dir.normalized);
-//            int nomHits = getNomBallsInPath(m_whiteBall,
-//                                           m_targetBall,
-//                                           m_targetPos,
-//                                           m_whiteBall.getRadius());
-//            m_power = 40f;
-//            if(nomHits==2)
-//            {
-//                m_power = 60;
-//            }else if(nomHits==3){
-//                m_power = 80f;
-//            }else{
-//                m_power=100;
-//            }
-//        }
-//        public void findRandomPocket()
-//        {
-//            m_targetPos = m_pockets[Random.Range(0,m_pockets.Length)].transform.position;
-//        }
+    protected AIExecutor m_Executor;
+    protected AICollector m_Collector;
+    protected AIDecider m_Decider;
 
-//        //can we use the ball
-//        public virtual bool canUseBall(PoolBall ball)
-//        {
-//            return true;
-//        }
+    public Vector3 hitpoint;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        m_Executor = new AIExecutor(this);
+        m_Collector = new AICollector(this);
+        m_Decider = new AIDecider(this);
+    }
 
+    public override void Begin()
+    {
+        base.Begin();
+        //m_OperateMask.SetActive(true);
+        //BaseUIController.GlobalMask.SetActive(true);
+        DecidedMessage decideMsg = m_Decider.Decide(m_Collector.Collect());
+        hitpoint = decideMsg.hitPoint;
+        m_Executor.SetDecision(decideMsg);
+    }
 
-//        public void findClosestAngleToBall()
-//        {
-//            float d0 = 1000000f;
-//            PoolRecycler pt = null;
-			
-//            for(int j=0; j<m_pockets.Length; j++)
-//            {	
-//                if(m_targetBall)
-//                {
-//                    Vector3 targetDir = m_pockets[j].transform.position -m_targetBall.transform.position;// - m_pockets[j].transform.position;
-//                    Vector3 forward = m_targetBall.transform.position - m_whiteBall.transform.position;
-//                    float D1 = Vector3.Angle(targetDir, forward);
-							
-//                    if(D1<d0)
-//                    {
-//                        pt = m_pockets[j];
-//                        m_targetPos = m_pockets[j].transform.position;
-//                        d0 = D1;
-//                    }
-//                }
-//            }
-//            if(pt)
-//            {
-////				Debug.Log ("Pocket Trigger " + pt.name);
-//            }
-//        }
-	
+    public void OnDrawGizmos()
+    {
+        if (Application.isPlaying)
+            Gizmos.DrawSphere(hitpoint, .1f);
+    }
 
-//        public void findClosestBall()
-//        {
-//            float d0 = 1000000f;
-//            for(int i=0; i<m_balls.Length; i++)
-//            {
-//                if(m_balls[i])
-//                {
-//                    float d1 = (m_whiteBall.transform.position - m_balls[i].transform.position).magnitude;
-//                    if(d1<d0 && m_balls[i]!=m_whiteBall && m_ball.pocketed==false){
-//                        m_targetBall = m_balls[i];
-//                        d0 = d1;
-//                    }
-//                }
-//            }
-//        }
-//    }
+    public override void End()
+    {
+        base.End();
+        //m_OperateMask.SetActive(false);
+    }
+
+    public override void PlayerUpdate()
+    {
+        m_Executor.Execute();
+    }
+}

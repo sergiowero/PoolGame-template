@@ -59,12 +59,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onCueballPotted += ComboBreak;
         m_MultiplierValue = 1;
         m_PlayerData = new PlayerData();
-#if UNITY_ANDROID && !UNITY_EDITOR
-        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.QuickFireGameRecordPath;
-        StartCoroutine(StreamTools.LoadBytes<PlayerData>(filePath, OnLoadedPlayerDataOnAndroid));
-#else
-        LoadPlayerData();
-#endif
+        m_PlayerData.HighScore = ConstantData.quickFireRecords.HighScore;
     }
 
     void OnDestroy()
@@ -103,29 +98,15 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         }
     }
 
-    protected void LoadPlayerData()
-    {
-        PlayerData data = StreamTools.DeserializeObject<PlayerData>(ConstantData.QuickFireGameRecordPath);
-        if(data != null)
-        {
-            m_PlayerData.HighScore = data.HighScore;
-        }
-    }
-
     protected void OnGameOver(IPlayer player)
     {
         m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 :  Mathf.Round((m_PlayerData.PottedCount / m_PlayerData.ShotCount) * 1000f) / 1000f;
         if(m_PlayerData.HighScore < m_PlayerData.Score)
         {
             m_PlayerData.HighScore = m_PlayerData.Score;
-            StreamTools.SerializeObject(m_PlayerData, ConstantData.QuickFireGameRecordPath);
-            BaseUIController.MSettlement.ShowCongratulationUI(m_PlayerData.Score);
+            ConstantData.quickFireRecords = m_PlayerData;
         }
-        else
-        {
-            BaseUIController.MSettlement.ShowRegretUI(m_PlayerData.Score, m_PlayerData.HighScore);
-        }
-        BaseUIController.MSettlement.SetPlayerData(m_PlayerData);
+        BaseUIController.MSettlement.GameOver(m_PlayerData);
     }
 
     public void SetTime(float time, bool immediate = false)

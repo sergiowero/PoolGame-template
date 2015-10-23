@@ -5,9 +5,9 @@ using System.Collections;
 public class SettlementGameover : MonoBehaviour 
 {
     [SerializeField]
-    protected Text m_HitRate;
+    protected Text m_Accuracy;
     [SerializeField]
-    protected Text m_MaxLink;
+    protected Text m_Combo;
     [SerializeField]
     protected Text m_Score;
     [SerializeField]
@@ -21,22 +21,19 @@ public class SettlementGameover : MonoBehaviour
     [SerializeField]
     private Text m_PlayTime;
     [SerializeField]
-    private Text m_AverageTime;
-    [SerializeField]
-    private Text m_MaxRank;
+    private Text m_Round;
 
     //缺少文字说明， 先这个样子
     public void SetData(QuickFirePlayer.PlayerData playerData)
     {
-        m_ShotCount.text = "击球数:" + playerData.ShotCount.ToString();
-        m_PottedCount.text = "进球数:" + playerData.PottedCount.ToString() ;
-        m_HitRate.text = "命中率:" + playerData.HitRate.ToString() + "%";
-        m_MaxLink.text = "最大连击数:" + playerData.MaxLink.ToString();
-        m_PlayTime.text = "游戏时间:" + playerData.PlayTime.ToString();
-        m_AverageTime.text = "平均游戏时间:" + playerData.AverageTime.ToString();
-        m_Score.text = "分数:" + playerData.Score.ToString();
-        m_HighScore.text = "最高分数:" + playerData.HighScore.ToString();
-        m_MaxRank.text = "最高Rank:" + playerData.MaxRank.ToString();
+        m_ShotCount.text = playerData.ShotCount.ToString();
+        m_PottedCount.text = playerData.PottedCount.ToString();
+        m_Accuracy.text = playerData.HitRate.ToString() + "%";
+        m_Combo.text =  "x" + playerData.MaxLink.ToString();
+        m_PlayTime.text = playerData.PlayTime.ToString() + "s";
+        m_Score.text = playerData.Score.ToString();
+        m_HighScore.text = playerData.HighScore.ToString();
+        m_Round.text = playerData.MaxRank.ToString();
     }
 
     public void OnBack()

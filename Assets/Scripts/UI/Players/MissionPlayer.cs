@@ -4,9 +4,6 @@ using System.Collections;
 
 public class MissionPlayer : MonoBehaviour, IPlayer
 {
-    private MissionRecords m_Records = null;
-    public MissionRecords Records { get { return m_Records; } }
-
     [SerializeField]
     private Text m_ShotsRemain;
     [SerializeField]
@@ -117,12 +114,12 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         m_LevelName.text = "Level " + LevelDataIndex.CurrentLevel.FileName;
         m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
         m_Score.text = "Score 0";
-#if UNITY_ANDROID && !UNITY_EDITOR
-        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.MissionLevelDataRecordPath;
-        StartCoroutine(StreamTools.LoadBytes<MissionRecords>(filePath, OnLoadedMissionRecordsOnAndroid));
-#else
-        LoadMissionRecords();
-#endif
+//#if UNITY_ANDROID && !UNITY_EDITOR
+//        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.MissionLevelDataRecordPath;
+//        StartCoroutine(StreamTools.LoadBytes<MissionRecords>(filePath, OnLoadedMissionRecordsOnAndroid));
+//#else
+//        LoadMissionRecords();
+//#endif
     }
 
     void OnDestroy()
@@ -142,42 +139,19 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         if(player != null && player.playerID == playerID)
         {
             AddScore(ShotsRemain * 200, null);
-            star = Mathf.Max(m_Records.GetStar(name), m_PlayerData.Star);
-            m_Records.Record(name, star, m_PlayerData.HighScore);
-            StreamTools.SerializeObject(m_Records, ConstantData.MissionLevelDataRecordPath);
-            BaseUIController.MSettlement.ShowCongratulationUI(m_PlayerData.Score);
-            PlayerPrefs.SetString(ConstantData.MissionProgressKeyName, ConstantData.LevelDatas.Next(LevelDataIndex.CurrentLevel).FileName);
+            star = Mathf.Max(ConstantData.missionRecords.GetStar(name), m_PlayerData.Star);
+            ConstantData.missionRecords.Record(name, star, m_PlayerData.HighScore);
+            StreamTools.SerializeObject(ConstantData.missionRecords, ConstantData.MissionLevelDataRecordPath);
+            BaseUIController.MSettlement.MissionComplete(m_PlayerData);
+            string nextMission = ConstantData.LevelDatas.Next(LevelDataIndex.CurrentLevel).FileName;
+            if(ConstantData.LevelDatas.Comp(PlayerPrefs.GetString(ConstantData.MissionProgressKeyName), nextMission) == -1)
+                PlayerPrefs.SetString(ConstantData.MissionProgressKeyName, nextMission);
         }
         else
         {
-            BaseUIController.MSettlement.ShowRegretUI(m_PlayerData.Score, m_PlayerData.HighScore);
+            BaseUIController.MSettlement.MissionFail(m_PlayerData);
         }
-        BaseUIController.MSettlement.SetMissionData(m_PlayerData);
-    }
-
-    protected void OnLoadedMissionRecordsOnAndroid(MissionRecords records)
-    {
-        if (records != null)
-        {
-            m_Records = records;
-        }
-        else
-        {
-            m_Records = new MissionRecords();
-        }
-        int highScoreRecord = m_Records.GetHighScore(LevelDataIndex.CurrentLevel.FileName);
-        m_PlayerData.HighScore = highScoreRecord;
-    }
-
-    protected void LoadMissionRecords()
-    {
-        m_Records = StreamTools.DeserializeObject<MissionRecords>(ConstantData.MissionLevelDataRecordPath);
-        if(m_Records == null)
-        {
-            m_Records = new MissionRecords();
-        }
-        int highScoreRecord = m_Records.GetHighScore(LevelDataIndex.CurrentLevel.FileName);
-        m_PlayerData.HighScore = highScoreRecord;
+        //BaseUIController.MSettlement.SetMissionData(m_PlayerData);
     }
 
     protected void FireBall()

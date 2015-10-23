@@ -26,13 +26,15 @@ public class BaseUIController : MonoBehaviour {
     [HideInInspector]
     private TopMenu m_TopMenu;
     [SerializeField]
-    private Settlement m_Settlement;
+    private SettlementUIManager m_Settlement;
     [SerializeField]
     private TextTips m_Tips;
     [SerializeField]
     private GameObject m_GlobalMask;
     [SerializeField]
     private FollowWorldObject m_Hand;
+    [SerializeField]
+    private GameObject m_BlackMask;
 
     public static TextArea text { get { return m_Instance.m_Text; } }
     public static OperateArea cueOperateArea { get { return m_Instance.m_CueOperateArea; } }
@@ -40,7 +42,7 @@ public class BaseUIController : MonoBehaviour {
     public static CueAndGuidelines cueAndLines { get { return m_Instance.m_CueAndLines; } }
     public static Siding siding { get { return m_Instance.m_Siding; } }
     public static  Transform TopMenuRoot { get { return m_Instance.m_TopMenuRoot; } }
-    public static Settlement MSettlement { get { return m_Instance.m_Settlement; } }
+    public static SettlementUIManager MSettlement { get { return m_Instance.m_Settlement; } }
     public static GameObject GlobalMask { get { return m_Instance.m_GlobalMask; } }
     public static FollowWorldObject hand { get { return m_Instance.m_Hand; } }
     public static TopMenu topMenu 
@@ -61,6 +63,7 @@ public class BaseUIController : MonoBehaviour {
         m_Instance = this;
         m_Text.gameObject.SetActive(false);
         hand.gameObject.SetActive(false);
+        m_BlackMask.SetActive(true);
         PoolRulesBase.onFireBall += OnFireBall;
         PoolRulesBase.onNewTurn += OnStartRound;
     }

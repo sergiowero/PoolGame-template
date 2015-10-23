@@ -96,4 +96,15 @@ public class MathTools
         return v;
     }
 
+    /// <summary>
+    /// the angle between v1 and v2 , not from v1 to v2
+    /// </summary>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    /// <returns></returns>
+    public static float AngleBetween(Vector3 v1, Vector3 v2)
+    {
+        float radian = Mathf.Acos(Vector3.Dot(v1.normalized, v2.normalized));
+        return Mathf.Rad2Deg * radian;
+    }
 }

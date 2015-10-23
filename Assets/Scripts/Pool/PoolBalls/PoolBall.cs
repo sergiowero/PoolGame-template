@@ -52,8 +52,11 @@ public class PoolBall : MonoBehaviour
 
     protected BallShadowRenderer m_ShadowRenderer;
 
-    protected BallRefLightRenderer m_LightRenderer;
-    public BallRefLightRenderer LightRenderer { get { return m_LightRenderer; } }
+    protected Follower m_LightRenderer;
+    public Follower LightRenderer { get { return m_LightRenderer; } }
+
+    protected Follower m_FocusRenderer;
+    public Follower focusRenderer { get { return m_FocusRenderer; } }
 
     //protected BallPhysicalDrag m_BallPhysicalDrag;
     protected PhysicalSupportTools m_BallPhysicalDrag;
@@ -75,7 +78,9 @@ public class PoolBall : MonoBehaviour
     {
         m_rigidbody = gameObject.GetComponent<Rigidbody>();
         m_ShadowRenderer = GetComponent<BallShadowRenderer>();
-        m_LightRenderer = GetComponent<BallRefLightRenderer>();
+        m_LightRenderer = transform.FindChild("RefLight").GetComponent<Follower>();
+        m_FocusRenderer = transform.FindChild("Focus").GetComponent<Follower>();
+        m_FocusRenderer.Close();
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         m_Mesh = GetComponent<MeshRenderer>();
         //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
@@ -297,7 +302,7 @@ public class PoolBall : MonoBehaviour
         transform.FindChild("Shadow").gameObject.SetActive(false);
         GetComponent<BallShadowRenderer>().enabled = false;
         transform.FindChild("RefLight").gameObject.SetActive(false);
-        GetComponent<BallRefLightRenderer>().enabled = false;
+        GetComponent<Follower>().enabled = false;
         m_state = State.HIDE;
     }
 
@@ -312,7 +317,7 @@ public class PoolBall : MonoBehaviour
         GetComponent<BallShadowRenderer>().enabled = true;
         m_state = State.IDLE;
         transform.FindChild("RefLight").gameObject.SetActive(true);
-        GetComponent<BallRefLightRenderer>().enabled = true;
+        GetComponent<Follower>().enabled = true;
     }
 
     public bool IsBallDisable()

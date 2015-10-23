@@ -20,6 +20,14 @@ public class PocketTrigger : MonoBehaviour
     [SerializeField]
     private bool m_debugmode = false;
 
+    [SerializeField]
+    private Transform m_PointerTransform;
+
+    public Vector3 pointerPosition { get { return m_PointerTransform.position; } }
+
+    [SerializeField]
+    private bool m_DrawGizmo;
+
     void Awake()
     {
         m_Punishment = transform.FindChild("PunishmentSprite").GetComponent<SpriteRenderer>();
@@ -128,5 +136,15 @@ public class PocketTrigger : MonoBehaviour
                 return Pools.PocketTriggers[i];
         }
         return null;
+    }
+
+    public void OnDrawGizmos()
+    {
+        if(m_DrawGizmo)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawCube(pointerPosition, Vector3.one * .2f);
+            Gizmos.color = Color.white;
+        }
     }
 }

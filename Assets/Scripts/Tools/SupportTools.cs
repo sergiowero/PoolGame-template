@@ -64,8 +64,6 @@ public class SupportTools
         {
             v.z = position.z;
         }
-        Rigidbody r = o.GetComponent<Rigidbody>();
-        if (r && useRigibody) r.MovePosition(v);
-        else o.transform.position = v;
+        o.transform.position = v;
     }
 }

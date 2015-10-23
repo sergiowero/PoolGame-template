@@ -154,6 +154,41 @@ public class Pools : MonoBehaviour
         }
     }
 
+    private List<PoolBall> _GetBalls(int min, int max)
+    {
+        min = Mathf.Max(0, min);
+        max = Mathf.Min(15, max);
+        List<PoolBall> list = new List<PoolBall>();
+        for(int i = min; i <= max; i++)
+        {
+            if(m_Balls[i].BallState == PoolBall.State.IDLE)
+                list.Add(m_Balls[i]);
+        }
+        return list;
+    }
+
+    public static List<PoolBall> GetSolidAndStripeBalls()
+    {
+        List<PoolBall> list = new List<PoolBall>();
+        list.AddRange(GetSolidBalls());
+        list.AddRange(GetStripeBalls());
+        return list;
+    }
+
+    public static List<PoolBall> GetSolidBalls()
+    {
+        List<PoolBall> list = new List<PoolBall>();
+        list.AddRange(m_Instance._GetBalls(1, 7));
+        return list;
+    }
+
+    public static List<PoolBall> GetStripeBalls()
+    {
+        List<PoolBall> list = new List<PoolBall>();
+        list.AddRange(m_Instance._GetBalls(9, 15));
+        return list;
+    }
+
     public static void AllBallsKinematic(bool cueBallKinematic = false)
     {
         m_Instance._AllBallsKinematic(cueBallKinematic);
@@ -262,5 +297,21 @@ public class Pools : MonoBehaviour
     public static void EnableStandardBalls()
     {
         m_Instance._EnableStandardBalls();
+    }
+
+    public static Vector2 GetTableSize()
+    {
+        Constraint c = CueBall.GetComponent<Constraint>();
+        Vector2 v = new Vector2(c.max.x - c.min.x, c.max.z - c.min.z);
+        return v;
+    }
+
+    public static void GetTableMinAndMaxPoints(out Vector3 min, out Vector3 max)
+    {
+        Constraint c = CueBall.GetComponent<Constraint>();
+        min = c.min;
+        min.y = CueBall.transform.position.y;
+        max = c.max;
+        max.y = CueBall.transform.position.y;
     }
 }

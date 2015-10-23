@@ -58,6 +58,7 @@
      <None Include="Assets\Plugins\Pixelplacement\iTween\ReadMe!\ReadMe!.txt" />
      <None Include="Assets\MyTest\FullSea.shader" />
      <None Include="Assets\MyTest\PlaneShader 1.shader" />
+     <None Include="Assets\Datas\Chapter.xml" />
      <None Include="Assets\Shaders\Mobile-Specular.shader" />
      <None Include="Assets\MyTest\StencilTest.shader" />
  <Reference Include="UnityEngine.UI">

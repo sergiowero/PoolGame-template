@@ -31,16 +31,20 @@ public class GameManager : MonoBehaviour
         switch (ConstantData.GType)
         {
             case GameType.QuickFire:
-                BaseUIController.topMenu = SupportTools.AddChild<TopMenuQuickFire>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuQuickFire");
+                BaseUIController.topMenu = SupportTools.AddChild<TopMenuQuickFire>(BaseUIController.TopMenuRoot.gameObject, "UI/BattleScene/TopMenuQuickFire");
                 Rules = gameObject.AddComponent<PoolRulesQuickFire>();
                 break;
             case GameType.Standard:
-                BaseUIController.topMenu = SupportTools.AddChild<TopMenuStandard>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuStandard");
+                BaseUIController.topMenu = SupportTools.AddChild<TopMenuStandard>(BaseUIController.TopMenuRoot.gameObject, "UI/BattleScene/TopMenuStandard");
                 Rules = gameObject.AddComponent<PoolRulesStandard>();
                 break;
             case GameType.Mission:
-                BaseUIController.topMenu = SupportTools.AddChild<TopMenuMission>(BaseUIController.TopMenuRoot.gameObject, "TestRes/TopMenuMission");
+                BaseUIController.topMenu = SupportTools.AddChild<TopMenuMission>(BaseUIController.TopMenuRoot.gameObject, "UI/BattleScene/TopMenuMission");
                 Rules = gameObject.AddComponent<PoolRulesMission>();
+                break;
+            case GameType.AI:
+                BaseUIController.topMenu = SupportTools.AddChild<TopMenuStandard>(BaseUIController.TopMenuRoot.gameObject, "UI/BattleScene/TopMenuMultipleAI");
+                Rules = gameObject.AddComponent<PoolRulesMultiple>();
                 break;
         }
         Rules.SetPlayers(BaseUIController.topMenu.GetPlayers());
