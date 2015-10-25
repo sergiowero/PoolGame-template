@@ -110,7 +110,13 @@ namespace PoolsEditor
             foreach (Transform t in ts)
             {
                 Transform lightRenderer = t.FindChild("Focus");
-                lightRenderer.gameObject.SetActive(true);
+                Follower f = lightRenderer.GetComponent<Follower>();
+                if (!f) f = lightRenderer.gameObject.AddComponent<Follower>();
+                f.SetRefObject(t);
+                f.SetOffset(new Vector3(0, -.16f, 0));
+                Follower ff = t.GetComponent<Follower>();
+                if (ff)
+                    DestroyImmediate(ff);
             }
         }
 

@@ -43,7 +43,8 @@ public class PoolRulesStandard : PoolRulesBase
         base.Start();
         m_TimePerRound = ConstantData.TimePerRoundLow;
         m_Time = m_TimePerRound;
-    } 
+    } 
+
 
     private bool AnyBallWithTypeEnterPocket(BallType type)
     {
@@ -161,7 +162,7 @@ public class PoolRulesStandard : PoolRulesBase
         //black 8 enter the pocket 
 
         //current player hits the black 8 in the pocket at the first round, current player win
-        if (FirstRound)
+        if (firstRound)
             return true;
 
         //current player has the target balls or current player hit the cueball in the pocket
@@ -183,7 +184,7 @@ public class PoolRulesStandard : PoolRulesBase
         //time out
         if (m_TimeOut) return BaseUIController.text.Show("时间到，由对手放置白球");
 
-        if (FirstRound)
+        if (firstRound)
         {
             //if there is no at least 4 balls hit the wall
             if (m_HittingRailBallsCount < 4 && !m_CueBallHitRail &&m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("开球局必须有至少4个球或者白球碰到岸边");
@@ -225,7 +226,7 @@ public class PoolRulesStandard : PoolRulesBase
     public override void PotBall(PoolBall ball, PocketIndexes pocket)
     {
         base.PotBall(ball, pocket);
-        if (CurrentPlayer.TargetBallType == BallType.NONE && ball.ballType != BallType.WHITE && ball.ballType != BallType.BLACK && !FirstRound)
+        if (CurrentPlayer.TargetBallType == BallType.NONE && ball.ballType != BallType.WHITE && ball.ballType != BallType.BLACK && !firstRound)
         {
             CurrentPlayer.TargetBallType = ball.ballType;
             OpponentPlayer.TargetBallType = ball.ballType == BallType.SOLID ? BallType.STRIPE : BallType.SOLID;

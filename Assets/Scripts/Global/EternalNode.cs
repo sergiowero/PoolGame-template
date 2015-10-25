@@ -28,7 +28,7 @@ public class EternalNode : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             if (PlayerPrefs.HasKey(m_LastPhysicalKey))
             {
-                ConstantData.MPhysical = PlayerPrefs.GetInt(m_LastPhysicalKey);
+                ConstantData.physical = PlayerPrefs.GetInt(m_LastPhysicalKey);
             }
             if (PlayerPrefs.HasKey(m_QuitTimeKey))
             {
@@ -36,13 +36,8 @@ public class EternalNode : MonoBehaviour
                 DTime now = DTime.Now;
                 DSpan span = now - time;
                 int ap = span.Minutes / 30;
-                ConstantData.MPhysical += ap;
-                if (ConstantData.MPhysical > 20)
-                {
-                    ConstantData.MPhysical = 20;
-                }
+                ConstantData.physical += ap;
             }
-            LaunchUIController.SetPhysical(ConstantData.MPhysical);
         }
     }
 
@@ -59,11 +54,8 @@ public class EternalNode : MonoBehaviour
         m_PhysicalRcoverTime += m_TimeDelta;
         if(m_PhysicalRcoverTime > ConstantData.PhysicalRecoverInterval)
         {
-            ConstantData.MPhysical++;
-            if (ConstantData.MPhysical > ConstantData.maxPhysical)
-                ConstantData.MPhysical = ConstantData.maxPhysical;
+            ConstantData.physical++;
             m_PhysicalRcoverTime = 0;
-            LaunchUIController.SetPhysical(ConstantData.MPhysical);
         }
     }
 
@@ -71,6 +63,6 @@ public class EternalNode : MonoBehaviour
     {
         m_Instance = null;
         PlayerPrefs.SetString(m_QuitTimeKey, System.DateTime.Now.ToString());
-        PlayerPrefs.SetInt(m_LastPhysicalKey, ConstantData.MPhysical);
+        PlayerPrefs.SetInt(m_LastPhysicalKey, ConstantData.physical);
     }
 }

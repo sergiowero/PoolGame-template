@@ -44,7 +44,8 @@ public class AIPlayer : BasePlayer
     #region Decider
     protected class AIDecider
     {
-        AIPlayer player;
+        //not use now
+        public AIPlayer player;
         CollectedMessage cMsg;
 
         public AIDecider(AIPlayer _player)
@@ -58,8 +59,10 @@ public class AIPlayer : BasePlayer
             DecidedMessage dMsg = new DecidedMessage();
 
             Dictionary<PoolBall, List<PocketTrigger>> considerBalls = GetConsiderBalls();
+            List<KeyValuePair<PoolBall, Vector3>> shootableBalls = GetShootableBalls();
             dMsg.drag = GameManager.Rules.State == GlobalState.DRAG_WHITEBALL;
             dMsg.considerBalls = considerBalls;
+            dMsg.shootableBalls = shootableBalls;
             PoolBall targetBall;
             PocketTrigger targetPocket;
             if (dMsg.drag)
@@ -77,12 +80,26 @@ public class AIPlayer : BasePlayer
             }
             else
             {
-                int i = Random.Range(0, cMsg.ballList.Count - 1), j = Random.Range(0, Pools.PocketTriggers.Count - 1);
-                dMsg.targetBall = cMsg.ballList[i];
+                if(dMsg.shootableBalls.Count != 0)
+                {
+                    int i = Mathf.Max(Random.Range(0, dMsg.shootableBalls.Count - 1), 0);
+                    dMsg.targetBall = dMsg.shootableBalls[i].Key;
+                    dMsg.hitPoint = dMsg.shootableBalls[i].Value;
+                }
+                else//如果目标类型的球无球可打,则随便找一个能打到的球
+                {
+                    int i = Mathf.Max(Random.Range(0, cMsg.ballList.Count - 1));
+                    dMsg.targetBall = cMsg.ballList[i];
+                    dMsg.hitPoint = dMsg.targetBall.transform.position;
+                }
+                int j = Random.Range(0, Pools.PocketTriggers.Count - 1);
                 dMsg.targetPocket = Pools.PocketTriggers[j];
                 dMsg.cueballPosition = Pools.CueBall.GetPosition();
-                dMsg.hitPoint = ConsiderHitPoint(dMsg.targetBall, dMsg.targetPocket);
                 dMsg.powerScale = 1;
+            }
+            if(Random.Range(0,100) > (int)AIPlayer.difficulty)
+            {
+                dMsg.hitPoint += new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
             }
             return dMsg;
         }
@@ -174,10 +191,11 @@ public class AIPlayer : BasePlayer
                 balls.Add(ball);
                 angles.Add(angle);
             }
-            float rand = Random.Range(0, totleAngle);
+            float rand = Random.Range(0, totleAngle), threshold = 0;
             for (int i = 0, count = angles.Count; i < count; i++)
             {
-                if(rand < angles[i])
+                threshold += angles[i];
+                if (rand < threshold)
                 {
                     PoolBall k = balls[i];
                     targetBall = k;
@@ -233,6 +251,42 @@ public class AIPlayer : BasePlayer
             return space;
         }
 
+        private List<KeyValuePair<PoolBall, Vector3>> GetShootableBalls()
+        {
+            List<KeyValuePair<PoolBall, Vector3>> shootableBalls = new List<KeyValuePair<PoolBall, Vector3>>();
+            Vector3 cueBallPosition = Pools.CueBall.GetPosition();
+            for(int i = 0; i < cMsg.ballList.Count; i++)
+            {
+                PoolBall ball = cMsg.ballList[i];
+                Vector3 hitPoint = Vector3.zero;
+                if (ball.BallState != PoolBall.State.IDLE)
+                    continue;
+
+                //求出dir的2条Y坐标为0的垂直向量, 得到目标球正对于白球的左侧和右侧的击球点,判断白球是否能击中 2个点或者白球中心的点的其中一个
+                Vector3 dir = ball.transform.position - cueBallPosition;
+                Vector2[] perpendicularVectors = MathTools.PerpendicularVector2D(new Vector2(dir.x, dir.z));
+
+
+                Vector3[] point3 = new Vector3[] 
+                { 
+                    ball.transform.position, 
+                    ball.transform.position + new Vector3(perpendicularVectors[0].x, 0, perpendicularVectors[0].y) * ball.GetRadius(),
+                    ball.transform.position + new Vector3(perpendicularVectors[1].x, 0, perpendicularVectors[1].y) * ball.GetRadius()
+                };
+
+                for(int j = 0; j < point3.Length; j++)
+                {
+                    hitPoint = point3[j];
+                    if(!CheckObastacleBetweenTargetPositionAndCueball(ball, hitPoint, cueBallPosition))
+                    {
+                        shootableBalls.Add(new KeyValuePair<PoolBall, Vector3>(ball, hitPoint));
+                        break;
+                    }
+                }
+            }
+            return shootableBalls;
+        }
+
         private Dictionary<PoolBall, List<PocketTrigger>> GetConsiderBalls()
         {
             Dictionary<PoolBall, List<PocketTrigger>> considerableBalls = new Dictionary<PoolBall, List<PocketTrigger>>();
@@ -244,7 +298,7 @@ public class AIPlayer : BasePlayer
 
                 List<PocketTrigger> triggerList = new List<PocketTrigger>();
                 for (int j = 0; j < Pools.PocketTriggers.Count; j++)
-                {
+                { 
                     PocketTrigger trigger = Pools.PocketTriggers[j];
                     //is any obstacle between the ball and the pocket ? 
                     bool b1 = !CheckObastacleBetweenBallAndPocket(ball, trigger);
@@ -296,7 +350,7 @@ public class AIPlayer : BasePlayer
 
             float angle = MathTools.AngleBetween(hitPoint - cueBallPosition, pocketPosition - targetBallPosition);
             float mag = (targetBallPosition - cueBallPosition).magnitude + (pocketPosition - targetBallPosition).magnitude;
-            return Mathf.Max(1, mag / Pools.GetTableSize().x * 1.5f);
+            return Mathf.Min(1, mag / Pools.GetTableSize().x);
         }
 
         private Vector3 GetRandomHitPoint()
@@ -317,13 +371,15 @@ public class AIPlayer : BasePlayer
         public PocketTrigger targetPocket;
 
         public Dictionary<PoolBall, List<PocketTrigger>> considerBalls = new Dictionary<PoolBall, List<PocketTrigger>>();
+        public List<KeyValuePair<PoolBall, Vector3>> shootableBalls = new List<KeyValuePair<PoolBall, Vector3>>();
     }
     #endregion //Decider
 
     #region Executor
     protected class AIExecutor
     {
-        AIPlayer player;
+        //not use now
+        public AIPlayer player;
 
         DecidedMessage msg;
 
@@ -366,10 +422,10 @@ public class AIPlayer : BasePlayer
             }
             if(thinkingTime <= 0)
             {
-                if(deQueue && behaviours.Count != 0)
+                if(/*deQueue && */behaviours.Count != 0)
                 {
                     Debug.Log("AI behaviours dequeue");
-                    deQueue = false;
+                    //deQueue = false;
                     thinkingTime = GenerateThinkingTime();
                     behaviours.Dequeue().Do();
                 }
@@ -443,6 +499,8 @@ public class AIPlayer : BasePlayer
 
     public Vector3 hitpoint;
 
+    public static AIDifficulty difficulty = AIDifficulty.Medium;
+
     protected override void Awake()
     {
         base.Awake();
@@ -461,10 +519,6 @@ public class AIPlayer : BasePlayer
         //BaseUIController.GlobalMask.SetActive(true);
         DecidedMessage decideMsg = m_Decider.Decide(m_Collector.Collect());
         hitpoint = decideMsg.hitPoint;
-        BaseUIController.Instance.targetPall.transform.position = MathTools.World2UI(decideMsg.targetBall.transform.position);
-        BaseUIController.Instance.targetPocket.transform.position = MathTools.World2UI(decideMsg.targetPocket.pointerPosition);
-        BaseUIController.Instance.hitpoint.transform.position = MathTools.World2UI(decideMsg.hitPoint);
-        BaseUIController.Instance.dropPosition.transform.position = MathTools.World2UI(decideMsg.cueballPosition);
         m_Executor.SetDecision(decideMsg);
     }
 
@@ -482,10 +536,10 @@ public class AIPlayer : BasePlayer
 
     public override void PlayerUpdate()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            m_Executor.deQueue = true;
-        }
+        //if(Input.GetKeyDown(KeyCode.A))
+        //{
+        //    m_Executor.deQueue = true;
+        //}
         m_Executor.Execute();
     }
 }

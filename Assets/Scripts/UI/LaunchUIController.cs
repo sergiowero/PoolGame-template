@@ -35,9 +35,11 @@ public class LaunchUIController : MonoBehaviour
 
     public static void SetPhysical(int value) 
     {
+        if (!m_Instance)
+            return;
         value = Mathf.Max(0, value);
         m_Instance.m_Physical.text = value.ToString() + "/" + ConstantData.maxPhysical;
-        m_Instance.m_PhysicalBar.fillAmount = value / ConstantData.maxPhysical;
+        m_Instance.m_PhysicalBar.fillAmount = (float)value / ConstantData.maxPhysical;
     }
 
     void Awake()
@@ -46,6 +48,7 @@ public class LaunchUIController : MonoBehaviour
         ConstantData.GType = GameType.None;
         m_Instance = this;
         m_Blank.SetActive(false);
+        m_BlackMask.gameObject.SetActive(false);
         m_LoadingFlag.SetActive(true);
         //Get chapter level prefab
         m_ChapterLevelPrefab = m_LevelRoot.transform.GetChild(0).GetComponent<ChapterLevel>();
@@ -99,28 +102,50 @@ public class LaunchUIController : MonoBehaviour
     public void LoadQuickFire()
     {
         ConstantData.GType = GameType.QuickFire;
-        ConstantData.MPhysical -= 1;
-        SetPhysical(ConstantData.MPhysical);
+        ConstantData.physical -= 1;
         LoadScene(1);
     }
 
     public void LoadStandard()
     {
         ConstantData.GType = GameType.Standard;
-        ConstantData.MPhysical -= 1;
-        SetPhysical(ConstantData.MPhysical);
+        ConstantData.physical -= 1;
         LoadScene(1);
     }
 
-    public void LoadLevel(ChapterCities city)
+    public void LoadBattleWithLowAI()
     {
+        LoadBattleWithAI(AIDifficulty.Low);
+    }
+
+    public void LoadBattleWithVeryLowAI()
+    {
+        LoadBattleWithAI(AIDifficulty.VeryLow);
+    }
+
+    public void LoadBattleWithMediumAI()
+    {
+        LoadBattleWithAI(AIDifficulty.Medium);
+    }
+
+    private void LoadBattleWithAI(AIDifficulty difficulty)
+    {
+        AIPlayer.difficulty = difficulty;
+        ConstantData.GType = GameType.AI;
+        ConstantData.physical -= 1;
+        LoadScene(1);
+    }
+
+    public void LoadLevel(GameObject go)
+    {
+        ChapterCities city = go.GetComponent<ChapterCities>();
         int childCount = m_LevelRoot.transform.childCount;
         IList<LevelData> levels = ConstantData.LevelDatas.DumpLevelDatasWithChapter(city.chapter);
         int i;
         for (i = 0; i < levels.Count; i++)
         {
             ChapterLevel l;
-            if(i < childCount)
+            if (i < childCount)
             {
                 l = m_LevelRoot.transform.GetChild(i).GetComponent<ChapterLevel>();
             }
@@ -133,10 +158,10 @@ public class LaunchUIController : MonoBehaviour
             l.text.text = (i + 1).ToString();
             l.name = "Level-" + l.text.text;
             l.SetStar(ConstantData.missionRecords.GetStar(levels[i].FileName));
-            l.mask.SetActive(ConstantData.LevelDatas.Comp(m_MissionProgress, levels[i].FileName)  == -1);
+            l.mask.SetActive(ConstantData.LevelDatas.Comp(m_MissionProgress, levels[i].FileName) == -1);
         }
         m_LevelRoot.GetComponent<RectTransform>().sizeDelta = new Vector2(i * m_LevelRoot.cellSize.x + (i - 1) * m_LevelRoot.spacing.x, m_LevelRoot.cellSize.y);
-        while(i < childCount)
+        while (i < childCount)
         {
             m_LevelRoot.transform.GetChild(i).gameObject.SetActive(false);
         }
@@ -146,16 +171,15 @@ public class LaunchUIController : MonoBehaviour
     {
         LevelDataIndex.CurrentLevel = l.levelData;
         ConstantData.GType = GameType.Mission;
-        ConstantData.MPhysical -= 1;
-        SetPhysical(ConstantData.MPhysical);
+        ConstantData.physical -= 1;
         LoadScene(1);
     }
 
     public void LoadScene(int sceneIndex)
     {
         //animation tools component attached at blackmask has a method named loadscene. we use this
-        //m_BlackMask.gameObject.SetActive(true);
-        //m_BlackMask.GetComponent<AnimationTools>().sceneIndex = 1;
-        Application.LoadLevel(sceneIndex);
+        m_BlackMask.gameObject.SetActive(true);
+        m_BlackMask.GetComponent<AnimationTools>().sceneIndex = 1;
+        //Application.LoadLevel(sceneIndex);
     }
 }

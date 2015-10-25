@@ -66,6 +66,13 @@ public enum GameType
     AI = 4
 }
 
+public enum AIDifficulty
+{
+    VeryLow = 30,
+    Low = 50,
+    Medium = 70
+}
+
 public abstract class PoolRulesBase : MonoBehaviour
 {
     public static Delegate1Args<int> onNewTurn;
@@ -92,7 +99,9 @@ public abstract class PoolRulesBase : MonoBehaviour
         m_State = m_PrevState;
     }
     protected int m_Turn = 0;
-    public bool FirstRound { get { return m_Turn == 1; } }
+    public bool firstRound { get { return m_Turn == 1; } }
+
+    //public int round { get { return m_Turn; } }
 
     protected bool m_GameOver = false;
 

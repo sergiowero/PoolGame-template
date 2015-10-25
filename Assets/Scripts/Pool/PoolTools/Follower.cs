@@ -12,11 +12,16 @@ public class Follower : MonoBehaviour {
 
     private Transform m_Trans;
 
+    [SerializeField]
+    private bool m_DisableAtAwake;
+
     void Awake()
     {
         m_Trans = transform;
         m_Rotation = m_Trans.rotation;
         m_Position = m_Trans.position;
+        if (m_DisableAtAwake)
+            Close();
     }
 
     void LateUpdate()

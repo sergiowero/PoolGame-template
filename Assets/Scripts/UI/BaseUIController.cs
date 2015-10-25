@@ -36,11 +36,6 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private GameObject m_BlackMask;
 
-    public Image hitpoint;
-    public Image targetPall;
-    public Image targetPocket;
-    public Image dropPosition;
-
     public static BaseUIController Instance { get { return m_Instance; } }
 
 

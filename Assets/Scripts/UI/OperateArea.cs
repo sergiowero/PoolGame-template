@@ -251,7 +251,7 @@ public class OperateArea : MonoBehaviour {
     private void RoundBegin(int playerID)
     {
         BaseUIController.cueAndLines.gameObject.SetActive(true);
-        if (GameManager.Rules.FirstRound)
+        if (GameManager.Rules.firstRound)
             Pools.Cue.Reset(); 
         //else
         //{

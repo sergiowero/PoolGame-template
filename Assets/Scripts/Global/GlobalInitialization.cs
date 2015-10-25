@@ -10,6 +10,9 @@ public sealed class GlobalInitialization : MonoBehaviour
     void Awake()
     {
         ConstantData.LevelDatas = m_LevelDatas;
+        ConstantData.missionRecords = LoadRecords<MissionRecords>(ConstantData.missionLevelDataRecordPath);
+        ConstantData.quickFireRecords = LoadRecords<QuickFirePlayer.PlayerData>(ConstantData.quickFireGameRecordPath);
+        ConstantData.achieveRecords = LoadRecords<AchieveRecords>(ConstantData.achieveDataRecordPath);
     }
 
     void Start()
@@ -17,8 +20,6 @@ public sealed class GlobalInitialization : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));
 #endif
-        ConstantData.missionRecords = LoadRecords<MissionRecords>(ConstantData.MissionLevelDataRecordPath);
-        ConstantData.quickFireRecords = LoadRecords<QuickFirePlayer.PlayerData>(ConstantData.QuickFireGameRecordPath);
     }
 
     #region IEnumerator

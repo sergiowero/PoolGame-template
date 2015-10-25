@@ -76,17 +76,24 @@ public class ConstantData
             return _OutlineAndBallLayer;
         }
     }
+    public static string achieveDataRecordPath
+    {
+        get
+        {
+            return StreamTools.GetPersistentDataPath() + "GameRecords/AchieveData";
+        }
+    }
 
     private static PoolDataAsset PoolDatas = null;
     public static string PoolDataAssetsFile { get { return StreamTools.GetStreamingAssetsPath(true) + "PoolEnvironmentData/PoolPhysical.asset"; } }
-    public static string QuickFireGameRecordPath 
+    public static string quickFireGameRecordPath 
     {
         get 
         { 
             return StreamTools.GetPersistentDataPath() + "GameRecords/QuickFireData";
         } 
     }
-    public static string MissionLevelDataRecordPath
+    public static string missionLevelDataRecordPath
     { 
         get 
         {
@@ -98,11 +105,34 @@ public class ConstantData
 
     public static GameType GType = GameType.None;
 
-    public static int MPhysical = 20;
+    private static int _Physical = 20;
+
+    public static int physical
+    {
+        set
+        {
+            _Physical = value;
+            if (_Physical > maxPhysical)
+                _Physical = maxPhysical;
+            LaunchUIController.SetPhysical(_Physical);
+        }
+        get { return _Physical; }
+    }
 
     public const int maxPhysical = 20;
 
     public static LevelDataIndex LevelDatas;
+
+    private static AchieveRecords _AchieveRecords;
+    public static AchieveRecords achieveRecords
+    {
+        set
+        {
+            _AchieveRecords = value;
+            StreamTools.SerializeObject(_AchieveRecords, ConstantData.achieveDataRecordPath);
+        }
+        get { return _AchieveRecords; }
+    }
 
     private static MissionRecords _MissionRecords;
     public static MissionRecords missionRecords
@@ -110,7 +140,7 @@ public class ConstantData
         set 
         {
             _MissionRecords = value;
-            StreamTools.SerializeObject(_MissionRecords, ConstantData.MissionLevelDataRecordPath);
+            StreamTools.SerializeObject(_MissionRecords, ConstantData.missionLevelDataRecordPath);
         }
         get { return _MissionRecords; }
     }
@@ -122,7 +152,7 @@ public class ConstantData
         set
         {
             _QuickFireRecords = value;
-            StreamTools.SerializeObject(_QuickFireRecords, ConstantData.QuickFireGameRecordPath);
+            StreamTools.SerializeObject(_QuickFireRecords, ConstantData.quickFireGameRecordPath);
         }
         get { return _QuickFireRecords; }
     }

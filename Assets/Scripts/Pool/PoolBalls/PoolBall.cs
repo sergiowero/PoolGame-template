@@ -80,7 +80,6 @@ public class PoolBall : MonoBehaviour
         m_ShadowRenderer = GetComponent<BallShadowRenderer>();
         m_LightRenderer = transform.FindChild("RefLight").GetComponent<Follower>();
         m_FocusRenderer = transform.FindChild("Focus").GetComponent<Follower>();
-        m_FocusRenderer.Close();
         sphereCollider = gameObject.GetComponent<SphereCollider>();
         m_Mesh = GetComponent<MeshRenderer>();
         //m_BallPhysicalDrag = GetComponent<BallPhysicalDrag>();
@@ -166,6 +165,7 @@ public class PoolBall : MonoBehaviour
     public void OnFireBall()
     {
         m_slowTime = 0;
+        m_FocusRenderer.Close();
     }
 
     public virtual void OnNewTurn(int turnIndex)

@@ -141,11 +141,17 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             AddScore(ShotsRemain * 200, null);
             star = Mathf.Max(ConstantData.missionRecords.GetStar(name), m_PlayerData.Star);
             ConstantData.missionRecords.Record(name, star, m_PlayerData.HighScore);
-            StreamTools.SerializeObject(ConstantData.missionRecords, ConstantData.MissionLevelDataRecordPath);
+            StreamTools.SerializeObject(ConstantData.missionRecords, ConstantData.missionLevelDataRecordPath);
             BaseUIController.MSettlement.MissionComplete(m_PlayerData);
             string nextMission = ConstantData.LevelDatas.Next(LevelDataIndex.CurrentLevel).FileName;
             if(ConstantData.LevelDatas.Comp(PlayerPrefs.GetString(ConstantData.MissionProgressKeyName), nextMission) == -1)
                 PlayerPrefs.SetString(ConstantData.MissionProgressKeyName, nextMission);
+            
+            //about achieve
+            if(GameManager.Rules.firstRound)
+                ConstantData.achieveRecords.Mark(name, AchieveType.FinishWithTriangularPole);
+            else
+                ConstantData.achieveRecords.Mark(name, AchieveType.Finish);
         }
         else
         {

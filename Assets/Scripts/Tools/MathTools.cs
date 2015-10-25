@@ -107,4 +107,22 @@ public class MathTools
         float radian = Mathf.Acos(Vector3.Dot(v1.normalized, v2.normalized));
         return Mathf.Rad2Deg * radian;
     }
+
+    /// <summary>
+    /// Get perpendicular vectors for giving vector2
+    /// </summary>
+    /// <param name="v"></param>
+    /// <returns></returns>
+    public static Vector2[] PerpendicularVector2D(Vector2 v)
+    {
+        v = v.normalized;
+        Vector2 pv1 = new Vector2(), pv2 = new Vector2();
+        float x = v.x, y = v.y, a, b;
+        b = Mathf.Sqrt(1 / (1 + y * y / x * x));
+        a = -(y / x) * b;
+
+        pv1.Set(a, b);
+        pv2.Set(-a, -b);
+        return new Vector2[] { pv1, pv2 };
+    }
 }
