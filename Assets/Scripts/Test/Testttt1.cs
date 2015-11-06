@@ -4,15 +4,15 @@ using System.Collections;
 public class Testttt1 : MonoBehaviour
 {
     [SerializeField]
-    private Texture2D m_Texture;
-
+    Vector2 size;
 
     [SerializeField]
-    private Color m_TextureColor;
+    Vector3 position;
 
-    void OnGUI()
+    void LateUpdate()
     {
-        GUI.color = m_TextureColor;
-        GUI.DrawTexture(new Rect(0, 0, m_Texture.width, m_Texture.height), m_Texture);
+        //GetComponent<RectTransform>().sizeDelta = size;
+        GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, 0);
     }
+
 }

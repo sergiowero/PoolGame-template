@@ -22,20 +22,21 @@ public class BasePlayer : MonoBehaviour, IPlayer
     public PocketIndexes m_TargetPocketIndex = 0;
 
     public int playerID { get; set; }
+    [SerializeField]
     protected CountdownOutline m_Outline;
+    [SerializeField]
     protected Image m_Avatar;
+    [SerializeField]
     public Text playerName;
     [SerializeField]
     protected GridLayoutGroup m_SlotsRoot;
 
     protected virtual void Awake()
     {
-        m_Outline = transform.FindChild("Outline").GetComponent<CountdownOutline>();
-        m_Avatar = transform.FindChild("Avatar").GetComponent<Image>();
-        playerName = transform.FindChild("PlayerName").GetComponent<Text>();
         m_TargetBallType = BallType.NONE;
         playerID = GetInstanceID();
         playerName.text = name;
+        m_Outline.enabled = false;
     }
 
     protected void AddBalls(int min, int max)
@@ -89,6 +90,8 @@ public class BasePlayer : MonoBehaviour, IPlayer
 
     public virtual void Begin()
     {
+        if(!m_Outline.enabled)
+            HOAudioManager.PlayClip("Ready");
         m_Outline.enabled = true;
     }
 

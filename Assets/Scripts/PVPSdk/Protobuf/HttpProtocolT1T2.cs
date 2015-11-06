@@ -32,7 +32,7 @@ namespace PVPSdk{
 	        } else {
 	            Debug.LogError (TAG + " reqName is null!");
 	        }
-	        this.tValue = Toolkit.GetUnixTime().ToString();
+	        this.tValue = PVP.Toolkit.GetUnixTime().ToString();
 	    }
 
 
@@ -41,13 +41,13 @@ namespace PVPSdk{
 	        ProtoBuf.Serializer.Serialize<T1>(stream, obj);
 	        stream.Position = 0;
 	        this.postBody = new byte[stream.Length + 4 ];
-	        byte[] bytes = BitConverter.GetBytes(Toolkit.GetUnixTime());
+	        byte[] bytes = BitConverter.GetBytes(PVP.Toolkit.GetUnixTime());
 	        Array.Copy(bytes, this.postBody, 4);
 	        stream.Read (this.postBody, 4, (int)stream.Length);
 	    }
 
 	    public override string GetRequestUrl () {
-			string request_url = Config.HttpUri + objName + "/" + method;
+			string request_url = PVP.Config.HttpUri + objName + "/" + method;
 	        Debug.Log ("Protocol GetRequestUrl = " + request_url);
 	        return request_url;
 	    }

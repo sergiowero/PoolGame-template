@@ -8,7 +8,7 @@
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Created>2006-09-16T00:00:00Z</Created>
   <LastSaved>2015-10-25T08:09:18Z</LastSaved>
-  <Version>15.00</Version>
+  <Version>12.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
   <AllowPNG/>
@@ -37,18 +37,19 @@
   <Style ss:ID="s64">
    <NumberFormat ss:Format="m&quot;月&quot;d&quot;日&quot;"/>
   </Style>
-  <Style ss:ID="s68">
+  <Style ss:ID="s65">
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
    <NumberFormat/>
   </Style>
  </Styles>
  <Worksheet ss:Name="Sheet1">
-  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="12" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="8" ss:ExpandedRowCount="12" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="54" ss:DefaultRowHeight="13.5">
    <Column ss:Index="2" ss:Width="110.25"/>
    <Column ss:Index="5" ss:Width="90.75"/>
    <Column ss:Width="142.5"/>
    <Column ss:Width="76.5"/>
+   <Column ss:Width="110.25"/>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">ID</Data></Cell>
     <Cell><Data ss:Type="String">Name</Data></Cell>
@@ -57,6 +58,7 @@
     <Cell><Data ss:Type="String">Goal</Data></Cell>
     <Cell ss:StyleID="s62"><Data ss:Type="String">DescriptionID</Data></Cell>
     <Cell ss:StyleID="s62"><Data ss:Type="String">Description</Data></Cell>
+    <Cell><Data ss:Type="String">IconName</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">ID</Data></Cell>
@@ -66,76 +68,87 @@
     <Cell ss:StyleID="s62"><Data ss:Type="String">完成需要的数量</Data></Cell>
     <Cell><Data ss:Type="String">描述ID(存在字符串表中)</Data></Cell>
     <Cell><Data ss:Type="String">描述</Data></Cell>
+    <Cell><Data ss:Type="String">图片名称</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="String">Novice</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String" x:Ticked="1">1-5</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">Novice</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">2</Data></Cell>
     <Cell><Data ss:Type="String">Double Shot</Data></Cell>
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">1-10</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">DoubleShot</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">3</Data></Cell>
     <Cell><Data ss:Type="String">Double Bag</Data></Cell>
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">4-10</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">DoubleBag</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">4</Data></Cell>
     <Cell><Data ss:Type="String">Combination Shot</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">2-20</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">CombinationShot</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">5</Data></Cell>
     <Cell><Data ss:Type="String">Advanced Star</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">1-20</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">AdvancedStar</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">6</Data></Cell>
     <Cell><Data ss:Type="String">5 Combo Shot</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">3-20</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">5ComboShot</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">7</Data></Cell>
     <Cell><Data ss:Type="String">Double Dip</Data></Cell>
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">3-10</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">DoubleDip</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">8</Data></Cell>
     <Cell><Data ss:Type="String">Arc Ball</Data></Cell>
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">2-10</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">ArcBall</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">9</Data></Cell>
     <Cell><Data ss:Type="String">Power Combo</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">4-20</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">PowerCombo</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="Number">10</Data></Cell>
     <Cell><Data ss:Type="String">Pro Potter</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="String" x:Ticked="1">5-20</Data></Cell>
-    <Cell ss:StyleID="s68"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:Index="8"><Data ss:Type="String">ProPotter</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -156,8 +169,7 @@
     <Pane>
      <Number>3</Number>
      <ActiveRow>2</ActiveRow>
-     <ActiveCol>4</ActiveCol>
-     <RangeSelection>R3C5:R12C5</RangeSelection>
+     <ActiveCol>7</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

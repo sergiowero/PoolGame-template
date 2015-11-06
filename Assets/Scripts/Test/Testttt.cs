@@ -1,19 +1,29 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using System.Collections;
 
 
 public class Testttt : MonoBehaviour
 {
     [SerializeField]
-    Vector3 m_v;
+    RectTransform test1;
+
+
+
 
     void OnGUI()
     {
-        if(GUILayout.Button("Test ray case"))
+        if(GUILayout.Button("fdsafdsafdsa"))
         {
-            GetComponent<CanvasGroup>().alpha = 0;
+            Debug.Log(Random.Range(0, 2));
         }
+    }
+
+
+
+    public void Test()
+    {
+        Debug.Log("Click");
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PVPSdk
+namespace PVPSdk.PVP
 {
 	public class SocketServer
 	{

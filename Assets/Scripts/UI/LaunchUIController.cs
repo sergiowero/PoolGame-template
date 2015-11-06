@@ -9,6 +9,8 @@ public class LaunchUIController : MonoBehaviour
 
     [SerializeField]
     private GridLayoutGroup m_ChapterRoot;
+    [SerializeField]
+    private ScrollRectSnapElement m_ChapterSnapElement;
 
     [SerializeField]
     private GridLayoutGroup m_LevelRoot;
@@ -18,7 +20,9 @@ public class LaunchUIController : MonoBehaviour
     private Animator m_Animator;
 
     [SerializeField]
-    private Image m_BlackMask;
+    private Image m_RiseMask;
+    [SerializeField]
+    private Image m_FadeMask;
     [SerializeField]
     private GameObject m_LoadingFlag;
     [SerializeField]
@@ -31,7 +35,8 @@ public class LaunchUIController : MonoBehaviour
 
     private ChapterLevel m_ChapterLevelPrefab;
 
-
+    [SerializeField]
+    private AudioSource m_AudioTest;
 
     public static void SetPhysical(int value) 
     {
@@ -48,7 +53,7 @@ public class LaunchUIController : MonoBehaviour
         ConstantData.GType = GameType.None;
         m_Instance = this;
         m_Blank.SetActive(false);
-        m_BlackMask.gameObject.SetActive(false);
+        m_RiseMask.gameObject.SetActive(false);
         m_LoadingFlag.SetActive(true);
         //Get chapter level prefab
         m_ChapterLevelPrefab = m_LevelRoot.transform.GetChild(0).GetComponent<ChapterLevel>();
@@ -63,12 +68,23 @@ public class LaunchUIController : MonoBehaviour
             m_MissionProgress = "1-1";
             PlayerPrefs.SetString(ConstantData.MissionProgressKeyName, m_MissionProgress);
         }
-        Invoke("LoadingDone", 1f);
+
+        if(string.IsNullOrEmpty(ConstantData.BattleSceneType))
+        {
+            m_Animator.Play("Loading");
+            Invoke("LoadingDone", 1f);
+        }
+        else
+        {
+            m_Animator.SetTrigger(ConstantData.BattleSceneType);
+            LoadLevelWithChapter(ConstantData.LoadedChapter);
+        }
     }
 
     void LoadingDone()
     {
-        m_Animator.SetTrigger("Default2Main");
+        //m_Animator.SetTrigger("Default2Main");
+        m_Animator.SetBool("GameStart", true);
         m_LoadingFlag.SetActive(false);
         m_Blank.SetActive(true);
     }
@@ -76,6 +92,7 @@ public class LaunchUIController : MonoBehaviour
     void Start()
     {
         ChapterCities chapterCityPrefab = m_ChapterRoot.transform.GetChild(0).GetComponent<ChapterCities>();
+        chapterCityPrefab.transform.SetParent(null);
 
         int i = 0;
         foreach(var v in ChapterConfiguration.chapterDictionary)
@@ -86,12 +103,15 @@ public class LaunchUIController : MonoBehaviour
             chapterCity.text.text = c.name;
             chapterCity.name = c.imageName.Substring(6); //imageName = Image_xxxxx  we just wanna get the real name
             chapterCity.chapter = c.chapter;
-            //chapterCity.image = Resources.Load() //load city texture... no textures
+            Sprite sprite = Resources.Load<Sprite>("UI/LaunchScene/MissionCards/" + c.imageName);
+            if (sprite)
+                chapterCity.image.sprite = sprite;
             bool b = c.chapter > ConstantData.LevelDatas.GetChapter(m_MissionProgress);
             chapterCity.lockMask.SetActive(b);
         }
         Destroy(chapterCityPrefab.gameObject);
-        m_ChapterRoot.GetComponent<RectTransform>().sizeDelta = new Vector2(i * m_ChapterRoot.cellSize.x + (i-1) * m_ChapterRoot.spacing.x, m_ChapterRoot.cellSize.y);
+        m_ChapterRoot.GetComponent<RectTransform>().sizeDelta = new Vector2(i * m_ChapterRoot.cellSize.x + i * m_ChapterRoot.spacing.x, m_ChapterRoot.cellSize.y);
+        m_ChapterSnapElement.Initialize();
     }
 
     void OnDestroy()
@@ -103,6 +123,7 @@ public class LaunchUIController : MonoBehaviour
     {
         ConstantData.GType = GameType.QuickFire;
         ConstantData.physical -= 1;
+        ConstantData.BattleSceneType = ConstantData.ToPratice;
         LoadScene(1);
     }
 
@@ -110,6 +131,7 @@ public class LaunchUIController : MonoBehaviour
     {
         ConstantData.GType = GameType.Standard;
         ConstantData.physical -= 1;
+        ConstantData.BattleSceneType = ConstantData.ToPratice;
         LoadScene(1);
     }
 
@@ -133,14 +155,15 @@ public class LaunchUIController : MonoBehaviour
         AIPlayer.difficulty = difficulty;
         ConstantData.GType = GameType.AI;
         ConstantData.physical -= 1;
+        ConstantData.BattleSceneType = ConstantData.ToPratice;
         LoadScene(1);
     }
 
-    public void LoadLevel(GameObject go)
+    private void LoadLevelWithChapter(int chapter)
     {
-        ChapterCities city = go.GetComponent<ChapterCities>();
+        ConstantData.LoadedChapter = chapter;
         int childCount = m_LevelRoot.transform.childCount;
-        IList<LevelData> levels = ConstantData.LevelDatas.DumpLevelDatasWithChapter(city.chapter);
+        IList<LevelData> levels = ConstantData.LevelDatas.DumpLevelDatasWithChapter(chapter);
         int i;
         for (i = 0; i < levels.Count; i++)
         {
@@ -158,7 +181,12 @@ public class LaunchUIController : MonoBehaviour
             l.text.text = (i + 1).ToString();
             l.name = "Level-" + l.text.text;
             l.SetStar(ConstantData.missionRecords.GetStar(levels[i].FileName));
-            l.mask.SetActive(ConstantData.LevelDatas.Comp(m_MissionProgress, levels[i].FileName) == -1);
+            bool levelLock = ConstantData.LevelDatas.Comp(m_MissionProgress, levels[i].FileName) == -1;
+            l.mask.SetActive(levelLock);
+            if (levelLock)
+                l.text.transform.localScale = Vector3.one * .72f;
+            else
+                l.text.transform.localScale = Vector3.one;
         }
         m_LevelRoot.GetComponent<RectTransform>().sizeDelta = new Vector2(i * m_LevelRoot.cellSize.x + (i - 1) * m_LevelRoot.spacing.x, m_LevelRoot.cellSize.y);
         while (i < childCount)
@@ -167,19 +195,27 @@ public class LaunchUIController : MonoBehaviour
         }
     }
 
+    public void LoadLevel(GameObject go)
+    {
+        ChapterCities city = go.GetComponent<ChapterCities>();
+        LoadLevelWithChapter(city.chapter);
+    }
+
     public void GoMisstion(ChapterLevel l)
     {
         LevelDataIndex.CurrentLevel = l.levelData;
         ConstantData.GType = GameType.Mission;
         ConstantData.physical -= 1;
+        ConstantData.BattleSceneType = ConstantData.ToLevel;
         LoadScene(1);
     }
 
     public void LoadScene(int sceneIndex)
     {
         //animation tools component attached at blackmask has a method named loadscene. we use this
-        m_BlackMask.gameObject.SetActive(true);
-        m_BlackMask.GetComponent<AnimationTools>().sceneIndex = 1;
+        m_RiseMask.gameObject.SetActive(true);
+        HOAudioManager.StopBGM();
+        m_RiseMask.GetComponent<AnimationTools>().sceneIndex = 1;
         //Application.LoadLevel(sceneIndex);
     }
 }

@@ -1,0 +1,26 @@
+PVPSDK
+
+V0.1.3-P1  2015-10-26
+
+- 修复进入大厅sdk Bug
+
+V0.1.3  2015-10-25
+
+- 重构对外接口
+
+V0.1.2  2015-10-22
+
+- 新增获取用户应用内信息接口 PVP.cleint.AppUserGetUserInfo ， 以及委托实例 PVP.cleint.appUserGetUserInfoResponseHandler
+- 新增修改用户在应用内信息接口 PVP.client.UpdateAppUserInfo ，以及委托实例 PVP.client.appUserUpdateInfoResponseHandler
+- 新增修改用户在应用内信息接口 PVP.client.UpdateAppUserCustomData ，以及委托实例 PVP.client.appUserUpdateCustomDataResponseHandler
+
+
+V0.1.1  2015-10-14
+
+- sdk 的入口类 class PVP 增加 PVP.userInfo, PVP.localAppUserInfo，PVP.appUserInfos, PVP.lobbyInfo, PVP.roomInfo 静态成员变量
+- PVP.client 实例成员方法增加参数，float timeout ,默认是5 秒。服务器超时响应，sdk 会触发超时事件
+
+V0.1.0 2015-10-10
+
+- 网络层管理
+- 完成初版

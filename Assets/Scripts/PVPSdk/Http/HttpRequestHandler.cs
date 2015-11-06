@@ -7,7 +7,7 @@ using System;
 
 
 
-namespace PVPSdk{
+namespace PVPSdk.Http{
 
 	/// <summary>
 	/// http 协议是有响应包，可以进行
@@ -25,8 +25,8 @@ namespace PVPSdk{
 
 	    AbstractHttpProtocol protoBuffer;
 	    Callback<NetworkMsgType, string, AbstractHttpProtocol> onFinish;
-		int time_out = Config.protocol_request_timeout;
-		int connect_time_out = Config.connect_timeout;
+		int time_out = PVP.Config.protocol_request_timeout;
+		int connect_time_out = PVP.Config.connect_timeout;
 
 		public void PostRequest ( AbstractHttpProtocol proto, Callback<NetworkMsgType, string, AbstractHttpProtocol> onFinish ) {
 	        this.protoBuffer = proto;

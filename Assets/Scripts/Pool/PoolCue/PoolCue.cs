@@ -60,12 +60,6 @@ public class PoolCue : MonoBehaviour
 
     protected Vector3 m_CurHitPoint;
 
-    //do we want to rotate
-    protected bool m_requestRotate = false;
-
-    //do we want to fire the ball
-    protected bool m_requestFire = false;
-
     #region Gizmos--------------------------------------------
     [SerializeField]
     protected Color m_GizmosColor;
@@ -78,8 +72,6 @@ public class PoolCue : MonoBehaviour
         m_initalRot = m_CueTrans.localRotation;
         m_CurRotAngle = 0;
         m_SidingPointOffset = m_SidingPointRange.x;
-        FireSlider.OnSliderValueChange += SetPowerScalar;
-        FireSlider.OnSliderRelease += Fire;
     }
 
     protected Vector3 GetHitPoint()
@@ -100,27 +92,22 @@ public class PoolCue : MonoBehaviour
         //Pools.CueBall.SetHitPoint(m_SidingPoint.position);
     }
 
-    public void OnDestroy()
-    {
-        FireSlider.OnSliderValueChange -= SetPowerScalar;
-        FireSlider.OnSliderRelease -= Fire;
-    }
-
     public void SetPowerScalar(float value)
     {
         m_powerScalar = value;
-        BaseUIController.cueAndLines.AdjustingCue(value);
     }
 
     public void Fire()
     {
-        m_requestFire = false;
-
         //lets set the balls target and the target position. When the white ball hits the first ball we will set the ball to point at the target.
         Pools.CueBall.setTarget(m_targetBall, m_targetPos);
-        Pools.CueBall.fireBall(m_powerScalar, m_FirePoint.forward, GetHitPoint());
+        float powerScalar = m_powerScalar;
+        if(GameManager.Rules.firstRound)
+        {
+            powerScalar *= Random.Range(.8f, 1.5f);
+        }
+        Pools.CueBall.fireBall(powerScalar, m_FirePoint.forward, GetHitPoint());
         m_state = State.ROLL;
-        BaseUIController.cueAndLines.gameObject.SetActive(false);
         m_CueTrans.parent = null;
     }
 
@@ -162,7 +149,7 @@ public class PoolCue : MonoBehaviour
             {
                 Vector3 pos = rch.point;
 
-                BaseUIController.cueAndLines.GuidePointerAt(rch.point, rch.transform, rch.normal);
+                BaseUIController.cueAndLines.GuidePointerAt(rch.point, rch.transform, rch.normal, m_FirePoint.forward);
 
                 Vector3 vec = pos - sc.transform.position;
 
@@ -177,6 +164,19 @@ public class PoolCue : MonoBehaviour
                     m_targetBall = rch.transform.GetComponent<PoolBall>();
                     m_targetPos = rch.point - nrm;
                 }
+
+                if (ConstantData.GType >= GameType.Standard && m_targetBall != null)
+                {
+                    BasePlayer player = ((PoolRulesStandard)GameManager.Rules).CurrentPlayer;
+                    bool b1 = player.TargetBallType == BallType.NONE && m_targetBall.ballType == BallType.BLACK;
+                    bool b2 = player.TargetBallType != BallType.NONE && player.TargetBallType != m_targetBall.ballType;
+                    if (b1 || b2)
+                        BaseUIController.cueAndLines.Forbidden();
+                    else
+                        BaseUIController.cueAndLines.Allow();
+                }
+                else
+                    BaseUIController.cueAndLines.Allow();
             }
         }
     }

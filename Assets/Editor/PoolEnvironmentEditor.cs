@@ -120,6 +120,17 @@ namespace PoolsEditor
             }
         }
 
+        [MenuItem("Window/游戏环境编辑/Temp")]
+        static void Temp()
+        {
+            GameObject.Find("Table/Colliders/Corner_righttop").transform.position = GameObject.Find("Table/Colliders/pocket_TopRight").transform.position;
+            GameObject.Find("Table/Colliders/Corner_rightbottom").transform.position = GameObject.Find("Table/Colliders/pocket_BottomRight").transform.position;
+            GameObject.Find("Table/Colliders/Corner_centerbottom").transform.position = GameObject.Find("Table/Colliders/pocket_BottomCenter").transform.position;
+            GameObject.Find("Table/Colliders/Corner_leftbottom").transform.position = GameObject.Find("Table/Colliders/pocket_BottomLeft").transform.position;
+            GameObject.Find("Table/Colliders/Corner_centertop").transform.position = GameObject.Find("Table/Colliders/pocket_TopCenter").transform.position;
+            GameObject.Find("Table/Colliders/Corner_lefttop").transform.position = GameObject.Find("Table/Colliders/pocket_TopLeft").transform.position;
+        }
+
         void Awake()
         {
             if (!Application.isPlaying)

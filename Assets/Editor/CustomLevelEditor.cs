@@ -22,6 +22,8 @@ namespace PoolsEditor
 
         int m_ShotCount = 0;
 
+        int m_DescripID;
+
         GameObject[] standardBallCache;
 
         private float m_R;
@@ -83,6 +85,29 @@ namespace PoolsEditor
             }
         }
 
+        [MenuItem("Window/关卡编辑/同步关卡数据")]
+        static void SyncDataManual()
+        {
+            LevelDataIndex levelDataIndex = Resources.LoadAssetAtPath<LevelDataIndex>(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataIndexPath);
+            if (!levelDataIndex)
+            {
+                levelDataIndex = ScriptableObject.CreateInstance<LevelDataIndex>();
+                AssetDatabase.CreateAsset(levelDataIndex, StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataIndexPath);
+            }
+            else
+            {
+                levelDataIndex.Clear();
+            }
+
+            System.IO.FileInfo[] fileInfos = StreamTools.GetAllFile(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath, "*-*");
+            foreach (var v in fileInfos)
+            {
+                LevelData data = Resources.LoadAssetAtPath<LevelData>(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath + v.Name);
+                levelDataIndex.Add(data);
+            }
+            Debug.Log("Synchronize data finished");
+        }
+
         void SyncData()
         {
             System.IO.FileInfo[] fileInfos = StreamTools.GetAllFile(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath, "*-*");
@@ -126,7 +151,7 @@ namespace PoolsEditor
             GetLevelDataIndex();
             m_CustomBallRoot = GameObject.Find("8Ball/OtherObjects").transform;
             Transform trans = GameObject.Find("WhiteBall").transform;
-            Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/Side/Siding.png");
+            Texture2D tex = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/EditorTextures/CUEBALL.png");
             m_PocketTexture = Resources.LoadAssetAtPath<Texture2D>("Assets/Images/EditorTextures/Pocket.png");
             m_CueBall = new TouchObject() { transform = trans, texture = tex, id = 0, type = BallType.WHITE };
             HideStandardBalls();
@@ -349,6 +374,7 @@ namespace PoolsEditor
             GUI.BeginGroup(new Rect(0, AreaHeight + 2 * m_GridSize + m_OutlineRect.height - m_BackgroundRect.height, AreaWidth + 2 * m_GridSize + 100, 350));
             m_CurrentLevelData = EditorGUILayout.ObjectField("关卡数据文件： ", m_CurrentLevelData, typeof(LevelData), false) as LevelData;
             m_ShotCount = EditorGUILayout.IntField("击杆数：", m_ShotCount);
+            m_DescripID = EditorGUILayout.IntField("描述ID : ", m_DescripID);
             m_LevelName = EditorGUILayout.TextField("关卡名称：", m_LevelName);
             CheckDataEquals();
             if (GUILayout.Button("保存") && !string.IsNullOrEmpty(m_LevelName))
@@ -372,6 +398,7 @@ namespace PoolsEditor
                 }
                 data.shotCount = m_ShotCount;
                 data.FileName = m_LevelName;
+                data.DescriptionID = m_DescripID;
                 AssetDatabase.CreateAsset(data, StreamTools.GetStreamingAssetsPathInEditor() + "LevelDatas/" + m_LevelName + ".asset");
                 m_CurrentLevelData = data;
                 m_LevelDataIndex.Add(data);
@@ -398,6 +425,7 @@ namespace PoolsEditor
                 }
                 foreach(var v in m_Pockets)
                 {
+                    v.Clear();
                     if ((v.pocketIndexes & m_CurrentLevelData.StartPunishmentPocket) != 0x0)
                         v.SetAsPunishment();
                     if ((v.pocketIndexes & m_CurrentLevelData.StartRewardPocket) != 0x0)

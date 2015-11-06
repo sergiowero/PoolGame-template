@@ -7,7 +7,7 @@ using System.IO;
 using System;
 
 
-namespace PVPSdk{
+namespace PVPSdk.PVP{
     public class Toolkit 
     {
 

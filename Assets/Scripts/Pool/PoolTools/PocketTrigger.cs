@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PocketTrigger : MonoBehaviour 
 {
+    public static System.Collections.Generic.List<int> pocketTriggerBallList = new System.Collections.Generic.List<int>();
+
     [SerializeField]
     private Transform m_RefTrans;
     [SerializeField]
@@ -84,15 +86,13 @@ public class PocketTrigger : MonoBehaviour
 #endif //#if UNITY_EDITOR
     public void OnCollisionEnter(Collision collision)
     {
-        if(collision.transform.CompareTag("Ball"))
+        if (collision.transform.CompareTag("Ball"))
         {
-            AudioHelper.m_Instance.onBallEnterPocket();
-            BallInPocket pocket = collision.gameObject.GetComponent<BallInPocket>();
-            collision.transform.GetComponent<PoolBall>().CloseRenderer();
-            if(pocket == null)
+            if (!pocketTriggerBallList.Contains(collision.collider.GetInstanceID()))
             {
-                pocket = collision.gameObject.AddComponent<BallInPocket>();
-                pocket.SetRefTrans(m_RefTrans);
+                AudioHelper.m_Instance.onBallEnterPocket();
+                collision.transform.GetComponent<PoolBall>().CloseRenderer();
+                pocketTriggerBallList.Add(collision.collider.GetInstanceID());
             }
         }
     }

@@ -53,7 +53,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         set 
         {
             m_PlayerData.ShotsRemain = value < 0 ? 0 : value;
-            m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
+            m_ShotsRemain.text = m_PlayerData.ShotsRemain.ToString();
         }
     }
 
@@ -92,7 +92,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         m_PlayerData.Score += s;
         if (m_PlayerData.HighScore < m_PlayerData.Score)
             m_PlayerData.HighScore = m_PlayerData.Score;
-        m_Score.text = "Score " + m_PlayerData.Score;
+        m_Score.text = m_PlayerData.Score.ToString();
 
         if(pocket)
         {
@@ -111,9 +111,9 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         BombBall.GameoverWithBoom += GameOver;
         DemonBall.GameOverWithPotted += GameOver;
         PoolRulesBase.onFireBall += FireBall;
-        m_LevelName.text = "Level " + LevelDataIndex.CurrentLevel.FileName;
-        m_ShotsRemain.text = "Cue x " + m_PlayerData.ShotsRemain;
-        m_Score.text = "Score 0";
+        m_LevelName.text = LevelDataIndex.CurrentLevel.FileName;
+        m_ShotsRemain.text = m_PlayerData.ShotsRemain.ToString();
+        m_Score.text = "0";
 //#if UNITY_ANDROID && !UNITY_EDITOR
 //        string filePath = StreamTools.GetStreamingAssetsPath() + ConstantData.MissionLevelDataRecordPath;
 //        StartCoroutine(StreamTools.LoadBytes<MissionRecords>(filePath, OnLoadedMissionRecordsOnAndroid));
@@ -133,12 +133,12 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     protected void GameOver(IPlayer player)
     {
         string name = LevelDataIndex.CurrentLevel.FileName;
-        m_PlayerData.Star = LayoutConfiguration.instance[name].GetStarWithScore(m_PlayerData.Score);
         m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 : Mathf.Round(((float)m_PlayerData.PottedCount / (float)m_PlayerData.ShotCount) * 1000f) / 1000f;
         int star = 0;
         if(player != null && player.playerID == playerID)
         {
             AddScore(ShotsRemain * 200, null);
+            m_PlayerData.Star = LayoutConfiguration.instance[name].GetStarWithScore(m_PlayerData.Score);
             star = Mathf.Max(ConstantData.missionRecords.GetStar(name), m_PlayerData.Star);
             ConstantData.missionRecords.Record(name, star, m_PlayerData.HighScore);
             StreamTools.SerializeObject(ConstantData.missionRecords, ConstantData.missionLevelDataRecordPath);

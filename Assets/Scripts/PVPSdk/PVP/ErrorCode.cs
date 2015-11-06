@@ -1,4 +1,4 @@
-﻿namespace PVPSdk
+﻿namespace PVPSdk.PVP
 {
     public class ErrorCode
     {
@@ -44,7 +44,7 @@
         public const int ROOM_UPDATE_MEMBER_CHECK_DATA_NOT_PASS = 11006;
         public const int ROOM_UPDATE_ROOM_CHECK_DATA_NOT_PASS = 11007;
 
-
+        public const int APPUSER_CHECK_NOT_PASS = 12001;
         //客户端直接反馈的错误
         public const int RESPONSE_TIME_OUT = 90000;
     }

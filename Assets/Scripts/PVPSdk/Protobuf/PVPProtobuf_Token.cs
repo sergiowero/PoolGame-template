@@ -10,10 +10,10 @@
 // Generated from: protobuf_token.proto
 namespace PVPProtobuf_Token
 {
-  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"User_LoginOrRegister_Req")]
-  public partial class User_LoginOrRegister_Req : global::ProtoBuf.IExtensible
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"User_LoginOrRegister_Request")]
+  public partial class User_LoginOrRegister_Request : global::ProtoBuf.IExtensible
   {
-    public User_LoginOrRegister_Req() {}
+    public User_LoginOrRegister_Request() {}
     
     private string _app_key;
     [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"app_key", DataFormat = global::ProtoBuf.DataFormat.Default)]
@@ -80,10 +80,10 @@ namespace PVPProtobuf_Token
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
-  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"User_LoginOrRegister_Res")]
-  public partial class User_LoginOrRegister_Res : global::ProtoBuf.IExtensible
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"User_LoginOrRegister_Response")]
+  public partial class User_LoginOrRegister_Response : global::ProtoBuf.IExtensible
   {
-    public User_LoginOrRegister_Res() {}
+    public User_LoginOrRegister_Response() {}
     
     private uint _uid;
     [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
@@ -126,6 +126,13 @@ namespace PVPProtobuf_Token
     {
       get { return _name; }
       set { _name = value; }
+    }
+    private string _avatar;
+    [global::ProtoBuf.ProtoMember(7, IsRequired = true, Name=@"avatar", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string avatar
+    {
+      get { return _avatar; }
+      set { _avatar = value; }
     }
     private global::ProtoBuf.IExtension extensionObject;
     global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)

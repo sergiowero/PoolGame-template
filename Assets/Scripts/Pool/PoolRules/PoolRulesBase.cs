@@ -60,10 +60,11 @@ public enum BallType
 public enum GameType
 {
     None = 0,
-    Standard = 1,
-    QuickFire = 2,
-    Mission = 3,
-    AI = 4
+    QuickFire = 1,
+    Mission = 2,
+    Standard = 3,
+    AI = 4,
+    Multiple = 5
 }
 
 public enum AIDifficulty
@@ -135,7 +136,6 @@ public abstract class PoolRulesBase : MonoBehaviour
             bool rollingDone = CheckIsBallsDoneRolling(Pools.BallsArray) && CheckIsBallsDoneRolling(Pools.CustomBallsArray);
             if (rollingDone)
             {
-                Debug.Log("rolling done");
                 State = GlobalState.IDLE;
                 StartCoroutine(CheckResultAndChangeTurn(ConstantData.TurnWaitTime));
             }
@@ -164,8 +164,6 @@ public abstract class PoolRulesBase : MonoBehaviour
     public virtual void PotBall(PoolBall ball, PocketIndexes pocket)
     {
         ball.Potted(pocket);
-        BallInPocket ballInPocket = ball.GetComponent<BallInPocket>();
-        if (ballInPocket) Destroy(ballInPocket);
 
         if (ball.ballType == BallType.WHITE)
         {

@@ -97,16 +97,23 @@ public class AIPlayer : BasePlayer
                 dMsg.cueballPosition = Pools.CueBall.GetPosition();
                 dMsg.powerScale = 1;
             }
-            if(Random.Range(0,100) > (int)AIPlayer.difficulty)
+            if(BaseUIController.Instance.debugAI)
             {
-                dMsg.hitPoint += new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+                BaseUIController.Instance.targetBallImage.transform.position = MathTools.World2UI(dMsg.targetBall.transform.position);
+                BaseUIController.Instance.targetPocketImage.transform.position = MathTools.World2UI(dMsg.targetPocket.transform.position);
+                BaseUIController.Instance.hitPointImage.transform.position = MathTools.World2UI(dMsg.hitPoint);
             }
+            if (Random.Range(0, 100) > (int)AIPlayer.difficulty)
+            {
+                dMsg.hitPoint += new Vector3(Random.Range(-player.m_Deviation, player.m_Deviation), 0, Random.Range(-player.m_Deviation, player.m_Deviation));
+            }
+            if(BaseUIController.Instance.debugAI)
+                BaseUIController.Instance.newHitPointImage.transform.position = MathTools.World2UI(dMsg.hitPoint);
             return dMsg;
         }
 
         private Vector3 ConsiderHitPointWithDrag(Dictionary<PoolBall, List<PocketTrigger>> considerBalls, out Vector3 cueBallPosition, out PoolBall targetBall, out PocketTrigger targetTrigger)
         {
-            Debug.Log("AI : consider hit point with drag");
             Dictionary<PoolBall, PocketTrigger> optimalBalls = FilterTheBestPocketForEachBall(considerBalls);
             cueBallPosition = Vector3.zero;
             targetTrigger = null;
@@ -172,7 +179,6 @@ public class AIPlayer : BasePlayer
 
         private Vector3 ConsiderHitPoint(Dictionary<PoolBall, List<PocketTrigger>> considerBalls, Vector3 cueBallPosition, out PoolBall targetBall, out PocketTrigger targetTrigger)
         {
-            Debug.Log("AI : consider hit point");
             Dictionary<PoolBall, PocketTrigger> optimalBalls = FilterTheBestPocketForEachBallWithCueBall(considerBalls, cueBallPosition);
             //Dictionary<PoolBall, float> ballCuebalAngles = new Dictionary<PoolBall, float>();
             List<float> angles = new List<float>();
@@ -187,10 +193,13 @@ public class AIPlayer : BasePlayer
                     continue;
 
                 float angle = MathTools.AngleBetween(ball.transform.position - cueBallPosition, trigger.pointerPosition - ball.transform.position);
+                //夹角越大， 旋转击打这个球的概率就越小，所以这里用90 - angle
+                angle = 90 - angle;
                 totleAngle += angle;
                 balls.Add(ball);
                 angles.Add(angle);
             }
+            //随机选择一个击打球
             float rand = Random.Range(0, totleAngle), threshold = 0;
             for (int i = 0, count = angles.Count; i < count; i++)
             {
@@ -348,14 +357,13 @@ public class AIPlayer : BasePlayer
             Vector3 targetBallPosition = ball.transform.position,
             pocketPosition = trigger.pointerPosition;
 
-            float angle = MathTools.AngleBetween(hitPoint - cueBallPosition, pocketPosition - targetBallPosition);
+            //float angle = MathTools.AngleBetween(hitPoint - cueBallPosition, pocketPosition - targetBallPosition);
             float mag = (targetBallPosition - cueBallPosition).magnitude + (pocketPosition - targetBallPosition).magnitude;
             return Mathf.Min(1, mag / Pools.GetTableSize().x);
         }
 
         private Vector3 GetRandomHitPoint()
         {
-            Debug.Log("AI : get random hit point");
             int i = Random.Range(0, cMsg.ballList.Count - 1), j = Random.Range(0, Pools.PocketTriggers.Count - 1);
             return ConsiderHitPoint(cMsg.ballList[i], Pools.PocketTriggers[j]);
         }
@@ -383,8 +391,6 @@ public class AIPlayer : BasePlayer
 
         DecidedMessage msg;
 
-        float thinkingTime;
-
         Queue<ExecuteBehaviour> behaviours;
 
         public bool deQueue;
@@ -398,43 +404,33 @@ public class AIPlayer : BasePlayer
 
         public void SetDecision(DecidedMessage _msg)
         {
-            Debug.Log("Executor set decision");
             msg = _msg;
-            thinkingTime = GenerateThinkingTime();
             if(msg.drag)
             {
-                behaviours.Enqueue(new ExecuteDrag(msg));
+                    if (Random.Range(0, 3) <= 2)
+                        behaviours.Enqueue(new ExecuteDragThink(msg, player));
+                behaviours.Enqueue(new ExecuteDrag(msg, player));
             }
-            behaviours.Enqueue(new ExecuteAim(msg));
-            behaviours.Enqueue(new ExecuteFire(msg));
-
-            foreach(var v in msg.considerBalls)
+            behaviours.Enqueue(new ExecuteThink(msg, player, Random.Range(1.1f,1.5f)));
+            for (int i = 0; i < 3; i++ )
             {
-                v.Key.focusRenderer.Open();
+                if (Random.Range(0, 3) <=2)
+                    behaviours.Enqueue(new ExecuteAimThink(msg, player));
             }
+            behaviours.Enqueue(new ExecuteAim(msg, player));
+            behaviours.Enqueue(new ExecuteThink(msg, player));
+            behaviours.Enqueue(new ExecuteFire(msg, player));
         }
 
         public void Execute()
         {
-            if(thinkingTime > 0)
-            {
-                thinkingTime -= Time.deltaTime;
-            }
-            if(thinkingTime <= 0)
-            {
-                if(/*deQueue && */behaviours.Count != 0)
-                {
-                    Debug.Log("AI behaviours dequeue");
-                    //deQueue = false;
-                    thinkingTime = GenerateThinkingTime();
-                    behaviours.Dequeue().Do();
-                }
-            }
-        }
+            if (behaviours.Count == 0)
+                return;
 
-        private float GenerateThinkingTime()
-        {
-            return Random.Range(.5f, 2);
+            if (behaviours.Peek().Preparing())
+            {
+                behaviours.Dequeue().Do();
+            }
         }
     }
 
@@ -442,53 +438,122 @@ public class AIPlayer : BasePlayer
     {
         protected DecidedMessage msg;
 
-        public ExecuteBehaviour(DecidedMessage _msg)
+        protected AIPlayer player; 
+
+        public ExecuteBehaviour(DecidedMessage _msg, AIPlayer _player)
         {
             msg = _msg;
+            player = _player;
         }
 
 
         public abstract void Do();
+
+        public virtual bool Preparing() { return true; }
     }
 
     protected class ExecuteDrag : ExecuteBehaviour
     {
-        public ExecuteDrag(DecidedMessage _msg) : base(_msg) { }
+        public ExecuteDrag(DecidedMessage _msg, AIPlayer _player) : base(_msg, _player) { }
 
         public override void Do()
         {
-            iTween.MoveTo(Pools.CueBall.gameObject, msg.cueballPosition, .5f);
+            iTween.MoveTo(Pools.CueBall.gameObject, msg.cueballPosition, 2);
+        }
+    }
+
+    protected class ExecuteDragThink : ExecuteThink
+    {
+        public ExecuteDragThink(DecidedMessage _msg, AIPlayer _player)
+            : base(_msg, _player)
+        {
+            m_ThinkTime = 0.5f;
+        }
+
+        public override void Do()
+        {
+            Vector3 v = new Vector3(Random.Range(0,.5f), 0, Random.Range(0,.5f));
+            iTween.MoveTo(Pools.CueBall.gameObject, msg.cueballPosition + v, 2);
         }
     }
 
     protected class ExecuteThink : ExecuteBehaviour
     {
-        public ExecuteThink(DecidedMessage _msg) : base(_msg) { }
+        protected float m_ThinkTime;
+        public ExecuteThink(DecidedMessage _msg, AIPlayer _player) : base(_msg, _player) 
+        {
+            m_ThinkTime = Random.Range(2, 3);
+        }
+
+        public ExecuteThink(DecidedMessage _msg, AIPlayer _player, float _thinkTime) : base(_msg, _player)
+        {
+            m_ThinkTime = _thinkTime;
+        }
+        public override void Do() { }
+        public override bool Preparing()
+        {
+            m_ThinkTime -= Time.deltaTime;
+            if (m_ThinkTime <= 0)
+                return true;
+            return false;
+        }
+    }
+
+    protected class ExecuteAimThink : ExecuteThink
+    {
+        public ExecuteAimThink(DecidedMessage _msg, AIPlayer _player) : base(_msg, _player) 
+        {
+            m_ThinkTime = 1;
+        }
+
         public override void Do()
         {
+            //List<PoolBall> list = player.BallsList;
+            float angle = BaseUIController.cueOperateArea.pointerOperation.GetRotationAngleAtWorld(msg.hitPoint + msg.targetBall.GetRadius() * Random.onUnitSphere);
+            Vector3 v = new Vector3(0, Pools.Cue.transform.eulerAngles.y + angle, 0);
+            iTween.RotateTo(Pools.Cue.gameObject, v ,1);
         }
     }
 
     protected class ExecuteAim : ExecuteBehaviour
     {
-        public ExecuteAim(DecidedMessage _msg) : base(_msg) { }
+        public ExecuteAim(DecidedMessage _msg, AIPlayer _player) : base(_msg, _player) { }
         public override void Do()
         {
             GameManager.Rules.State = GlobalState.IDLE;
             float angle = BaseUIController.cueOperateArea.pointerOperation.GetRotationAngleAtWorld(msg.hitPoint);
             Vector3 v = new Vector3(0, Pools.Cue.transform.eulerAngles.y + angle, 0);
-            iTween.RotateTo(Pools.Cue.gameObject, v, .5f);
+            iTween.RotateTo(Pools.Cue.gameObject, v, 1);
         }
     }
 
     protected class ExecuteFire : ExecuteBehaviour
     {
-        public ExecuteFire(DecidedMessage _msg) : base(_msg) { }
+        public ExecuteFire(DecidedMessage _msg, AIPlayer _player) : base(_msg, _player) 
+        {
+        }
+
+        private float m_Time = .2f;
+        private float _Time;
+
         public override void Do()
         {
-            Debug.Log("AI fire, power scalar : " + msg.powerScale);
-            Pools.Cue.SetPowerScalar(msg.powerScale);
-            Pools.Cue.Fire();
+            BaseUIController.cueAndLines.ReleaseCue();
+        }
+
+        public override bool Preparing()
+        {
+            //if (m_Push)
+            //{
+            BaseUIController.cueAndLines.AdjustingChange(Mathf.Lerp(0, msg.powerScale, _Time / m_Time));
+            _Time += Time.deltaTime;
+            if (_Time > m_Time)
+            {
+                //m_Push = false;
+                return true;
+            }
+            //}
+            return false;
         }
     }
     #endregion //Executor
@@ -500,6 +565,10 @@ public class AIPlayer : BasePlayer
     public Vector3 hitpoint;
 
     public static AIDifficulty difficulty = AIDifficulty.Medium;
+
+    [SerializeField]
+    [Range(0,0.05f)]
+    private float m_Deviation;
 
     protected override void Awake()
     {
@@ -514,32 +583,20 @@ public class AIPlayer : BasePlayer
         if (GameManager.Rules.State == GlobalState.GAMEOVER)
             return;
 
-        base.Begin();
-        //m_OperateMask.SetActive(true);
-        //BaseUIController.GlobalMask.SetActive(true);
+        m_Outline.enabled = true;
+        BaseUIController.GlobalMask = true;
         DecidedMessage decideMsg = m_Decider.Decide(m_Collector.Collect());
         hitpoint = decideMsg.hitPoint;
         m_Executor.SetDecision(decideMsg);
     }
 
-    public void OnDrawGizmos()
-    {
-        if (Application.isPlaying)
-            Gizmos.DrawSphere(hitpoint, .1f);
-    }
-
     public override void End()
     {
         base.End();
-        //m_OperateMask.SetActive(false);
     }
 
     public override void PlayerUpdate()
     {
-        //if(Input.GetKeyDown(KeyCode.A))
-        //{
-        //    m_Executor.deQueue = true;
-        //}
         m_Executor.Execute();
     }
 }

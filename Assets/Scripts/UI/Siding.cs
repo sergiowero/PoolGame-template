@@ -5,93 +5,56 @@ using System.Collections;
 
 public class Siding : MonoBehaviour 
 {
-    private static Siding m_Instance = null;
-
     [SerializeField]
     private RectTransform m_SideballO;//sideball operator
     [SerializeField]
     private RectTransform m_AnchorO; //anchor to sideball operator
     [SerializeField]
-    private RectTransform m_BlackMask; //showing when sideballO is showing, for operator sideballO
-    [SerializeField]
-    private RectTransform m_MaskDeactiveObject; //disable mask touch component
-    [SerializeField]
     private SidingAnchor m_SidingAnchor;
     [SerializeField]
-    private Slider m_VerticalDegreeSlider;
+    private Text m_MasseText;
     [SerializeField]
-    private Text m_VerticalDegreeText;
+    private RectTransform m_MasseCue;
+    [SerializeField]
+    private RectTransform m_MasseIcon;
+    [SerializeField]
+    private int m_PrevValue;
 
-    private bool m_SidingDrag = false;
-
-    private bool m_TouchWhiteArea = false;
-
-    private Vector3 m_SideballO_Orip;
 
     private Vector2 m_LastCoord;
 
 
     private const float m_FadeTime = .5f;
 
+    public int MasseAngle
+    {
+        get
+        {
+            return (int)m_MasseCue.localEulerAngles.z;
+        }
+        set
+        {
+            m_MasseCue.localEulerAngles = new Vector3(0, 0, value);
+            m_MasseText.text = value.ToString() + "°";
+            m_MasseText.transform.rotation = Quaternion.identity;
+            Pools.Cue.VerticalRotate(value);
+            iTween.RotateTo(m_MasseIcon.gameObject, m_MasseCue.localEulerAngles, .2f);
+        }
+    }
+
     void Awake()
     {
-        if(!m_Instance)
-        {
-            m_Instance = this;
-            m_SideballO_Orip = m_SideballO.localPosition;
-            Color c = m_SideballO.GetComponent<Image>().color;
-            c.a = 0;
-            m_SideballO.GetComponent<Image>().color = c;
-            m_SideballO.gameObject.SetActive(false);
-            m_BlackMask.gameObject.SetActive(false);
-            m_SidingAnchor.OnMovingDown = AnchorMoveDown;
-            //PoolRulesBase.onFireBall += ResetAnchorOffset;
-            PoolRulesBase.onNewTurn += ResetAnchorOffset;
-            m_VerticalDegreeSlider.value = 0;
-        }
-        else
-        {
-            Debug.LogError("there two siding object in the scene!");
-        }
+        m_SidingAnchor.OnMovingDown = AnchorMoveDown;
+        PoolRulesBase.onNewTurn += ResetAnchorOffset;
+        m_MasseCue.localEulerAngles = Vector3.zero;
+        m_MasseIcon.localEulerAngles = Vector3.zero;
     }
 
     void OnDestroy()
     {
         m_SidingAnchor.OnMovingDown = null;
         //PoolRulesBase.onFireBall -= ResetAnchorOffset;
-        PoolRulesBase.onNewTurn += ResetAnchorOffset;
-    }
-
-    public void OnToggleClick()
-    {
-        if (WhiteBall.CueBallSiding)
-        {
-            m_MaskDeactiveObject.gameObject.SetActive(true);
-            iTween.FadeTo(m_SideballO.gameObject, 0, m_FadeTime);
-            iTween.FadeTo(m_AnchorO.gameObject, 0, m_FadeTime);
-            iTween.FadeTo(m_BlackMask.gameObject, 0, m_FadeTime * .5f);
-            iTween.ScaleTo(m_SideballO.gameObject, Vector3.one, m_FadeTime);
-            iTween.MoveTo(m_SideballO.gameObject, iTween.Hash("position", m_SideballO_Orip, "time", m_FadeTime, "oncomplete", "OnFadeoffDown", "oncompletetarget", gameObject, "islocal", true));
-        }
-        else
-        {
-            m_SideballO.gameObject.SetActive(true);
-            m_BlackMask.gameObject.SetActive(true);
-            m_MaskDeactiveObject.gameObject.SetActive(false);
-            iTween.FadeTo(m_BlackMask.gameObject, 0.4f, m_FadeTime * .5f);
-            iTween.FadeTo(m_SideballO.gameObject, 1, m_FadeTime);
-            iTween.FadeTo(m_AnchorO.gameObject, 1, m_FadeTime);
-            iTween.MoveTo(m_SideballO.gameObject, iTween.Hash("position", Vector3.zero, "time", m_FadeTime, "islocal", false));
-            iTween.ScaleTo(m_SideballO.gameObject, Vector3.one * 3, m_FadeTime);
-        }
-        WhiteBall.CueBallSiding = !WhiteBall.CueBallSiding;
-    }
-
-    private void OnFadeoffDown()
-    {
-        m_SideballO.gameObject.SetActive(false);
-        m_BlackMask.gameObject.SetActive(false);
-        m_MaskDeactiveObject.gameObject.SetActive(false);
+        PoolRulesBase.onNewTurn -= ResetAnchorOffset;
     }
 
     private void CalculateAnchorOffset(Vector3 position)
@@ -109,33 +72,11 @@ public class Siding : MonoBehaviour
         else
         {
             coord = newCoord;
-            m_TouchWhiteArea = true;
         }
-        if (m_TouchWhiteArea)
-            _SidingAnchorOffset(coord);
+        _SidingAnchorOffset(coord);
     }
 
-    public void BlackMaskDragBegin(BaseEventData data)
-    {
-        m_SidingDrag = true;
-    }
-
-    public void BlackMaskDragEnd(BaseEventData data)
-    {
-        m_SidingDrag = false;
-        if(!m_TouchWhiteArea)
-        {
-            OnToggleClick();
-        }
-        else
-        {
-            PointerEventData ped = data as PointerEventData;
-            CalculateAnchorOffset(ped.position);
-        }
-        m_TouchWhiteArea = false;
-    }
-
-    public void BlackMaskDrag(BaseEventData data)
+    public void OnSiding(BaseEventData data)
     {
         PointerEventData ped = data as PointerEventData;
         CalculateAnchorOffset(ped.position);
@@ -144,10 +85,6 @@ public class Siding : MonoBehaviour
     private void AnchorMoveDown()
     {
         Pools.Cue.Siding(m_SidingAnchor.GetAnchorOffset());
-        if(!m_SidingDrag)
-        {
-            OnToggleClick();
-        }
     }
 
     private void _SidingAnchorOffset(Vector2 offset)
@@ -157,20 +94,32 @@ public class Siding : MonoBehaviour
 
     private void _ResetVerticalDegreeSlider()
     {
-        m_VerticalDegreeSlider.value = 0;
+        m_MasseCue.localEulerAngles = Vector3.zero;
     }
 
     private void ResetAnchorOffset(int i)
     {
-        m_Instance._SidingAnchorOffset(Vector2.zero);
-        m_Instance._ResetVerticalDegreeSlider();
+        _SidingAnchorOffset(Vector2.zero);
+        _ResetVerticalDegreeSlider();
+        MasseAngle = 0;
         Pools.Cue.Siding(Vector3.zero);
     }
 
-    public void ChangeVerticalDegree(float value)
+    public void OnCueDrag(BaseEventData data)
     {
-        float fv = Mathf.Lerp(0, 90, value);
-        Pools.Cue.VerticalRotate(fv);
-        m_VerticalDegreeText.text = ((int)fv).ToString();
+        PointerEventData pd = data as PointerEventData;
+        Vector3 worldPosition = BaseUIController.GetUICamera().ScreenToWorldPoint(pd.position);
+        Vector3 v = (worldPosition - m_MasseCue.position).normalized;
+        int angle;
+        if (Vector3.Cross(v, Vector3.right).z > 0)
+            angle = 0;
+        else
+            angle = (int)Vector3.Angle(Vector3.right, v);
+        angle = Mathf.Clamp(angle, 0, 90);
+        if (m_PrevValue != angle)
+        {
+            m_PrevValue = angle;
+            MasseAngle = angle;
+        }
     }
 }

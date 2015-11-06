@@ -59,6 +59,8 @@ public class PoolRecycler : MonoBehaviour
         {
             GameManager.Rules.PotBall(pb, m_RefTrigger.PocketIndex);
             Pools.StorageRack.Add(pb);
+            if (PocketTrigger.pocketTriggerBallList.Contains(col.GetInstanceID()))
+                PocketTrigger.pocketTriggerBallList.Remove(col.GetInstanceID());
         }
     }
 }

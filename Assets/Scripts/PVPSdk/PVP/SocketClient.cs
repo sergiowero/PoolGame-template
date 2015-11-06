@@ -17,7 +17,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 
-namespace PVPSdk {
+namespace PVPSdk.PVP {
 
 
     /// <summary>
@@ -48,6 +48,7 @@ namespace PVPSdk {
 
     public delegate void ReceivedProtoEventHandler(ReceivedProtoEventArgs e);
     public delegate void NetworkErrorEventHandler();
+    public delegate void StartConnectEventHandler();
 
     /// <summary>
     /// 访问服务器的socket 客户端，支持自动重连,支持自动接收数据包
@@ -90,7 +91,7 @@ namespace PVPSdk {
 
         public event ReceivedProtoEventHandler receiveProtoEventHandler;
         public event NetworkErrorEventHandler networkErrorHandler;
-        public event LockSocketEventHandler lockSocketEventhandler;
+        public event StartConnectEventHandler startConnectEventHandler;
 
         public bool isConnected {
             get {
@@ -137,8 +138,8 @@ namespace PVPSdk {
                 if (this.isConnected) {
                     Thread.Sleep (10);
                 } else {
-                    if(this.lockSocketEventhandler != null){
-                        this.lockSocketEventhandler ();
+                    if(this.startConnectEventHandler != null){
+                        this.startConnectEventHandler ();
                     }
                     //清掉已有的线程
                     if (_sendDataThread != null) {
@@ -209,10 +210,15 @@ namespace PVPSdk {
 
         private void _SocketCheckToken(){
             while (this._keepConnecting && this._tcpClient.Connected && this._state != SocketClientState.CheckTokened) {
-                Socket_CheckToken_Client t = new Socket_CheckToken_Client ();
-                t.proto_version = PVP.PROTO_VERSION;
+                Socket_CheckToken_Request t = new Socket_CheckToken_Request ();
+                t.proto_version = Config.PROTO_VERSION;
                 t.token = this.token;
-                this.SendData<Socket_CheckToken_Client>(0, MessageTypeId.Socket_CheckToken_Client, t, true);
+                if(PVPGlobal.localAppUserInfo != null){
+                    t.app_user_info_number = PVPGlobal.localAppUserInfo.number;
+                    t.app_user_info_custom_data_number = PVPGlobal.localAppUserInfo.customDataNumber;
+                }
+
+                this.SendData<Socket_CheckToken_Request>(0, MessageTypeId.Socket_CheckToken_Request, t, true);
                 //间隔 0.5 秒
                 Thread.Sleep (500);
             }
@@ -239,7 +245,7 @@ namespace PVPSdk {
 							r.messageTypeId = messageTypeId;
 							r.errorCode = errorCode;
                             r.requestId = requestId;
-                            if(r.messageTypeId == MessageTypeId.Socket_CheckToken_Server && r.errorCode == ErrorCode.SUCCESS){
+                            if(r.messageTypeId == MessageTypeId.Socket_CheckToken_Response && r.errorCode == ErrorCode.SUCCESS){
                                 this._state = SocketClientState.CheckTokened;
                             }
 							if (protoLength == 0) {
@@ -318,7 +324,7 @@ namespace PVPSdk {
                     if(this.state == SocketClientState.CheckTokened){
                         while (_writeQueue.Count > 0) {
                             ReceivedProtoEventArgs item = _writeQueue.Dequeue ();
-                            if(PVP.isDebug){
+                            if(PVPGlobal.isDebug){
                                 Debug.Log(string.Format("send data {0}", item.bytes.Length));
                             }
                             stream.Write (item.bytes, 0, item.bytes.Length);

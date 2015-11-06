@@ -51,6 +51,7 @@ public class AchieveConfiguration : HOConfigurationReader
             info.goal = ParseTableValueToInt(value["Goal"]);
             info.DescriptionID = ParseTableValueToInt(value["DescriptionID"]);
             info.Description = ParseTableValueToString(value["Description"]);
+            info.IconName = ParseTableValueToString(value["IconName"]);
             key = info.id;
             mAchieveDictionary.Add(key, info);
         }

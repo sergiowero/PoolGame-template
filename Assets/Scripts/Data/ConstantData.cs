@@ -2,13 +2,66 @@
 using System.Collections;
 using System.Text;
 
+public enum GLanguage
+{
+    zhCN,
+    zhTW,
+    ruRU,
+    enUS,
+    enGB
+}
+
 public class ConstantData
 {
+    public static GLanguage GameLanguage = GLanguage.enUS;
+
+    public static string BattleSceneType = null;
+
+    public const string ToPratice = "ToPratice";
+
+    public const string ToLevel = "ToLevel";
+
+    public static int LoadedChapter = 0;
+
+    public const string MusicVolumnKey = "music_volumn";
+
+    public const string SoundVolumnKey = "sound_volumn";
+
+    public const int True = 1;
+
+    public const int False = 0;
+
+    private static int _Sound = 1;
+    public static bool Sound
+    {
+        set
+        {
+            _Sound = value ? True : False;
+            PlayerPrefs.SetInt(SoundVolumnKey, _Sound);
+        }
+        get
+        {
+            return _Sound == True;
+        }
+    }
+
+    private static int _Music = 1;
+    public static bool Music
+    {
+        get
+        {
+            return _Music == True;
+        }
+        set
+        {
+            _Music = value ? True : False;
+            PlayerPrefs.SetInt(MusicVolumnKey, _Music);
+        }
+    }
+
     public const float BallRadiusAdjustment = .004f;
 
     public const float BallDragRayCastRadius = 1f;
-
-    public const float AdjustingCueScalar = 0.3f;
 
     public const float TurnWaitTime = .1f;
 

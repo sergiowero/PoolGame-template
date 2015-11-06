@@ -10,10 +10,13 @@ public class BombBall : PoolBall
     [SerializeField]
     private GUISkin m_Skin;
 
+    public bool showGUI;
+
     public override void Awake()
     {
         base.Awake();
         m_TimeRemain = ConstantData.MissionBombBallDuration;
+        showGUI = true;
     }
 
     public override void Update()
@@ -34,6 +37,18 @@ public class BombBall : PoolBall
     //    m_TimeRemain = TurnDuration - turn;
     //}
 
+    public override void CloseRenderer()
+    {
+        base.CloseRenderer();
+        showGUI = false;
+    }
+
+    public override void OpenRenderer()
+    {
+        base.OpenRenderer();
+        showGUI = true;
+    }
+
     private void Boom()
     {
         AudioHelper.m_Instance.onExplosion();
@@ -44,10 +59,13 @@ public class BombBall : PoolBall
 
     void OnGUI()
     {
-        GUISkin t = GUI.skin;
-        GUI.skin = m_Skin;
-        Vector2 v = Pools.SceneCamera.WorldToScreenPoint(transform.position);
-        GUI.Label(new Rect(v.x, Screen.height - v.y, 50, 50), ((int)m_TimeRemain).ToString());
-        GUI.skin = t;
+        if (showGUI)
+        {
+            GUISkin t = GUI.skin;
+            GUI.skin = m_Skin;
+            Vector2 v = Pools.SceneCamera.WorldToScreenPoint(transform.position);
+            GUI.Label(new Rect(v.x, Screen.height - v.y, 50, 50), ((int)m_TimeRemain).ToString());
+            GUI.skin = t;
+        }
     }
 }

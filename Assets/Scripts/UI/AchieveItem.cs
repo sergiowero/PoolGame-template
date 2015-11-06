@@ -9,4 +9,6 @@ public class AchieveItem : MonoBehaviour
     public Text description;
     public Text progress;
     public Image backGround;
+    public Image achieveIcon;
+    public Image finishFlag;
 }

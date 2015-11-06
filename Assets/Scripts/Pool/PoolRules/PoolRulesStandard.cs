@@ -68,18 +68,18 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected override void CustomUpdate()
     {
-        //if (m_Countdown)
-        //{
-        //    m_Time -= Time.deltaTime;
-        //    CurrentPlayer.Countdown(m_Time / m_TimePerRound);
-        //    if (m_Time <= 0)
-        //    {
-        //        m_Countdown = false;
-        //        m_TimeOut = true;
-        //        //check the result immediately
-        //        StartCoroutine(CheckResultAndChangeTurn(0));
-        //    }
-        //}
+        if (m_Countdown)
+        {
+            m_Time -= Time.deltaTime;
+            CurrentPlayer.Countdown(m_Time / m_TimePerRound);
+            if (m_Time <= 0)
+            {
+                m_Countdown = false;
+                m_TimeOut = true;
+                //check the result immediately
+                StartCoroutine(CheckResultAndChangeTurn(0));
+            }
+        }
     }
 
     public override void SetPlayers(params IPlayer[] players)
@@ -105,7 +105,6 @@ public class PoolRulesStandard : PoolRulesBase
         {
             GameManager.Rules.State = GlobalState.DRAG_WHITEBALL;
         }
-
         for (int i = 0, length = m_Players.Length; i < length; i++)
         {
             m_Players[i].UpdateBallIcon();
@@ -116,6 +115,7 @@ public class PoolRulesStandard : PoolRulesBase
     protected override IEnumerator CheckResultAndChangeTurn(float time)
     {
         yield return new WaitForSeconds(time);
+
 
         if (CheckGameOver()) // the game is over
         {
@@ -159,6 +159,7 @@ public class PoolRulesStandard : PoolRulesBase
         if (Pools.Balls[8].BallState != PoolBall.State.POTTED )
             return false;
 
+        CurrentPlayer.UpdateBallIcon();
         //black 8 enter the pocket 
 
         //current player hits the black 8 in the pocket at the first round, current player win

@@ -65,6 +65,8 @@ public class LevelData : ScriptableObject
     [SerializeField]
     private int m_ShotCount;
     [SerializeField]
+    private int m_DescriptionID;
+    [SerializeField]
     private BallData m_CueballData;
     [SerializeField]
     private List<BallData> m_BallDatas = new List<BallData>();
@@ -77,6 +79,7 @@ public class LevelData : ScriptableObject
     public PocketIndexes StartPunishmentPocket { get { return m_StartPunishmentPocket; } set { m_StartPunishmentPocket = value; } }
     public PocketIndexes StartRewardPocket { get { return m_StartRewardPocket; } set { m_StartRewardPocket = value; } }
     public int shotCount { get { return m_ShotCount; } set { m_ShotCount = value; } }
+    public int DescriptionID { get { return m_DescriptionID; } set { m_DescriptionID = value; } }
 }
 
 

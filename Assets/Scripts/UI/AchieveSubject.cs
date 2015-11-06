@@ -23,14 +23,18 @@ public class AchieveSubject : MonoBehaviour {
             int id = v.Key;
             item.achieveName.text = v.Value.name;
             item.description.text = v.Value.DescriptionID.ToString();
+            item.achieveIcon.sprite = Resources.Load<Sprite>("UI/LaunchScene/AchieveIcon/" + v.Value.IconName);
             if(ConstantData.achieveRecords[id] < v.Value.goal)
             {
+                item.progress.gameObject.SetActive(true);
+                item.finishFlag.gameObject.SetActive(false);
                 item.progress.text = ConstantData.achieveRecords[id] + "/" + v.Value.goal;
                 item.backGround.color = Color.gray;
             }
             else
             {
-                item.progress.text = "Finish";
+                item.progress.gameObject.SetActive(false);
+                item.finishFlag.gameObject.SetActive(true);
                 item.backGround.color = Color.white;
                 progress++;
             }

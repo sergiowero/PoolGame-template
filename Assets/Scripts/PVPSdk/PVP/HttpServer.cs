@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace PVPSdk
+namespace PVPSdk.PVP
 {
 	public class HttpServer 
 	{
@@ -25,12 +25,6 @@ namespace PVPSdk
 				return this._instance;
 			}
 		}
-
-
-		public void Login(){
-			
-		}
-
 	}
 }
 

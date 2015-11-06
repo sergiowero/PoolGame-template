@@ -32,9 +32,22 @@ public class BaseUIController : MonoBehaviour {
     [SerializeField]
     private GameObject m_GlobalMask;
     [SerializeField]
-    private FollowWorldObject m_Hand;
+    private BallInHand m_Hand;
     [SerializeField]
-    private GameObject m_BlackMask;
+    private GameObject m_FadeMask;
+    [SerializeField]
+    private GameObject m_RiseMask;
+
+    [SerializeField]
+    public Image targetPocketImage;
+    [SerializeField]
+    public Image targetBallImage;
+    [SerializeField]
+    public Image hitPointImage;
+    [SerializeField]
+    public Image newHitPointImage;
+    [SerializeField]
+    public bool debugAI;
 
     public static BaseUIController Instance { get { return m_Instance; } }
 
@@ -46,8 +59,21 @@ public class BaseUIController : MonoBehaviour {
     public static Siding siding { get { return m_Instance.m_Siding; } }
     public static  Transform TopMenuRoot { get { return m_Instance.m_TopMenuRoot; } }
     public static SettlementUIManager MSettlement { get { return m_Instance.m_Settlement; } }
-    public static GameObject GlobalMask { get { return m_Instance.m_GlobalMask; } }
-    public static FollowWorldObject hand { get { return m_Instance.m_Hand; } }
+    public static bool GlobalMask 
+    {
+        get
+        {
+            return m_Instance.m_GlobalMask.activeInHierarchy;
+        }
+        set
+        {
+            cueAndLines.SetFade(value);
+            m_Instance.m_GlobalMask.SetActive(value);
+        }
+    }
+
+
+    public static BallInHand hand { get { return m_Instance.m_Hand; } }
     public static TopMenu topMenu 
     {
         set 
@@ -65,11 +91,20 @@ public class BaseUIController : MonoBehaviour {
         }
         m_Instance = this;
         m_Text.gameObject.SetActive(false);
-        hand.gameObject.SetActive(false);
-        m_BlackMask.SetActive(true);
+        //hand.gameObject.SetActive(false);
+        m_FadeMask.SetActive(true);
         PoolRulesBase.onFireBall += OnFireBall;
         PoolRulesBase.onNewTurn += OnStartRound;
+
+        if(!debugAI)
+        {
+            targetPocketImage.gameObject.SetActive(false); 
+            targetBallImage.gameObject.SetActive(false);
+            hitPointImage.gameObject.SetActive(false);
+            newHitPointImage.gameObject.SetActive(false);
+        }
     }
+
 
     void OnDestroy()
     {
@@ -81,13 +116,13 @@ public class BaseUIController : MonoBehaviour {
     private void OnFireBall()
     {
         fireSlider.gameObject.SetActive(false);
-        GlobalMask.SetActive(true);
+        GlobalMask = true;
     }
 
     private void OnStartRound(int playerIndex)
     {
         fireSlider.gameObject.SetActive(true);
-        GlobalMask.SetActive(false);
+        GlobalMask= false;
     }
 
     public static Camera GetUICamera()
@@ -102,7 +137,7 @@ public class BaseUIController : MonoBehaviour {
 
     public void Back2MainScene()
     {
-        Application.LoadLevel(0);
+        m_RiseMask.gameObject.SetActive(true);
     }
 
     public static void GenerateTips(string text, Color c, Vector3 position, bool stationary = false)

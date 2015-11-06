@@ -262,12 +262,12 @@ public class PoolBall : MonoBehaviour
         return m_state != State.ROLL;
     }
 
-    public void CloseRenderer()
+    public virtual void CloseRenderer()
     {
         if (m_ShadowRenderer) m_ShadowRenderer.Close();
     }
 
-    public void OpenRenderer()
+    public virtual void OpenRenderer()
     {
         if (m_ShadowRenderer) m_ShadowRenderer.Open();
     }

@@ -29,23 +29,21 @@ public class CountdownOutline : MonoBehaviour
     void OnEnable()
     {
         iTween.ColorTo(gameObject, m_NormalColor, .5f);
+        PoolRulesBase.onFireBall += OnFireBall;
     }
 
     void OnDisable()
     {
         iTween.ColorTo(gameObject, Color.white * 0, .5f);
+        PoolRulesBase.onFireBall -= OnFireBall;
     }
 
     public void SetValue(float fillAmount)
     {
         m_Image.fillAmount = fillAmount;
-        if(m_Image.fillAmount < .25f)
+        if (m_Image.fillAmount < .25f)
         {
             m_Twinkle.enabled = true;
-        }
-        else
-        {
-            m_Twinkle.enabled = false;
         }
 
         if(m_Image.fillAmount <= 0)
@@ -56,6 +54,25 @@ public class CountdownOutline : MonoBehaviour
         {
             enabled = true;
         }
+        if(m_Twinkle.enabled)
+        {
+            HOAudioManager.PlayLoopClip("Clock");
+        }
+        if(!enabled || !m_Twinkle.enabled)
+        {
+            HOAudioManager.StopLoopClip();
+        }
+    }
+
+    void OnFireBall()
+    {
+        m_Twinkle.enabled = false;
+        HOAudioManager.StopLoopClip();
+    }
+
+    void OnGUI()
+    {
+        GUILayout.Label(GameManager.Rules.State.ToString());
     }
 
     public float GetValue()

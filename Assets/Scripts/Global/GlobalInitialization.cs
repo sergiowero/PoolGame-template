@@ -7,12 +7,16 @@ public sealed class GlobalInitialization : MonoBehaviour
     [SerializeField]
     private LevelDataIndex m_LevelDatas;
 
+    [SerializeField]
+    private string m_bgmName;
+
     void Awake()
     {
         ConstantData.LevelDatas = m_LevelDatas;
         ConstantData.missionRecords = LoadRecords<MissionRecords>(ConstantData.missionLevelDataRecordPath);
         ConstantData.quickFireRecords = LoadRecords<QuickFirePlayer.PlayerData>(ConstantData.quickFireGameRecordPath);
         ConstantData.achieveRecords = LoadRecords<AchieveRecords>(ConstantData.achieveDataRecordPath);
+
     }
 
     void Start()
@@ -20,6 +24,7 @@ public sealed class GlobalInitialization : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(LoadPoolAsset(OnPoolAssetLoadedAtAndroidPlatform));
 #endif
+        HOAudioManager.PlayBGM(m_bgmName);
     }
 
     #region IEnumerator

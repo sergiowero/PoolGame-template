@@ -130,9 +130,12 @@ public class OperateArea : MonoBehaviour {
 
             prevScreenPosition = position;
 
-            cueBall.transform.position += ballDelta;
-            cueBall.transform.position = MathTools.Clamp3(cueBall.transform.position, constraint.min, constraint.max);
-            if (RayCast(Pools.SceneCamera.WorldToScreenPoint(cueBall.transform.position)))
+            Vector3 cbPosition = cueBall.transform.position;
+            cbPosition += ballDelta;
+            cbPosition = MathTools.Clamp3(cbPosition, constraint.min, constraint.max);
+            cueBall.transform.position = cbPosition;
+            //BaseUIController.hand.Locate(cbPosition);
+            if (RayCast(Pools.SceneCamera.WorldToScreenPoint(cbPosition)))
             {
                 droppable = false;
                 BaseUIController.hand.ChangeState(1);
@@ -163,7 +166,9 @@ public class OperateArea : MonoBehaviour {
         public void Begin()
         {
             Pools.Cue.Hide();
-            BaseUIController.hand.gameObject.SetActive(true);
+            BaseUIController.hand.Show();
+            BaseUIController.hand.Locate(cueBall.transform.position);
+            BaseUIController.fireSlider.gameObject.SetActive(false);
             y = cueBall.transform.position.y;
             cueBall.yConstrain = false;
             Vector3 v = cueBall.transform.position;
@@ -182,7 +187,8 @@ public class OperateArea : MonoBehaviour {
             Vector3 v = cueBall.transform.position;
             v.y = y;
             cueBall.transform.position = v;
-            BaseUIController.hand.gameObject.SetActive(false);
+            BaseUIController.hand.Hide();
+            BaseUIController.fireSlider.gameObject.SetActive(true);
             cueBall.rigidbody.useGravity = true;
             cueBall.rigidbody.constraints = RigidbodyConstraints.None;
             constraint.enabled = false;
@@ -240,7 +246,6 @@ public class OperateArea : MonoBehaviour {
         dragOperation = new DragOperation();
         m_DontDoAnyOperation = new DontDoAnyOperation();
         SetOpeartion(pointerOperation);
-        BaseUIController.hand.followObject = Pools.CueBall.transform;
     }
 
     void OnDestroy()
@@ -250,9 +255,9 @@ public class OperateArea : MonoBehaviour {
 
     private void RoundBegin(int playerID)
     {
-        BaseUIController.cueAndLines.gameObject.SetActive(true);
-        if (GameManager.Rules.firstRound)
-            Pools.Cue.Reset(); 
+        Pools.Cue.Reset(); 
+        //method just execute for once
+        PoolRulesBase.onNewTurn -= RoundBegin;
         //else
         //{
         //    for (int i = 0; i < 16; i++)
@@ -273,7 +278,6 @@ public class OperateArea : MonoBehaviour {
 
     public void ChangeOperationType(GlobalState state)
     {
-        Debug.Log("Change operation type : " + state);
         switch (state)
         {
             case GlobalState.DRAG_WHITEBALL:

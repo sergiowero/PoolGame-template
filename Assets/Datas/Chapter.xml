@@ -32,7 +32,7 @@
   </Style>
  </Styles>
  <Worksheet ss:Name="Sheet1">
-  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="12" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="7" x:FullColumns="1"
    x:FullRows="1" ss:DefaultColumnWidth="54" ss:DefaultRowHeight="13.5">
    <Column ss:AutoFitWidth="0" ss:Width="116.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="147"/>
@@ -72,31 +72,6 @@
     <Cell><Data ss:Type="String">London</Data></Cell>
     <Cell><Data ss:Type="String">Image_London</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="Number">6</Data></Cell>
-    <Cell><Data ss:Type="String">Shanghai</Data></Cell>
-    <Cell><Data ss:Type="String">Image_Shanghai</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="Number">7</Data></Cell>
-    <Cell><Data ss:Type="String">Alicante</Data></Cell>
-    <Cell><Data ss:Type="String">Image_Alicante</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="Number">8</Data></Cell>
-    <Cell><Data ss:Type="String">Chicago</Data></Cell>
-    <Cell><Data ss:Type="String">Image_Chicago</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="Number">9</Data></Cell>
-    <Cell><Data ss:Type="String">Doha</Data></Cell>
-    <Cell><Data ss:Type="String">Image_Doha</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="Number">10</Data></Cell>
-    <Cell><Data ss:Type="String">Sheffield</Data></Cell>
-    <Cell><Data ss:Type="String">Image_Sheffield</Data></Cell>
-   </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -115,7 +90,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>2</ActiveRow>
+     <ActiveRow>10</ActiveRow>
      <ActiveCol>2</ActiveCol>
     </Pane>
    </Panes>

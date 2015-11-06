@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace PVPSdk
+namespace PVPSdk.PVP
 {
 	public static class SocketClientExt
 	{

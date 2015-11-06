@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using PVPProtobuf;
 
-namespace PVPSdk
+namespace PVPSdk.PVP
 {
     public class MemberCustomData
     {
-        public int custom_data_number{ get; private set;}
+        public uint customDataNumber{ get; private set;}
         public uint member_uid {
             get;
             private set;
@@ -18,10 +18,16 @@ namespace PVPSdk
         public MemberCustomData (Room_UpdateMemberCustomData_Broadcast custom_data )
         {
             this.member_uid = custom_data.member_uid;
-            this.custom_data_number = custom_data.custom_data_number;
+            this.customDataNumber = custom_data.custom_data_number;
             this.custom_data = new Dictionary<string, byte[]> ();
-            foreach (Pair item in custom_data.custom_data) {
+            foreach (Pair item in custom_data.updated_data) {
                 this.custom_data [item.key] = item.value;
+            }
+
+            foreach (string key in custom_data.deleted_data) {
+                if (this.custom_data.ContainsKey (key)) {
+                    this.custom_data.Remove (key);
+                }
             }
         }
     }

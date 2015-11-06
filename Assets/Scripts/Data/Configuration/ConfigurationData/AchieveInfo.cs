@@ -17,5 +17,6 @@ public class AchieveInfo
     public int goal { get; set; }
     public int DescriptionID { get; set; }
     public string Description { get; set; }
+    public string IconName { get; set; }
 }
 

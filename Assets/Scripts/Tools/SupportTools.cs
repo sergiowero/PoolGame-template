@@ -17,9 +17,13 @@ public class SupportTools
 
     public static GameObject AddChild(Transform parent, Transform child)
     {
+        RectTransform rectTrans = child.GetComponent<RectTransform>();
         child.SetParent(parent);
+        if(rectTrans)
+            rectTrans.anchoredPosition = Vector2.zero;
+        else
+            child.localPosition = Vector3.zero;
         child.localRotation = Quaternion.identity;
-        child.localPosition = Vector3.zero;
         child.localScale = Vector3.one;
         return child.gameObject;
     }
@@ -66,4 +70,5 @@ public class SupportTools
         }
         o.transform.position = v;
     }
+
 }
