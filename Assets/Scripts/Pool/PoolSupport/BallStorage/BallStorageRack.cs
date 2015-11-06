@@ -41,7 +41,7 @@ public class BallStorageRack : MonoBehaviour {
             {
                 Rigidbody rb = m_BallQueue.Dequeue();
                 WhiteBall cueball;
-                if ((cueball = rb.GetComponent<WhiteBall>()) && cueball.BallState != PoolBall.State.POTTED) //cueball has already reset
+                if ((cueball = rb.GetComponent<WhiteBall>()) && cueball.BallState != PoolBall.State.POTTED) //ball has already reset
                 {
                     return;
                 }

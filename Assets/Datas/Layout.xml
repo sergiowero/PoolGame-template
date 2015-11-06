@@ -19,8 +19,11 @@
   <WindowWidth>28800</WindowWidth>
   <WindowTopX>0</WindowTopX>
   <WindowTopY>0</WindowTopY>
+  <Calculation>ManualCalculation</Calculation>
+  <DoNotCalculateBeforeSave/>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
+  <Uncalced/>
  </ExcelWorkbook>
  <Styles>
   <Style ss:ID="Default" ss:Name="Normal">
@@ -236,8 +239,8 @@
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="Number">18</Data></Cell>
     <Cell><Data ss:Type="Number">100</Data></Cell>
-    <Cell><Data ss:Type="Number">640</Data></Cell>
-    <Cell><Data ss:Type="Number">740</Data></Cell>
+    <Cell><Data ss:Type="Number">630</Data></Cell>
+    <Cell><Data ss:Type="Number">840</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
    </Row>
@@ -256,8 +259,8 @@
     <Cell><Data ss:Type="Number">1</Data></Cell>
     <Cell><Data ss:Type="Number">20</Data></Cell>
     <Cell><Data ss:Type="Number">100</Data></Cell>
-    <Cell><Data ss:Type="Number">630</Data></Cell>
-    <Cell><Data ss:Type="Number">840</Data></Cell>
+    <Cell><Data ss:Type="Number">440</Data></Cell>
+    <Cell><Data ss:Type="Number">540</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
     <Cell><Data ss:Type="Number">0</Data></Cell>
    </Row>
@@ -2070,11 +2073,10 @@
    </PageSetup>
    <Unsynced/>
    <Selected/>
-   <TopRowVisible>84</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>106</ActiveRow>
+     <ActiveRow>20</ActiveRow>
      <ActiveCol>4</ActiveCol>
     </Pane>
    </Panes>

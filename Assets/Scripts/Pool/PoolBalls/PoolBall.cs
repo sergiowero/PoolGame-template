@@ -70,7 +70,8 @@ public class PoolBall : MonoBehaviour
 
     protected Renderer m_Mesh;
 
-    protected Vector3 m_LastPosition;
+    protected Vector3 m_PrevRoundPosition;
+    protected Quaternion m_PrevRoundRotation;
 
     protected float m_Radius;
 
@@ -171,6 +172,8 @@ public class PoolBall : MonoBehaviour
     public virtual void OnNewTurn(int turnIndex)
     {
         hitWall = false;
+        m_PrevRoundPosition = transform.position;
+        m_PrevRoundRotation = transform.rotation;
     }
 
     public float GetRadius()
@@ -228,19 +231,15 @@ public class PoolBall : MonoBehaviour
         }
     }
 
-    public virtual void Reset()
+    protected void ResetState(Vector3 position, Quaternion rotation)
     {
-        if (m_state == State.HIDE) return;
-
-
         m_slowTime = 0;
         m_state = State.IDLE;
-        //SupportTools.SetPosition(gameObject, m_initalPos, SupportTools.AxisIgnore.IgnoreX | SupportTools.AxisIgnore.IgnoreZ);
         Vector3 v = transform.position;
         m_rigidbody.isKinematic = false;
         v.y = m_MaxYAxis;
-        transform.position = v;
-        transform.rotation = m_initalRot;
+        transform.position = position;
+        transform.rotation = rotation;
         m_rigidbody.constraints = RigidbodyConstraints.None;
         m_rigidbody.angularVelocity = Vector3.zero;
         m_rigidbody.velocity = Vector3.zero;
@@ -252,9 +251,24 @@ public class PoolBall : MonoBehaviour
         ReversePhysicalMaterial();
         PhysicalSupportTools.Remove(gameObject, PhysicalSupportType.MaxSpeedLimit);
         RackBallCollision rb;
-        if(rb = GetComponent<RackBallCollision>()) Destroy(rb);
+        if (rb = GetComponent<RackBallCollision>()) Destroy(rb);
         enabled = true;
-        m_LastPosition = transform.position;
+    }
+
+    public virtual void Reset()
+    {
+        if (m_state == State.HIDE) return;
+        m_slowTime = 0;
+        m_state = State.IDLE;
+        Vector3 v = transform.position;
+        m_rigidbody.isKinematic = false;
+        v.y = m_MaxYAxis;
+        ResetState(v, m_initalRot);
+    }
+
+    public void BackToPrevRoundState()
+    {
+        ResetState(m_PrevRoundPosition, m_PrevRoundRotation);
     }
 
     public bool IsDoneRolling()

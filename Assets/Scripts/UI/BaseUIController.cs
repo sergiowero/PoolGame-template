@@ -37,6 +37,9 @@ public class BaseUIController : MonoBehaviour {
     private GameObject m_FadeMask;
     [SerializeField]
     private GameObject m_RiseMask;
+    [SerializeField]
+    private Animator m_Menu;
+
 
     [SerializeField]
     public Image targetPocketImage;
@@ -137,6 +140,13 @@ public class BaseUIController : MonoBehaviour {
 
     public void Back2MainScene()
     {
+        m_RiseMask.GetComponent<AnimationTools>().sceneIndex = 0;
+        m_RiseMask.gameObject.SetActive(true);
+    }
+
+    public void RestartScene()
+    {
+        m_RiseMask.GetComponent<AnimationTools>().sceneIndex = 1;
         m_RiseMask.gameObject.SetActive(true);
     }
 

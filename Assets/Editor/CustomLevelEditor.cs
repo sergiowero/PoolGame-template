@@ -434,6 +434,7 @@ namespace PoolsEditor
                         v.SetAsBlock();
                 }
                 m_ShotCount = m_CurrentLevelData.shotCount;
+                m_DescripID = m_CurrentLevelData.DescriptionID;
                 m_LevelName = m_CurrentLevelData.FileName;
                 m_PrevLevelDataFileName = m_LevelName;
             }

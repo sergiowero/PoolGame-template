@@ -11,6 +11,8 @@ public class PoolRulesMission : PoolRulesBase
 
     protected bool m_WhiteballHitBallThisRound = false;
 
+    protected int m_ScoreThisRound = 0;
+
     protected int m_PunishmentCountThisRound = 0;// the count that ball is potted at punitive pocket per round
 
     protected int m_RewardCountThisRound = 0;//the count that ball is potted at reward pocket per round
@@ -56,26 +58,25 @@ public class PoolRulesMission : PoolRulesBase
     {
         yield return new WaitForSeconds(time);
 
-        int shots = 0;
-        if (m_WhiteBallPotted || !m_WhiteballHitBallThisRound)
-        {
-            shots -= ConstantData.MissionCueballPottedPunishment;
-        }
-        else if (m_PottedBallListThisRound.Count == 0)
-        {
-            shots -= ConstantData.MissionNoBallHittedPunishment;
-        }
-        shots += ConstantData.RewardShots * m_RewardCountThisRound - ConstantData.PunitiveShots * m_PunishmentCountThisRound;
-        m_Player.ShotsRemain += shots;
-        if (shots != 0)
-            BaseUIController.GenerateTips("CUE " + shots, shots > 0 ? Color.yellow : Color.red, true);
+        if (m_PottedBallListThisRound.Count == 0) m_Player.Link = 0; 
 
-        if (m_PottedBallListThisRound.Count == 0 || shots < 0) m_Player.Link = 0; 
-
-        for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+        if(m_WhiteBallPotted)
         {
-            PoolBall pb = m_PottedBallListThisRound[i];
-            m_PottedBallList.Add(pb.GetBallID(), pb);
+            m_Player.Score -= m_ScoreThisRound;
+            BaseUIController.text.Show(string.Format(HOLocalizationConfiguration.GetValue(106), m_ScoreThisRound));
+            yield return new WaitForSeconds(ConstantData.MissionFoulTimeWait);
+            for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+            {
+                m_PottedBallListThisRound[i].BackToPrevRoundState();
+            }
+        }
+        else
+        {
+            for (int i = 0, count = m_PottedBallListThisRound.Count; i < count; i++)
+            {
+                PoolBall pb = m_PottedBallListThisRound[i];
+                m_PottedBallList.Add(pb.GetBallID(), pb);
+            }
         }
         m_PottedBallListThisRound.Clear();
 
@@ -84,10 +85,10 @@ public class PoolRulesMission : PoolRulesBase
             m_GameOver = true;
             if (onGameOver != null)
             {
-                if (m_TargetBalls.Count == 0)
-                    onGameOver(m_Player);
-                else if (m_Player.ShotsRemain == 0)
+                 if (m_Player.ShotsRemain == 0)
                     onGameOver(null);
+                else if (m_TargetBalls.Count == 0)
+                    onGameOver(m_Player);
             }
         }
         else
@@ -139,13 +140,20 @@ public class PoolRulesMission : PoolRulesBase
         base.PotBall(ball, pocket);
 
         if ((pocket & PocketTrigger.PunitivePocket) != 0)
-            m_PunishmentCountThisRound++;
+        {
+            //m_PunishmentCountThisRound++;
+            m_Player.AddCues(ConstantData.PunitiveShots, PocketTrigger.GetPocketWithIndexes(pocket));
+        }
         if ((pocket & PocketTrigger.RewardPocket) != 0)
-            m_RewardCountThisRound++;
+        {
+            //m_RewardCountThisRound++;
+            m_Player.AddCues(ConstantData.RewardShots, PocketTrigger.GetPocketWithIndexes(pocket));
+        }
         int score = 0;
         if (ball.ballType == BallType.WHITE)
         {
             m_Player.Link = 0;
+            m_Player.AddCues(ConstantData.MissionCueballPottedPunishment, PocketTrigger.GetPocketWithIndexes(pocket));
             return;
         }
         else if (ball.ballType == BallType.BOMB)
@@ -177,6 +185,7 @@ public class PoolRulesMission : PoolRulesBase
         {
             m_Player.Link++;
             m_Player.AddScore(score, PocketTrigger.GetPocketWithIndexes(pocket));
+            m_ScoreThisRound = score;
         }
 
         if (m_Player.Link >= 5)

@@ -83,9 +83,11 @@ public class ConstantData
 
     public const int GuidelineLength = 60;
 
-    public const int MissionCueballPottedPunishment = 2;
+    public const int MissionCueballPottedPunishment = -2;
 
-    public const int MissionNoBallHittedPunishment = 1;
+    public const int MissionFireShots = -1;
+
+    public const int MissionFoulTimeWait = 2;
 
     #region Ball points......
     public const int MissionPottedPoint = 100;
@@ -111,7 +113,7 @@ public class ConstantData
 
     public const int SpecialPocketProbability = 30;
 
-    public const int PunitiveShots = 2;
+    public const int PunitiveShots = -2;
 
     public const int RewardShots = 1;
 

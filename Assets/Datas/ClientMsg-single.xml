@@ -7,7 +7,7 @@
  xmlns:html="http://www.w3.org/TR/REC-html40">
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Created>2006-09-16T00:00:00Z</Created>
-  <LastSaved>2015-11-02T08:38:00Z</LastSaved>
+  <LastSaved>2015-11-06T14:30:25Z</LastSaved>
   <Version>12.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
@@ -15,6 +15,10 @@
   <RemovePersonalInformation/>
  </OfficeDocumentSettings>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <SupBook>
+   <Path> </Path>
+   <SheetName> </SheetName>
+  </SupBook>
   <WindowHeight>13035</WindowHeight>
   <WindowWidth>28800</WindowWidth>
   <WindowTopX>0</WindowTopX>
@@ -196,7 +200,7 @@
     <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">犯规</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s71"><Data ss:Type="String">&lt;color=d90000&gt;Foul!&lt;/color&gt;</Data></Cell>
+    <Cell ss:StyleID="s67"><Data ss:Type="String">&lt;color=d90000&gt;Foul -{0}&lt;/color&gt;</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1927,7 +1931,7 @@
    <FreezePanes/>
    <FrozenNoSplit/>
    <SplitHorizontal>2</SplitHorizontal>
-   <TopRowBottomPane>182</TopRowBottomPane>
+   <TopRowBottomPane>53</TopRowBottomPane>
    <SplitVertical>1</SplitVertical>
    <LeftColumnRightPane>1</LeftColumnRightPane>
    <ActivePane>0</ActivePane>
@@ -1944,8 +1948,8 @@
     </Pane>
     <Pane>
      <Number>0</Number>
-     <ActiveRow>200</ActiveRow>
-     <ActiveCol>0</ActiveCol>
+     <ActiveRow>73</ActiveRow>
+     <ActiveCol>5</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

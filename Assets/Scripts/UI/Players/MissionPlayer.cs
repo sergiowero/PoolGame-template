@@ -86,13 +86,51 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         }
     }
 
+    public int Score
+    {
+        get { return m_PlayerData.Score; }
+        set
+        {
+            if(value <= 0)
+                m_PlayerData.Score = 0;
+            else
+                m_PlayerData.Score = value;
+            if (m_PlayerData.HighScore < m_PlayerData.Score)
+                m_PlayerData.HighScore = m_PlayerData.Score;
+            m_Score.text = Score.ToString();
+        }
+    }
+
+    public void AddCues(int cue, Vector3 position)
+    {
+        if (cue == 0)
+            return;
+
+        ShotsRemain += cue;
+        Color c;
+        string f = string.Format(HOLocalizationConfiguration.GetValue(113), cue);
+        if (cue > 0)
+            c = Color.yellow;
+        else
+        {
+            m_PlayerData.Link = 0;
+            c = Color.red;
+        }
+        BaseUIController.GenerateTips(f, c, position);
+    }
+
+    public void AddCues(int cue, PocketTrigger pocket)
+    {
+        if (cue == 0)
+            return;
+
+        AddCues(cue, MathTools.World2UI(pocket.GetRealPosition()));
+    }
+
     public void AddScore(int score, PocketTrigger pocket)
     {
         int s = (int)(score * (m_PlayerData.Link + 4) * .2f);
-        m_PlayerData.Score += s;
-        if (m_PlayerData.HighScore < m_PlayerData.Score)
-            m_PlayerData.HighScore = m_PlayerData.Score;
-        m_Score.text = m_PlayerData.Score.ToString();
+        Score += s;
 
         if(pocket)
         {
@@ -163,5 +201,6 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     protected void FireBall()
     {
         m_PlayerData.ShotCount++;
+        AddCues(ConstantData.MissionFireShots, m_ShotsRemain.transform.position);
     }
 }
