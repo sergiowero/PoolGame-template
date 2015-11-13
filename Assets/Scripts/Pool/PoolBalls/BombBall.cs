@@ -8,64 +8,86 @@ public class BombBall : PoolBall
     public static Delegate1Args<IPlayer> GameoverWithBoom;
 
     [SerializeField]
-    private GUISkin m_Skin;
+    private GameObject m_BombEffect;
 
-    public bool showGUI;
+    [SerializeField]
+    private float m_TimeToGameOver = 1;
+
+    private GameObject m_BombGO;
+
+    private UnityEngine.UI.Text m_BombTickText;
+    private RectTransform m_BombTickTextTransform;
+    private Transform m_BombTrans;
 
     public override void Awake()
     {
         base.Awake();
         m_TimeRemain = ConstantData.MissionBombBallDuration;
-        showGUI = true;
+        m_BombTickText = GetComponentInChildren<UnityEngine.UI.Text>();
+        m_BombTickText.transform.SetParent(GameManager.CurrentUIRoot.transform);
+        m_BombTickText.transform.SetAsFirstSibling();
+        m_BombTickTextTransform = m_BombTickText.transform as RectTransform;
+        m_BombTrans = transform;
     }
 
     public override void Update()
     {
+        if (GameManager.Rules.State == GlobalState.GAMEOVER)
+            return;
+
+        if((m_state & (State.POTTED | State.HIDE)) != 0x0)
+        {
+            return;
+        }
+
         base.Update();
         m_TimeRemain -= Time.deltaTime;
         if (m_TimeRemain < 0) m_TimeRemain = 0;
+        m_BombTickText.text = ((int)m_TimeRemain).ToString();
+        //m_BombTickTextTransform.position = MathTools.World2UI(m_BombTrans.position);
+        m_BombTickTextTransform.position = MathTools.World2UI(m_BombTrans.position);
         if(m_TimeRemain <= 0)
         {
             Boom();
         }
     }
 
-    //public override void OnNewTurn(int turn)
-    //{
-    //    if (turn >= TurnDuration)
-    //        Boom();
-    //    m_TimeRemain = TurnDuration - turn;
-    //}
-
-    public override void CloseRenderer()
+    void OnDestroy()
     {
-        base.CloseRenderer();
-        showGUI = false;
+        if (m_BombGO)
+            Destroy(m_BombGO);
+        if (m_BombTickText)
+            Destroy(m_BombTickText.gameObject);
     }
 
     public override void OpenRenderer()
     {
         base.OpenRenderer();
-        showGUI = true;
+        //m_BombTickText.gameObject.SetActive(true);
+    }
+
+    public override void CloseRenderer()
+    {
+        base.CloseRenderer();
+        m_BombTickText.gameObject.SetActive(false);
     }
 
     private void Boom()
     {
-        AudioHelper.m_Instance.onExplosion();
-        if (GameoverWithBoom != null)
-            GameoverWithBoom(null);
-        Destroy(gameObject);
+        HOAudioManager.Explosion();
+        m_BombGO = Instantiate(m_BombEffect, transform.position, Quaternion.identity) as GameObject;
+        Invoke("GameOverWithBoom", m_TimeToGameOver);
+        gameObject.SetActive(false);
     }
 
-    void OnGUI()
+    private void GameOverWithBoom()
     {
-        if (showGUI)
+        if(GameManager.Rules.State != GlobalState.GAMEOVER)
         {
-            GUISkin t = GUI.skin;
-            GUI.skin = m_Skin;
-            Vector2 v = Pools.SceneCamera.WorldToScreenPoint(transform.position);
-            GUI.Label(new Rect(v.x, Screen.height - v.y, 50, 50), ((int)m_TimeRemain).ToString());
-            GUI.skin = t;
+            GameManager.Rules.State = GlobalState.GAMEOVER;
+            if (GameoverWithBoom != null)
+                GameoverWithBoom(null);
         }
+        Destroy(gameObject);
     }
 }

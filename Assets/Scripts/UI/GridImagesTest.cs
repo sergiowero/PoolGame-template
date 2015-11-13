@@ -11,7 +11,7 @@ public class GridImagesTest : MonoBehaviour
     public void OnClickButton()
     {
         LevelDataIndex.CurrentLevel = MLevelData;
-        ConstantData.GType = GameType.Mission;
+        GameManager.GType = GameType.Mission;
         Application.LoadLevel(1);
     }
 }

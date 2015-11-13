@@ -36,6 +36,7 @@ public class CountdownOutline : MonoBehaviour
     {
         iTween.ColorTo(gameObject, Color.white * 0, .5f);
         PoolRulesBase.onFireBall -= OnFireBall;
+        m_Twinkle.enabled = false;
     }
 
     public void SetValue(float fillAmount)

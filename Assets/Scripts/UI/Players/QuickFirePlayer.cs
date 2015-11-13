@@ -10,7 +10,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         public int ShotCount;
         public int PottedCount;
         public float HitRate;
-        public int MaxLink;
+        public int combo;
         public float PlayTime;
         public int AverageTime;
         public int Score;
@@ -32,6 +32,8 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
     protected System.TimeSpan m_TimeSpan;
 
     protected bool m_PottedBallThisRound;
+
+    protected bool m_MarkPotted;
 
     public float PlayTime 
     {
@@ -57,6 +59,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onGameOver += OnGameOver;
         PoolRulesBase.onFireBall += OnFireBall;
         PoolRulesBase.onCueballPotted += ComboBreak;
+        PoolRulesBase.onNewTurn += TurnBegin;
         m_MultiplierValue = 1;
         m_PlayerData = new PlayerData();
         m_PlayerData.HighScore = ConstantData.quickFireRecords.HighScore;
@@ -67,6 +70,7 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onGameOver -= OnGameOver;
         PoolRulesBase.onFireBall -= OnFireBall;
         PoolRulesBase.onCueballPotted -= ComboBreak;
+        PoolRulesBase.onNewTurn -= TurnBegin;
     }
 
     void Update()
@@ -100,12 +104,13 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
 
     protected void OnGameOver(IPlayer player)
     {
-        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 :  Mathf.Round((m_PlayerData.PottedCount / m_PlayerData.ShotCount) * 1000f) / 1000f;
+        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 : (float)m_PlayerData.PottedCount / (float)m_PlayerData.ShotCount;
         if(m_PlayerData.HighScore < m_PlayerData.Score)
         {
             m_PlayerData.HighScore = m_PlayerData.Score;
             ConstantData.quickFireRecords = m_PlayerData;
         }
+        GameStatistics.MarkQuickFireHighScore(m_PlayerData.Score);
         BaseUIController.MSettlement.GameOver(m_PlayerData);
     }
 
@@ -137,8 +142,13 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
                 break;
             }
         }
-        m_PlayerData.PottedCount++;
-        m_PlayerData.MaxLink++;
+        if(!m_MarkPotted)
+        {
+            m_PlayerData.PottedCount++;
+            m_MarkPotted = true;
+        }
+        m_PlayerData.combo++;
+        GameStatistics.MarkMaxCombo(m_PlayerData.combo);
     }
 
     protected void Combo()
@@ -164,6 +174,11 @@ public class QuickFirePlayer : MonoBehaviour, IPlayer
             iTween.FadeTo(m_BallIcons[i].gameObject, 0, .5f);
         }
         iTween.FadeTo(m_BallIcons[m_BallIcons.Length - 1].gameObject, iTween.Hash("alpha", 0, "time", .5f, "oncomplete", "ClearBallIcons", "oncompletetarget", gameObject));
+    }
+
+    protected void TurnBegin(int turn)
+    {
+        m_MarkPotted = false;
     }
 
     protected void ClearBallIcons()

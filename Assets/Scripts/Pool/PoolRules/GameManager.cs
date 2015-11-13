@@ -5,6 +5,10 @@ public class GameManager : MonoBehaviour
 {
     public static PoolRulesBase Rules;
 
+    public static Canvas CurrentUIRoot = null;
+
+    public static GameType GType = GameType.None;
+
     public int m_TargetFream = 300;
 
 #if UNITY_EDITOR
@@ -20,7 +24,7 @@ public class GameManager : MonoBehaviour
 #if UNITY_EDITOR
         if (m_DebugGameType != GameType.None)
         {
-            ConstantData.GType = m_DebugGameType;
+            GType = m_DebugGameType;
             LevelDataIndex.CurrentLevel = m_DebugLevelData;
         }
 #endif //#if UNITY_EDITOR 20
@@ -34,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        switch (ConstantData.GType)
+        switch (GType)
         {
             case GameType.QuickFire:
                 BaseUIController.topMenu = SupportTools.AddChild<TopMenuQuickFire>(BaseUIController.TopMenuRoot.gameObject, "UI/BattleScene/TopMenuQuickFire");
@@ -58,6 +62,12 @@ public class GameManager : MonoBehaviour
 
     private void OnGameOver(IPlayer player)
     {
+        if (GType == GameType.AI)
+        {
+            GameStatistics.MarkAIBattleCount(1);
+            if (!(player is AIPlayer))
+                GameStatistics.MarkAIBattleWins(1);
+        }
         Rules.State = GlobalState.GAMEOVER;
     }
 }

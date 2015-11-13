@@ -562,8 +562,6 @@ public class AIPlayer : BasePlayer
     protected AICollector m_Collector;
     protected AIDecider m_Decider;
 
-    public Vector3 hitpoint;
-
     public static AIDifficulty difficulty = AIDifficulty.Medium;
 
     [SerializeField]
@@ -586,7 +584,6 @@ public class AIPlayer : BasePlayer
         m_Outline.enabled = true;
         BaseUIController.GlobalMask = true;
         DecidedMessage decideMsg = m_Decider.Decide(m_Collector.Collect());
-        hitpoint = decideMsg.hitPoint;
         m_Executor.SetDecision(decideMsg);
     }
 

@@ -15,6 +15,8 @@ public class HOLocalizationConfiguration : HOConfigurationReader
 
     public static string GetValue(int id)
     {
+        if (Instance == null)
+            return "";
         string value = Instance.m_DicTable[id][ConstantData.GameLanguage.ToString()].ToString();
         return value;
     }

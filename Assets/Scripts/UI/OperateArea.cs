@@ -248,11 +248,6 @@ public class OperateArea : MonoBehaviour {
         SetOpeartion(pointerOperation);
     }
 
-    void OnDestroy()
-    {
-        PoolRulesBase.onNewTurn -= RoundBegin;
-    }
-
     private void RoundBegin(int playerID)
     {
         Pools.Cue.Reset(); 

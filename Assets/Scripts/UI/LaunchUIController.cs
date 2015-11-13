@@ -50,7 +50,8 @@ public class LaunchUIController : MonoBehaviour
     void Awake()
     {
         m_Animator = GetComponent<Animator>();
-        ConstantData.GType = GameType.None;
+        GameManager.GType = GameType.None;
+        GameManager.CurrentUIRoot = GetComponent<Canvas>();
         m_Instance = this;
         m_Blank.SetActive(false);
         m_RiseMask.gameObject.SetActive(false);
@@ -117,20 +118,22 @@ public class LaunchUIController : MonoBehaviour
     void OnDestroy()
     {
         m_Instance = null;
+        GameStatistics.Serialize();
+        HOAudioManager.StopLoopClip();
     }
 
     public void LoadQuickFire()
     {
-        ConstantData.GType = GameType.QuickFire;
-        ConstantData.physical -= 1;
+        GameManager.GType = GameType.QuickFire;
+        //ConstantData.physical -= 1;
         ConstantData.BattleSceneType = ConstantData.ToPratice;
         LoadScene(1);
     }
 
     public void LoadStandard()
     {
-        ConstantData.GType = GameType.Standard;
-        ConstantData.physical -= 1;
+        GameManager.GType = GameType.Standard;
+        //ConstantData.physical -= 1;
         ConstantData.BattleSceneType = ConstantData.ToPratice;
         LoadScene(1);
     }
@@ -153,9 +156,9 @@ public class LaunchUIController : MonoBehaviour
     private void LoadBattleWithAI(AIDifficulty difficulty)
     {
         AIPlayer.difficulty = difficulty;
-        ConstantData.GType = GameType.AI;
-        ConstantData.physical -= 1;
-        ConstantData.BattleSceneType = ConstantData.ToPratice;
+        GameManager.GType = GameType.AI;
+        //ConstantData.physical -= 1;
+        ConstantData.BattleSceneType = ConstantData.ToAI;
         LoadScene(1);
     }
 
@@ -203,9 +206,14 @@ public class LaunchUIController : MonoBehaviour
 
     public void GoMisstion(ChapterLevel l)
     {
+        if (ConstantData.physical < ConstantData.physicalSubstact)
+        {
+
+        }
+
         LevelDataIndex.CurrentLevel = l.levelData;
-        ConstantData.GType = GameType.Mission;
-        ConstantData.physical -= 1;
+        GameManager.GType = GameType.Mission;
+        ConstantData.physical -= ConstantData.physicalSubstact;
         ConstantData.BattleSceneType = ConstantData.ToLevel;
         LoadScene(1);
     }

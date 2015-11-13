@@ -24,7 +24,7 @@ public class HOAudioPlayer : MonoBehaviour
 
     public void PlayS(string key)
     {
-        HOAudioManager.PlayClip(key);
+        HOAudioManager.PlayClip(key, 1);
     }
 
     public void PlayI(int key)

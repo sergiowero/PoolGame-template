@@ -7,8 +7,6 @@ public class PoolRulesStandard : PoolRulesBase
 
     protected bool m_Countdown = true;
 
-    protected bool m_WhiteHitBall = false;
-
     protected bool m_CueBallHitRail = false;
 
     protected bool m_UseGuidelines;
@@ -98,7 +96,6 @@ public class PoolRulesStandard : PoolRulesBase
         m_Time = m_TimePerRound;
         m_Countdown = true;
         m_CueBallHitRail = false;
-        m_WhiteHitBall = false;
         m_WhiteHitBallType = BallType.NONE;
         m_HittingRailBallsCount = 0;
         if(m_HandleWhiteball)
@@ -119,6 +116,7 @@ public class PoolRulesStandard : PoolRulesBase
 
         if (CheckGameOver()) // the game is over
         {
+            GameManager.Rules.State = GlobalState.GAMEOVER;
             if (onGameOver != null)
             {
                 onGameOver(CurrentPlayer);
@@ -131,6 +129,7 @@ public class PoolRulesStandard : PoolRulesBase
 
             if (m_HandleWhiteball || !AnyBallWithTypeEnterPocket(CurrentPlayer.TargetBallType))
             {
+                CurrentPlayer.combo = 0;
                 //change player(if there is more than 2 players in the game)
                 CurrentPlayer.End();
                 m_CurPlayerIndex = MathTools.Roll(0, m_Players.Length, m_CurPlayerIndex + 1);
@@ -220,8 +219,8 @@ public class PoolRulesStandard : PoolRulesBase
         if (!m_WhiteHitBall)
         {
             m_WhiteHitBallType = ball.ballType;
-            m_WhiteHitBall = true;
         }
+        base.WhiteBallHitBall(ball);
     }
 
     public override void PotBall(PoolBall ball, PocketIndexes pocket)
@@ -231,6 +230,11 @@ public class PoolRulesStandard : PoolRulesBase
         {
             CurrentPlayer.TargetBallType = ball.ballType;
             OpponentPlayer.TargetBallType = ball.ballType == BallType.SOLID ? BallType.STRIPE : BallType.SOLID;
+        }
+        BallType b = ball.ballType;
+        if (b != BallType.WHITE)
+        {
+            CurrentPlayer.combo++;
         }
     }
 

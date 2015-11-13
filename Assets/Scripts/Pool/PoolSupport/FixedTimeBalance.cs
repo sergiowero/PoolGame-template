@@ -44,7 +44,7 @@ public class FixedTimeBalance : MonoBehaviour {
             else if (m_SleepCount >= 4)
                 time = .003f;
             else
-                time = .004f;
+                time = .005f;
             Time.fixedDeltaTime = time;
         }
 	}

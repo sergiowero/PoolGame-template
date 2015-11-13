@@ -11,6 +11,8 @@ public class MissionPlayer : MonoBehaviour, IPlayer
     [SerializeField]
     private Text m_Score;
 
+    private bool m_MarkPotted;
+
     public int playerID {  get;  set;  }
 
     [System.Serializable]
@@ -19,8 +21,8 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         public int ShotCount;
         public int PottedCount;
         public float HitRate;
-        public int Link;
-        public int MaxLink;
+        public int Combo;
+        public int MaxCombo;
         public int ShotsRemain = ConstantData.MissionShotCount;
         public int HighScore;
         public int Score;
@@ -33,8 +35,8 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             builder.Append("FireCount : ").Append(ShotCount).Append('\n')
                 .Append("Potted count : ").Append(PottedCount).Append('\n')
                 .Append("Hit rate : ").Append(HitRate).Append('\n')
-                .Append("Link : ").Append(Link).Append('\n')
-                .Append("Max link : ").Append(MaxLink).Append('\n')
+                .Append("Link : ").Append(Combo).Append('\n')
+                .Append("Max link : ").Append(MaxCombo).Append('\n')
                 .Append("Shot remain : ").Append(ShotsRemain).Append('\n')
                 .Append("Hight score : ").Append(HighScore).Append('\n')
                 .Append("Score : ").Append(Score).Append('\n')
@@ -63,26 +65,21 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         set { m_PlayerData.ShotCount = value; }
     }
 
-    public int PottedCount
-    {
-        get { return m_PlayerData.PottedCount; }
-        set { m_PlayerData.PottedCount = value; }
-    }
-
     public float HitRate
     {
         get { return m_PlayerData.HitRate; }
         set { m_PlayerData.HitRate = value; }
     }
 
-    public int Link
+    public int Combo
     {
-        get { return m_PlayerData.Link; }
+        get { return m_PlayerData.Combo; }
         set 
         {
-            m_PlayerData.Link = value;
-            if (m_PlayerData.MaxLink < m_PlayerData.Link)
-                m_PlayerData.MaxLink = m_PlayerData.Link;
+            m_PlayerData.Combo = value;
+            if (m_PlayerData.MaxCombo < m_PlayerData.Combo)
+                m_PlayerData.MaxCombo = m_PlayerData.Combo;
+            GameStatistics.MarkMaxCombo(m_PlayerData.Combo);
         }
     }
 
@@ -101,6 +98,15 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         }
     }
 
+    public void Pot()
+    {
+        if (!m_MarkPotted)
+        {
+            m_PlayerData.PottedCount += 1;
+            m_MarkPotted = true;
+        }
+    }
+
     public void AddCues(int cue, Vector3 position)
     {
         if (cue == 0)
@@ -113,7 +119,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
             c = Color.yellow;
         else
         {
-            m_PlayerData.Link = 0;
+            m_PlayerData.Combo = 0;
             c = Color.red;
         }
         BaseUIController.GenerateTips(f, c, position);
@@ -129,14 +135,14 @@ public class MissionPlayer : MonoBehaviour, IPlayer
 
     public void AddScore(int score, PocketTrigger pocket)
     {
-        int s = (int)(score * (m_PlayerData.Link + 4) * .2f);
+        int s = (int)(score * (m_PlayerData.Combo + 4) * .2f);
         Score += s;
 
         if(pocket)
         {
             string tips;
-            if (Link > 1)
-                tips = "COMBO x " + Link + "\n+" + s;
+            if (Combo > 1)
+                tips = "COMBO x " + Combo + "\n+" + s;
             else
                 tips = "+" + s;
             BaseUIController.GenerateTips(tips, Color.yellow, MathTools.World2UI(pocket.GetRealPosition()));
@@ -148,6 +154,7 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onGameOver += GameOver;
         BombBall.GameoverWithBoom += GameOver;
         DemonBall.GameOverWithPotted += GameOver;
+        PoolRulesBase.onNewTurn += TurnBegin;
         PoolRulesBase.onFireBall += FireBall;
         m_LevelName.text = LevelDataIndex.CurrentLevel.FileName;
         m_ShotsRemain.text = m_PlayerData.ShotsRemain.ToString();
@@ -165,19 +172,27 @@ public class MissionPlayer : MonoBehaviour, IPlayer
         PoolRulesBase.onGameOver -= GameOver;
         BombBall.GameoverWithBoom -= GameOver;
         DemonBall.GameOverWithPotted -= GameOver;
+        PoolRulesBase.onNewTurn -= TurnBegin;
         PoolRulesBase.onFireBall -= FireBall;
+    }
+
+    protected void TurnBegin(int turn)
+    {
+        m_MarkPotted = false;
     }
 
     protected void GameOver(IPlayer player)
     {
         string name = LevelDataIndex.CurrentLevel.FileName;
-        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 : Mathf.Round(((float)m_PlayerData.PottedCount / (float)m_PlayerData.ShotCount) * 1000f) / 1000f;
+        m_PlayerData.HitRate = m_PlayerData.ShotCount == 0 ? 0 : (float)m_PlayerData.PottedCount / (float)m_PlayerData.ShotCount;
         int star = 0;
         if(player != null && player.playerID == playerID)
         {
             AddScore(ShotsRemain * 200, null);
             m_PlayerData.Star = LayoutConfiguration.instance[name].GetStarWithScore(m_PlayerData.Score);
-            star = Mathf.Max(ConstantData.missionRecords.GetStar(name), m_PlayerData.Star);
+            int starRecord = ConstantData.missionRecords.GetStar(name);
+            GameStatistics.MarkMissionStars(Mathf.Max(0, m_PlayerData.Star - starRecord));
+            star = Mathf.Max(starRecord, m_PlayerData.Star);
             ConstantData.missionRecords.Record(name, star, m_PlayerData.HighScore);
             StreamTools.SerializeObject(ConstantData.missionRecords, ConstantData.missionLevelDataRecordPath);
             BaseUIController.MSettlement.MissionComplete(m_PlayerData);

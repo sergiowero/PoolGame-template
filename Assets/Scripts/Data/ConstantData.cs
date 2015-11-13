@@ -21,6 +21,8 @@ public class ConstantData
 
     public const string ToLevel = "ToLevel";
 
+    public const string ToAI = "ToAI";
+
     public static int LoadedChapter = 0;
 
     public const string MusicVolumnKey = "music_volumn";
@@ -69,7 +71,7 @@ public class ConstantData
 
     public const float TimePerRoundHigh = 60;
 
-    public const float TimeLimitQuickFire = 60 * 2;
+    public const float TimeLimitQuickFire = 60 * 2; 
 
     public const int QuickFireBallPottedPoint = 100;
 
@@ -117,7 +119,7 @@ public class ConstantData
 
     public const int RewardShots = 1;
 
-    public const int PhysicalRecoverInterval = 30 * 60;
+    public const int PhysicalRecoverInterval = 20 * 60;
 
     private static int _OutlineAndBallLayer = -1;
     public static int OulineAndBallLayer
@@ -148,6 +150,15 @@ public class ConstantData
             return StreamTools.GetPersistentDataPath() + "GameRecords/QuickFireData";
         } 
     }
+
+    public static string gameStatisticsDataPath 
+    { 
+        get
+        { 
+        return StreamTools.GetStreamingAssetsPath() + "GameRecords/GameStatisticsData"; 
+        }
+    }
+
     public static string missionLevelDataRecordPath
     { 
         get 
@@ -158,9 +169,10 @@ public class ConstantData
     public static string MissionLevelDataPath { get { return "LevelDatas/"; } }
     public static string MissionLevelDataIndexPath { get { return "LevelDatas/LevelDataIndex.asset"; } }
 
-    public static GameType GType = GameType.None;
 
     private static int _Physical = 20;
+
+    public const int physicalSubstact = 2;
 
     public static int physical
     {
@@ -177,6 +189,17 @@ public class ConstantData
     public const int maxPhysical = 20;
 
     public static LevelDataIndex LevelDatas;
+
+    private static GameStatistics _GameStatisticsData = null;
+    public static GameStatistics gameStatisticsData
+    {
+        set
+        {
+            if(_GameStatisticsData == null)
+                _GameStatisticsData = value;
+        }
+        get { return _GameStatisticsData;  }
+    }
 
     private static AchieveRecords _AchieveRecords;
     public static AchieveRecords achieveRecords

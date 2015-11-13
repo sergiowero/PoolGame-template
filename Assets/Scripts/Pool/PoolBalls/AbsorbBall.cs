@@ -13,8 +13,7 @@ public class AbsorbBall : PoolBall
         if (col.gameObject.name.Contains("Rail"))
         {
             //we hit the wall.
-            //BaseGameManager.ballHitWall(rigidbody.velocity);
-            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            HOAudioManager.BallhitRail(m_rigidbody.velocity);
             if (!hitWall)
             {
                 GameManager.Rules.BallHitRail();
@@ -32,7 +31,7 @@ public class AbsorbBall : PoolBall
             }
             else
             {
-                if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+                HOAudioManager.BallhitBall(m_rigidbody.velocity);
             }
         }
     }

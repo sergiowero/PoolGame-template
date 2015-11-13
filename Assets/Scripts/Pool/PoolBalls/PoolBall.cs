@@ -134,8 +134,7 @@ public class PoolBall : MonoBehaviour
         if (col.gameObject.name.Contains("Rail"))
         {
             //we hit the wall.
-            //BaseGameManager.ballHitWall(rigidbody.velocity);
-            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            HOAudioManager.BallhitRail(m_rigidbody.velocity);
             if (!hitWall)
             {
                 GameManager.Rules.BallHitRail();
@@ -144,8 +143,7 @@ public class PoolBall : MonoBehaviour
         }
         if (col.gameObject.CompareTag("Ball"))
         {
-            //BaseGameManager.ballHitBall(rigidbody.velocity);
-            if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+            HOAudioManager.BallhitBall(m_rigidbody.velocity);
         }
     }
 
@@ -183,6 +181,9 @@ public class PoolBall : MonoBehaviour
 
     public virtual void Update()
     {
+        if (GameManager.Rules.State == GlobalState.GAMEOVER)
+            return;
+
         if (m_rigidbody.velocity.sqrMagnitude < .001f && m_rigidbody.angularVelocity.sqrMagnitude < .001f)
         {
             if (m_state == State.ROLL)
@@ -222,12 +223,11 @@ public class PoolBall : MonoBehaviour
             m_state = State.POTTED;
             m_rigidbody.velocity = Vector3.zero;
             m_rigidbody.angularVelocity = Vector3.zero;
-            //m_state = State.IDLE;
             CloseDrag();
             CloseRenderer();
             enabled = false;
             RemovePhysicalMaterial();
-            //gameObject.SetActive(false);
+            GameStatistics.MarkPottedBalls(1);
         }
     }
 

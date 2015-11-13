@@ -57,6 +57,8 @@ public class LevelData : ScriptableObject
     }
 
     [SerializeField]
+    private bool m_SpecificPocket;
+    [SerializeField]
     private PocketIndexes m_BlockPocketList = PocketIndexes.None;
     [SerializeField]
     private PocketIndexes m_StartPunishmentPocket = PocketIndexes.None;
@@ -80,6 +82,7 @@ public class LevelData : ScriptableObject
     public PocketIndexes StartRewardPocket { get { return m_StartRewardPocket; } set { m_StartRewardPocket = value; } }
     public int shotCount { get { return m_ShotCount; } set { m_ShotCount = value; } }
     public int DescriptionID { get { return m_DescriptionID; } set { m_DescriptionID = value; } }
+    public bool SpecificPocket { get { return m_SpecificPocket; } set { m_SpecificPocket = value; } }
 }
 
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 [RequireComponent(typeof(AudioSource))]
 public class HOAudioManager : MonoBehaviour
@@ -23,6 +24,11 @@ public class HOAudioManager : MonoBehaviour
     private string m_ClipNameCache;
 
     private BGMPlayer m_BGMPlayer;
+
+    private float m_CacheTime;
+    [SerializeField]
+    private float m_PlayerCacheTimeInterval;
+    private bool m_CacheReady = true;
 
     #endregion
 
@@ -68,6 +74,17 @@ public class HOAudioManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    void Update()
+    {
+        if(m_CacheTime > 0)
+        {
+            m_CacheReady = false;
+            m_CacheTime -= Time.deltaTime;
+            if (m_CacheTime <= 0)
+                m_CacheReady = true;
+        }
+    }
     #endregion
 
     #region Static methods
@@ -89,10 +106,13 @@ public class HOAudioManager : MonoBehaviour
             m_Instance._StopLoopClip();
     }
 
-    public static void PlayClip(string clipName, bool stopPrevousAudio = false)
+    public static void PlayClip(string clipName, float volumn, bool stopPrevousAudio = false)
     {
         if (m_Instance != null)
-            m_Instance._PlayClip(clipName, stopPrevousAudio);
+        {
+            volumn = Mathf.Clamp01(volumn);
+            m_Instance._PlayClip(clipName, volumn, stopPrevousAudio);
+        }
     }
 
     public static void PlayClip(AudioClip clip)
@@ -105,12 +125,6 @@ public class HOAudioManager : MonoBehaviour
     {
         //if (m_Instance != null)
         //    m_Instance._PlayClip(HOAudioConfiguration.audioDictionary[clipKey].AudioName, stopPrevousAudio);
-    }
-
-    public static void PlayAgain(bool stopPrevousAudio = false)
-    {
-        if (m_Instance != null)
-            m_Instance._PlayClip(m_Instance.m_ClipNameCache, stopPrevousAudio);
     }
 
     public static void Stop()
@@ -173,7 +187,7 @@ public class HOAudioManager : MonoBehaviour
             }
             while (m_ClipsPool.Count >= m_ClipsPoolCount)
             {
-                //m_ClipsPool.Remove(HOUIStaticFunctions.FirstOrDefault<string>(m_ClipsPool.Keys));
+                m_ClipsPool.Remove(m_ClipsPool.Keys.FirstOrDefault<string>());
             }
             m_ClipsPool.Add(clipName, clip);
         }
@@ -194,10 +208,16 @@ public class HOAudioManager : MonoBehaviour
         m_OneShotSource.PlayOneShot(clip);
     }
 
-    private void _PlayClip(string clipName, bool stopPrevousAudio)
+    private void _PlayClip(string clipName, float volumn, bool stopPrevousAudio)
     {
+        return;
         if (!ConstantData.Sound)
             return;
+        if(clipName.CompareTo(m_ClipNameCache) == 0)
+        {
+            if (!m_CacheReady) return;
+        }
+
         AudioClip clip;
         if (clipName.CompareTo(m_ClipNameCache) == 0)
         {
@@ -219,13 +239,14 @@ public class HOAudioManager : MonoBehaviour
             m_ClipNameCache = clipName;
             while (m_ClipsPool.Count >= m_ClipsPoolCount)
             {
-                //m_ClipsPool.Remove(HOUIStaticFunctions.FirstOrDefault<string>(m_ClipsPool.Keys));
+                m_ClipsPool.Remove(m_ClipsPool.Keys.FirstOrDefault<string>());
             }
             m_ClipsPool.Add(clipName, clip);
         }
 
         if (stopPrevousAudio) m_OneShotSource.Stop();
-        m_OneShotSource.PlayOneShot(clip);
+        m_OneShotSource.PlayOneShot(clip, volumn);
+        m_CacheTime = m_PlayerCacheTimeInterval;
     }
 
     private void _Stop()
@@ -372,4 +393,52 @@ public class HOAudioManager : MonoBehaviour
             iTween.AudioTo(audioSource.gameObject, iTween.Hash("volume", volume, "time", m_TransitTime, "ignoretimescale", true));
         }
     }
+
+
+
+    #region Extension
+    public static void BallhitRail(Vector3 velocity)
+    {
+        if (!m_Instance)
+            return;
+        float v0 = Mathf.Max(Mathf.Abs(velocity.x), Mathf.Abs(velocity.y), Mathf.Abs(velocity.z));
+        v0 = Mathf.Clamp(v0, 0, 5);
+        v0 = Mathf.Lerp(0, 1, v0 * .2f);
+        m_Instance._PlayClip("RailHit", v0, false);
+    }
+
+    public static void BallhitBall(Vector3 velocity)
+    {
+        if (!m_Instance)
+            return;
+        float v0 = Mathf.Max(Mathf.Abs(velocity.x), Mathf.Abs(velocity.y), Mathf.Abs(velocity.z));
+        v0 = Mathf.Clamp(v0, 0, 5);
+        v0 = Mathf.Lerp(0, 1, v0 * .2f);
+        m_Instance._PlayClip("ball02", v0, false);
+    }
+
+    public static void FireBall()
+    {
+        if (m_Instance)
+            m_Instance._PlayClip("bomb", 1, false);
+    }
+
+    public static void PottedBall()
+    {
+        if (m_Instance)
+            m_Instance._PlayClip("pocket", 1, false);
+    }
+
+    public static void Break()
+    {
+        if (m_Instance)
+            m_Instance._PlayClip("Break", 1, false);
+    }
+
+    public static void Explosion()
+    {
+        if (m_Instance)
+            m_Instance._PlayClip("Explosion", 1, false);
+    }
+    #endregion //Extension
 }

@@ -65,17 +65,17 @@ public class WhiteBall : PoolBall
         if (GameManager.Rules.State == GlobalState.DRAG_WHITEBALL)
             return;
 
-        #region Might be useful
         if (col.gameObject.name.Contains("Rail"))
         {
-            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            HOAudioManager.BallhitRail(m_rigidbody.velocity);
             GameManager.Rules.CueBallHitRail();
             GameManager.Rules.BallHitRail();
+            GameStatistics.MarkCueballHitRail(1);
         }
-        #endregion
         if (col.transform.CompareTag("Ball"))
         {
-            if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+            HOAudioManager.BallhitBall(m_rigidbody.velocity);
+            GameStatistics.MarkCueballHitBall(1);
             PoolBall ball = col.gameObject.GetComponent<PoolBall>();
             GameManager.Rules.WhiteBallHitBall(ball);
             if (ball && ball == m_targetBall)
@@ -89,12 +89,12 @@ public class WhiteBall : PoolBall
     public override void Update()
     {
         base.Update();
-        m_TestVelocity = m_rigidbody.angularVelocity;
+        m_TestVelocity = m_rigidbody.velocity;
     }
 
     public void OnDrawGizmos()
     {
-        if(Application.isPlaying)
+        if (Application.isPlaying)
         {
             Gizmos.DrawRay(m_rigidbody.position, m_TestVelocity);
         }
@@ -110,7 +110,7 @@ public class WhiteBall : PoolBall
 
     public void fireBall(float powerScalar, Vector3 fireDir, Vector3 hitPoint)
     {
-        AudioHelper.m_Instance.onFireBall();
+        HOAudioManager.FireBall();
         GameManager.Rules.OnBallFired();
         m_slowTime = 0;
 
@@ -118,5 +118,20 @@ public class WhiteBall : PoolBall
         m_rigidbody.AddForceAtPosition(fireForce, hitPoint, ForceMode.Impulse);
         m_state = State.ROLL;
         OpenDrag();
+    }
+
+    public override void Potted(PocketIndexes pocketIndex)
+    {
+        if (m_rigidbody)
+        {
+            m_state = State.POTTED;
+            m_rigidbody.velocity = Vector3.zero;
+            m_rigidbody.angularVelocity = Vector3.zero;
+            CloseDrag();
+            CloseRenderer();
+            enabled = false;
+            RemovePhysicalMaterial();
+            GameStatistics.MarkCueballPotted(1);
+        }
     }
 }

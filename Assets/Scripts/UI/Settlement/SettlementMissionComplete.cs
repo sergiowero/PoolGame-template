@@ -5,20 +5,21 @@ using System.Collections;
 public class SettlementMissionComplete : MonoBehaviour
 {
     [SerializeField]
-    private Text m_ShotsRemain;
+    private NumericalEffect m_ShotsRemain;
 
     private int m_Star;
 
     [SerializeField]
-    private Text m_HitRate;
+    private NumericalEffect m_HitRate;
     [SerializeField]
-    private Text m_MaxLink;
+    private NumericalEffect m_MaxLink;
     [SerializeField]
-    private Text m_Score;
+    //private Text m_Score;
+    private NumericalEffect m_Score;
     [SerializeField]
-    private Text m_HighScore;
+    private NumericalEffect m_HighScore;
     [SerializeField]
-    private Text m_FriendHighScore;
+    private NumericalEffect m_FriendHighScore;
     [SerializeField]
     private Animator m_Animator;
 
@@ -29,11 +30,11 @@ public class SettlementMissionComplete : MonoBehaviour
 
     public void SetData(MissionPlayer.PlayerData playerData)
     {
-        m_ShotsRemain.text = playerData.ShotsRemain.ToString();
-        m_HitRate.text = (playerData.HitRate * 100).ToString() + "%";
-        m_MaxLink.text = "x" + playerData.MaxLink.ToString();
-        m_Score.text = playerData.Score.ToString();
-        m_HighScore.text = playerData.HighScore.ToString();
+        m_ShotsRemain.value = playerData.ShotsRemain;
+        m_HitRate.value = (int)(playerData.HitRate * 100);
+        m_MaxLink.value = playerData.MaxCombo;
+        m_Score.value = playerData.Score;
+        m_HighScore.value = playerData.HighScore;
         m_Star = playerData.Star;
     }
 
@@ -43,7 +44,8 @@ public class SettlementMissionComplete : MonoBehaviour
         if(levelData != null)
         {
             LevelDataIndex.CurrentLevel = levelData;
-            Application.LoadLevel(1);
+            //Application.LoadLevel(1);
+            BaseUIController.Instance.RestartScene();
         }
     }
 

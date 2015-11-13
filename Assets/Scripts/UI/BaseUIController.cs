@@ -37,8 +37,6 @@ public class BaseUIController : MonoBehaviour {
     private GameObject m_FadeMask;
     [SerializeField]
     private GameObject m_RiseMask;
-    [SerializeField]
-    private Animator m_Menu;
 
 
     [SerializeField]
@@ -86,6 +84,8 @@ public class BaseUIController : MonoBehaviour {
         get { return m_Instance.m_TopMenu; } 
     }
 
+    private System.Collections.Generic.List<TextTips> m_TipsCache = new System.Collections.Generic.List<TextTips>();
+
     void Awake()
     {
         if (m_Instance)
@@ -93,6 +93,7 @@ public class BaseUIController : MonoBehaviour {
             Debug.LogError("two " + gameObject.name + " in the scene. check the code");
         }
         m_Instance = this;
+        GameManager.CurrentUIRoot = GetComponent<Canvas>();
         m_Text.gameObject.SetActive(false);
         //hand.gameObject.SetActive(false);
         m_FadeMask.SetActive(true);
@@ -114,6 +115,8 @@ public class BaseUIController : MonoBehaviour {
         PoolRulesBase.onFireBall -= OnFireBall;
         PoolRulesBase.onNewTurn -= OnStartRound;
         m_Instance = null;
+        GameStatistics.Serialize();
+        HOAudioManager.StopLoopClip();
     }
 
     private void OnFireBall()
@@ -150,11 +153,51 @@ public class BaseUIController : MonoBehaviour {
         m_RiseMask.gameObject.SetActive(true);
     }
 
+    private void _GenerateTips(string text, Color c, Vector3 position, bool stationary)
+    {
+        TextTips tip = GetTextTip();
+        tip.SetText(text, c, stationary);
+        tip.transform.position = position;
+        DeployingTips(tip);
+    }
+
+    private void DeployingTips(TextTips tip)
+    {
+        Vector3 position = tip.transform.localPosition;
+        for(int i = 0; i < m_TipsCache.Count; i++)
+        {
+            if(m_TipsCache[i] != null && m_TipsCache[i].gameObject.activeInHierarchy && tip.GetInstanceID() != m_TipsCache[i].GetInstanceID())
+            {
+                if(tip.rect.Overlaps(m_TipsCache[i].rect))
+                {
+                    position.y -= tip.rect.height + 1;
+                    tip.transform.localPosition = position;
+                    DeployingTips(tip);
+                }
+            }
+        }
+    }
+
+    private TextTips GetTextTip()
+    {
+        TextTips tip = null;
+        for (int i = 0; i < m_TipsCache.Count; i++)
+        {
+            if(m_TipsCache[i] != null && !m_TipsCache[i].gameObject.activeInHierarchy)
+            {
+                tip = m_TipsCache[i];
+                tip.gameObject.SetActive(true);
+                return tip;
+            }
+        }
+        tip = SupportTools.AddChild<TextTips>(gameObject, m_Tips.gameObject);
+        m_TipsCache.Add(tip);
+        return tip;
+    }
+
     public static void GenerateTips(string text, Color c, Vector3 position, bool stationary = false)
     {
-        TextTips tips = SupportTools.AddChild<TextTips>(m_Instance.gameObject, m_Instance.m_Tips.gameObject);
-        tips.transform.position = position;
-        tips.SetText(text, c, stationary);
+        m_Instance._GenerateTips(text, c, position, stationary);
     }
 
     public static void GenerateTips(string text, Color c, bool stationary = false)

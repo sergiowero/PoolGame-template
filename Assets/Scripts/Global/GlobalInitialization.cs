@@ -16,6 +16,7 @@ public sealed class GlobalInitialization : MonoBehaviour
         ConstantData.missionRecords = LoadRecords<MissionRecords>(ConstantData.missionLevelDataRecordPath);
         ConstantData.quickFireRecords = LoadRecords<QuickFirePlayer.PlayerData>(ConstantData.quickFireGameRecordPath);
         ConstantData.achieveRecords = LoadRecords<AchieveRecords>(ConstantData.achieveDataRecordPath);
+        ConstantData.gameStatisticsData = LoadRecords<GameStatistics>(ConstantData.gameStatisticsDataPath);
 
     }
 

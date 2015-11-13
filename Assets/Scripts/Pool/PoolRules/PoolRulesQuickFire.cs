@@ -28,9 +28,9 @@ public class PoolRulesQuickFire : PoolRulesBase
 
         m_Player.SetTime(m_Time);
 
-        if (m_Time <= 0 && !m_GameOver)
+        if (m_Time <= 0 && State != GlobalState.GAMEOVER)
         {
-            m_GameOver = true;
+            State = GlobalState.GAMEOVER;
             if (onGameOver != null)
             {
                 onGameOver(m_Player);
@@ -102,10 +102,7 @@ public class PoolRulesQuickFire : PoolRulesBase
             m_PottedBallList.Clear();
             m_Player.Rank++;
         }
-    }
-
-    public override void WhiteBallHitBall(PoolBall ball)
-    {
+        GameStatistics.MarkQuickFireHighRound(m_Turn);
     }
 
     public override void CueBallHitRail()

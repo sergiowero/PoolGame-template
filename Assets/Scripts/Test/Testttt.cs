@@ -6,24 +6,11 @@ using System.Collections;
 
 public class Testttt : MonoBehaviour
 {
-    [SerializeField]
-    RectTransform test1;
-
-
-
-
     void OnGUI()
     {
-        if(GUILayout.Button("fdsafdsafdsa"))
+        if(GUILayout.Button("Generate tips"))
         {
-            Debug.Log(Random.Range(0, 2));
+            BaseUIController.GenerateTips("100",Color.yellow,MathTools.World2UI(Pools.CueBall.GetPosition()));
         }
-    }
-
-
-
-    public void Test()
-    {
-        Debug.Log("Click");
     }
 }

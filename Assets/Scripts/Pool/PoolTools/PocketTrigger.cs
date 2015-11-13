@@ -90,7 +90,7 @@ public class PocketTrigger : MonoBehaviour
         {
             if (!pocketTriggerBallList.Contains(collision.collider.GetInstanceID()))
             {
-                AudioHelper.m_Instance.onBallEnterPocket();
+                HOAudioManager.PottedBall();
                 collision.transform.GetComponent<PoolBall>().CloseRenderer();
                 pocketTriggerBallList.Add(collision.collider.GetInstanceID());
             }

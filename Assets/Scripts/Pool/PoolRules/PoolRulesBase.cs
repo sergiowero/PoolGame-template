@@ -104,9 +104,9 @@ public abstract class PoolRulesBase : MonoBehaviour
 
     //public int round { get { return m_Turn; } }
 
-    protected bool m_GameOver = false;
-
     protected bool m_WhiteBallPotted = false;
+
+    protected bool m_WhiteHitBall = false;
 
     protected float m_Time;
 
@@ -131,7 +131,7 @@ public abstract class PoolRulesBase : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (State == GlobalState.ROLLING && !m_GameOver)
+        if (State == GlobalState.ROLLING)
         {
             bool rollingDone = CheckIsBallsDoneRolling(Pools.BallsArray) && CheckIsBallsDoneRolling(Pools.CustomBallsArray);
             if (rollingDone)
@@ -164,15 +164,16 @@ public abstract class PoolRulesBase : MonoBehaviour
     public virtual void PotBall(PoolBall ball, PocketIndexes pocket)
     {
         ball.Potted(pocket);
-
         if (ball.ballType == BallType.WHITE)
         {
             m_WhiteBallPotted = true;
             if (onCueballPotted != null)
                 onCueballPotted();
         }
-        else
+        else if (ball.ballType != BallType.JIANGYOU && ball.ballType != BallType.DEMON)
+        {
             m_PottedBallListThisRound.Add(ball);
+        }
     }
 
     public virtual void OnBallFired()
@@ -191,7 +192,12 @@ public abstract class PoolRulesBase : MonoBehaviour
         //reset game state
         //
         if (m_WhiteBallPotted)
+        {
             Pools.CueBall.Reset();
+        }
+        if (m_WhiteHitBall)
+            GameStatistics.MarkCueballHitNoBall(1);
+        m_WhiteHitBall = false;
         m_WhiteBallPotted = false;
         m_TimeOut = false;
         if (onNewTurn != null)
@@ -211,6 +217,14 @@ public abstract class PoolRulesBase : MonoBehaviour
         m_PottedBallListThisRound.Clear();
         TurnBegin();
     }
+
+    public virtual void WhiteBallHitBall(PoolBall ball)
+    {
+        if (!m_WhiteHitBall)
+        {
+            m_WhiteHitBall = true;
+        }
+    }
     #endregion
 
     #region Abstract methods......................
@@ -223,8 +237,6 @@ public abstract class PoolRulesBase : MonoBehaviour
     //protected abstract void OnTimeOut();
 
     protected abstract void CustomUpdate();
-
-    public abstract void WhiteBallHitBall(PoolBall ball);
 
     protected abstract void CallPocket();
 

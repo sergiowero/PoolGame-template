@@ -9,8 +9,6 @@ public class PoolRulesMission : PoolRulesBase
 
     protected IList<int> m_TargetBalls = new List<int>();
 
-    protected bool m_WhiteballHitBallThisRound = false;
-
     protected int m_ScoreThisRound = 0;
 
     protected int m_PunishmentCountThisRound = 0;// the count that ball is potted at punitive pocket per round
@@ -52,13 +50,14 @@ public class PoolRulesMission : PoolRulesBase
         PocketTrigger.Block(LevelDataIndex.CurrentLevel.BlockPockets);
         m_Player.ShotsRemain = LevelDataIndex.CurrentLevel.shotCount;
         TurnBegin();
+        TextDialog.Show(LevelDataIndex.CurrentLevel.DescriptionID);
     }
 
     protected override IEnumerator CheckResultAndChangeTurn(float time)
     {
         yield return new WaitForSeconds(time);
 
-        if (m_PottedBallListThisRound.Count == 0) m_Player.Link = 0; 
+        if (m_PottedBallListThisRound.Count == 0) m_Player.Combo = 0; 
 
         if(m_WhiteBallPotted)
         {
@@ -82,13 +81,13 @@ public class PoolRulesMission : PoolRulesBase
 
         if (CheckGameOver())
         {
-            m_GameOver = true;
+            State = GlobalState.GAMEOVER;
             if (onGameOver != null)
             {
-                 if (m_Player.ShotsRemain == 0)
-                    onGameOver(null);
-                else if (m_TargetBalls.Count == 0)
+                 if (m_TargetBalls.Count == 0)
                     onGameOver(m_Player);
+                 else if (m_Player.ShotsRemain == 0)
+                    onGameOver(null);
             }
         }
         else
@@ -98,11 +97,10 @@ public class PoolRulesMission : PoolRulesBase
     protected override void TurnBegin()
     {
         base.TurnBegin();
-        m_WhiteballHitBallThisRound = false;
         m_PunishmentCountThisRound = 0;
         m_RewardCountThisRound = 0;
 
-        if(m_Turn > 1)
+        if (m_Turn > 1 && LevelDataIndex.CurrentLevel.SpecificPocket)
         {
             //generate punitive pocket and reward pocket
             //punishment
@@ -152,7 +150,7 @@ public class PoolRulesMission : PoolRulesBase
         int score = 0;
         if (ball.ballType == BallType.WHITE)
         {
-            m_Player.Link = 0;
+            m_Player.Combo = 0;
             m_Player.AddCues(ConstantData.MissionCueballPottedPunishment, PocketTrigger.GetPocketWithIndexes(pocket));
             return;
         }
@@ -183,17 +181,17 @@ public class PoolRulesMission : PoolRulesBase
             score = ConstantData.MissionDemonBallPoint;
         if(score > 0)
         {
-            m_Player.Link++;
+            m_Player.Combo++;
             m_Player.AddScore(score, PocketTrigger.GetPocketWithIndexes(pocket));
             m_ScoreThisRound = score;
         }
 
-        if (m_Player.Link >= 5)
+        if (m_Player.Combo >= 5)
         {
             BaseUIController.GenerateTips("Great!");
         }
 
-        m_Player.PottedCount++;
+        m_Player.Pot();
         if (m_TargetBalls.Contains(ball.GetBallID())) 
             m_TargetBalls.Remove(ball.GetBallID());
     }
@@ -215,11 +213,6 @@ public class PoolRulesMission : PoolRulesBase
     protected override void CustomUpdate()
     {
         
-    }
-
-    public override void WhiteBallHitBall(PoolBall ball)
-    {
-        m_WhiteballHitBallThisRound = true;
     }
 
     protected override void CallPocket()

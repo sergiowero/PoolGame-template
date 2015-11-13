@@ -102,13 +102,14 @@ public class PoolCue : MonoBehaviour
         //lets set the balls target and the target position. When the white ball hits the first ball we will set the ball to point at the target.
         Pools.CueBall.setTarget(m_targetBall, m_targetPos);
         float powerScalar = m_powerScalar;
-        if(GameManager.Rules.firstRound)
+        if(GameManager.Rules.firstRound && GameManager.GType != GameType.Mission)
         {
             powerScalar *= Random.Range(.8f, 1.5f);
         }
         Pools.CueBall.fireBall(powerScalar, m_FirePoint.forward, GetHitPoint());
         m_state = State.ROLL;
         m_CueTrans.parent = null;
+        GameStatistics.MarkShot(1);
     }
 
     public void Rotate(float angle)
@@ -165,7 +166,7 @@ public class PoolCue : MonoBehaviour
                     m_targetPos = rch.point - nrm;
                 }
 
-                if (ConstantData.GType >= GameType.Standard && m_targetBall != null)
+                if (GameManager.GType >= GameType.Standard && m_targetBall != null)
                 {
                     BasePlayer player = ((PoolRulesStandard)GameManager.Rules).CurrentPlayer;
                     bool b1 = player.TargetBallType == BallType.NONE && m_targetBall.ballType == BallType.BLACK;

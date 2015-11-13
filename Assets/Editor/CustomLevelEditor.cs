@@ -103,6 +103,9 @@ namespace PoolsEditor
             foreach (var v in fileInfos)
             {
                 LevelData data = Resources.LoadAssetAtPath<LevelData>(StreamTools.GetStreamingAssetsPathInEditor() + ConstantData.MissionLevelDataPath + v.Name);
+                data.SpecificPocket =
+                    !(data.StartPunishmentPocket == PocketIndexes.None
+                    && data.StartRewardPocket == PocketIndexes.None);
                 levelDataIndex.Add(data);
             }
             Debug.Log("Synchronize data finished");
@@ -427,12 +430,21 @@ namespace PoolsEditor
                 {
                     v.Clear();
                     if ((v.pocketIndexes & m_CurrentLevelData.StartPunishmentPocket) != 0x0)
+                    {
                         v.SetAsPunishment();
+                    }
                     if ((v.pocketIndexes & m_CurrentLevelData.StartRewardPocket) != 0x0)
+                    {
                         v.SetAsReward();
+                    }
                     if ((v.pocketIndexes & m_CurrentLevelData.BlockPockets) != 0x0)
+                    {
                         v.SetAsBlock();
+                    }
                 }
+                m_CurrentLevelData.SpecificPocket = 
+                    !(m_CurrentLevelData.StartPunishmentPocket == PocketIndexes.None 
+                    && m_CurrentLevelData.StartRewardPocket == PocketIndexes.None);
                 m_ShotCount = m_CurrentLevelData.shotCount;
                 m_DescripID = m_CurrentLevelData.DescriptionID;
                 m_LevelName = m_CurrentLevelData.FileName;

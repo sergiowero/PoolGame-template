@@ -11,7 +11,7 @@ public class SingularityBall : PoolBall
         {
             //we hit the wall.
             //BaseGameManager.ballHitWall(rigidbody.velocity);
-            AudioHelper.m_Instance.onBallHitWall(m_rigidbody.velocity);
+            HOAudioManager.BallhitRail(m_rigidbody.velocity);
             if (!hitWall)
             {
                 GameManager.Rules.BallHitRail();
@@ -25,11 +25,11 @@ public class SingularityBall : PoolBall
             {
                 if (SingularityBreakBall != null)
                     SingularityBreakBall(ball);
-                if (AudioEnable) AudioHelper.m_Instance.onBreak();
+                HOAudioManager.Break();
             }
             else
             {
-                if (AudioEnable) AudioHelper.m_Instance.onBallHitBall(m_rigidbody.velocity);
+                HOAudioManager.BallhitBall(m_rigidbody.velocity);
             }
         }
     }

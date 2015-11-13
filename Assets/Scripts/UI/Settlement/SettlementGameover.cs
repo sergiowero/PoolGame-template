@@ -5,35 +5,35 @@ using System.Collections;
 public class SettlementGameover : MonoBehaviour 
 {
     [SerializeField]
-    protected Text m_Accuracy;
+    protected NumericalEffect m_Accuracy;
     [SerializeField]
-    protected Text m_Combo;
+    protected NumericalEffect m_Combo;
     [SerializeField]
-    protected Text m_Score;
+    protected NumericalEffect m_Score;
     [SerializeField]
-    protected Text m_HighScore;
+    protected NumericalEffect m_HighScore;
     [SerializeField]
-    protected Text m_FriendHighScore;
+    protected NumericalEffect m_FriendHighScore;
     [SerializeField]
-    private Text m_ShotCount;
+    private NumericalEffect m_ShotCount;
     [SerializeField]
-    private Text m_PottedCount;
+    private NumericalEffect m_PottedCount;
     [SerializeField]
-    private Text m_PlayTime;
+    private NumericalEffect m_PlayTime;
     [SerializeField]
-    private Text m_Round;
+    private NumericalEffect m_Round;
 
     //缺少文字说明， 先这个样子
     public void SetData(QuickFirePlayer.PlayerData playerData)
     {
-        m_ShotCount.text = playerData.ShotCount.ToString();
-        m_PottedCount.text = playerData.PottedCount.ToString();
-        m_Accuracy.text = playerData.HitRate.ToString() + "%";
-        m_Combo.text =  "x" + playerData.MaxLink.ToString();
-        m_PlayTime.text = playerData.PlayTime.ToString() + "s";
-        m_Score.text = playerData.Score.ToString();
-        m_HighScore.text = playerData.HighScore.ToString();
-        m_Round.text = playerData.MaxRank.ToString();
+        m_ShotCount.value = playerData.ShotCount;
+        m_PottedCount.value = playerData.PottedCount;
+        m_Accuracy.value = (int)(playerData.HitRate * 100);
+        m_Combo.value = playerData.combo;
+        m_PlayTime.value = (int)playerData.PlayTime;
+        m_Score.value = playerData.Score;
+        m_HighScore.value = playerData.HighScore;
+        m_Round.value = playerData.MaxRank;
     }
 
     public void OnBack()

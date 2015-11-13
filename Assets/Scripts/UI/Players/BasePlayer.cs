@@ -18,8 +18,17 @@ public class BasePlayer : MonoBehaviour, IPlayer
     protected List<PoolBall> m_TargetBalls = new List<PoolBall>();
     public List<PoolBall> BallsList { get { return m_TargetBalls; } }
 
-    [System.NonSerialized]
-    public PocketIndexes m_TargetPocketIndex = 0;
+    private int m_Combo = 0;
+
+    public int combo
+    {
+        set 
+        {
+            m_Combo = value;
+            GameStatistics.MarkMaxCombo(m_Combo);
+        }
+        get { return m_Combo; }
+    }
 
     public int playerID { get; set; }
     [SerializeField]
@@ -91,7 +100,7 @@ public class BasePlayer : MonoBehaviour, IPlayer
     public virtual void Begin()
     {
         if(!m_Outline.enabled)
-            HOAudioManager.PlayClip("Ready");
+            HOAudioManager.PlayClip("Ready", 1);
         m_Outline.enabled = true;
     }
 

@@ -5,14 +5,14 @@ using System.Collections;
 public class SettlementMissionFail : MonoBehaviour
 {
     [SerializeField]
-    private Text m_Score;
+    private NumericalEffect m_Score;
     [SerializeField]
-    private Text m_FriendHighScore;
+    private NumericalEffect m_FriendHighScore;
 
 
     public void SetData(MissionPlayer.PlayerData playerData)
     {
-        m_Score.text = playerData.Score.ToString();
+        m_Score.value = playerData.Score;
     }
 
     public void OnBack()
