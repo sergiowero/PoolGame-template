@@ -51,6 +51,20 @@ public class MissionRecords
         return 0;
     }
 
+    public int GetChapterStars(int chapter)
+    {
+        int star = 0;
+        string missionProcess = PlayerPrefs.GetString(ConstantData.MissionProgressKeyName);
+        for(int i = 0; i < 20; i++)
+        {
+            string name = chapter + "-" + i;
+            if(ConstantData.LevelDatas.Comp(name, missionProcess) > 0)
+                break;
+            star += GetStar(name);
+        }
+        return star;
+    }
+
     [System.Serializable]
     public class MRecord
     {

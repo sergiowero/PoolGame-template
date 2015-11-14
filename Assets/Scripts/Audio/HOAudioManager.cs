@@ -210,7 +210,6 @@ public class HOAudioManager : MonoBehaviour
 
     private void _PlayClip(string clipName, float volumn, bool stopPrevousAudio)
     {
-        return;
         if (!ConstantData.Sound)
             return;
         if(clipName.CompareTo(m_ClipNameCache) == 0)
@@ -414,13 +413,13 @@ public class HOAudioManager : MonoBehaviour
         float v0 = Mathf.Max(Mathf.Abs(velocity.x), Mathf.Abs(velocity.y), Mathf.Abs(velocity.z));
         v0 = Mathf.Clamp(v0, 0, 5);
         v0 = Mathf.Lerp(0, 1, v0 * .2f);
-        m_Instance._PlayClip("ball02", v0, false);
+        m_Instance._PlayClip("Ball", v0, false);
     }
 
     public static void FireBall()
     {
         if (m_Instance)
-            m_Instance._PlayClip("bomb", 1, false);
+            m_Instance._PlayClip("Hitball", 1, false);
     }
 
     public static void PottedBall()

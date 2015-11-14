@@ -581,7 +581,7 @@ public class AIPlayer : BasePlayer
         if (GameManager.Rules.State == GlobalState.GAMEOVER)
             return;
 
-        m_Outline.enabled = true;
+        //m_Outline.enabled = true;
         BaseUIController.GlobalMask = true;
         DecidedMessage decideMsg = m_Decider.Decide(m_Collector.Collect());
         m_Executor.SetDecision(decideMsg);

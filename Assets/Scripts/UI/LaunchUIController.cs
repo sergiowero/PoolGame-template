@@ -109,6 +109,9 @@ public class LaunchUIController : MonoBehaviour
                 chapterCity.image.sprite = sprite;
             bool b = c.chapter > ConstantData.LevelDatas.GetChapter(m_MissionProgress);
             chapterCity.lockMask.SetActive(b);
+            int star = 0;
+            if (!b) star = ConstantData.missionRecords.GetChapterStars(v.Key);
+            chapterCity.process.text = string.Format(HOLocalizationConfiguration.GetValue(104), star, 60);
         }
         Destroy(chapterCityPrefab.gameObject);
         m_ChapterRoot.GetComponent<RectTransform>().sizeDelta = new Vector2(i * m_ChapterRoot.cellSize.x + i * m_ChapterRoot.spacing.x, m_ChapterRoot.cellSize.y);

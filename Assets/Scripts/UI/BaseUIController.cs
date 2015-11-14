@@ -121,13 +121,15 @@ public class BaseUIController : MonoBehaviour {
 
     private void OnFireBall()
     {
-        fireSlider.gameObject.SetActive(false);
+        //fireSlider.gameObject.SetActive(false);
+        //fireSlider.Hide();
         GlobalMask = true;
     }
 
     private void OnStartRound(int playerIndex)
     {
-        fireSlider.gameObject.SetActive(true);
+        //fireSlider.gameObject.SetActive(true);
+        //fireSlider.Show();
         GlobalMask= false;
     }
 

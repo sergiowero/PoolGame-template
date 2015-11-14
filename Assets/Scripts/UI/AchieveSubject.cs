@@ -29,13 +29,13 @@ public class AchieveSubject : MonoBehaviour {
                 item.progress.gameObject.SetActive(true);
                 item.finishFlag.gameObject.SetActive(false);
                 item.progress.text = ConstantData.achieveRecords[id] + "/" + v.Value.goal;
-                item.backGround.color = Color.gray;
+                item.backGround = Color.gray;
             }
             else
             {
                 item.progress.gameObject.SetActive(false);
                 item.finishFlag.gameObject.SetActive(true);
-                item.backGround.color = Color.white;
+                item.backGround = Color.white;
                 progress++;
             }
         }

@@ -45,7 +45,25 @@ public class BasePlayer : MonoBehaviour, IPlayer
         m_TargetBallType = BallType.NONE;
         playerID = GetInstanceID();
         playerName.text = name;
-        m_Outline.enabled = false;
+        //m_Outline.enabled = false;
+        PoolRulesBase.onNewTurn += TurnBegin;
+    }
+
+    protected virtual void OnDestroy()
+    {
+        PoolRulesBase.onNewTurn -= TurnBegin;
+    }
+
+    protected virtual void TurnBegin(int turn)
+    {
+        if(((PoolRulesStandard)GameManager.Rules).CurrentPlayer.playerID != playerID)
+        {
+            m_Outline.enabled = false;
+        }
+        else
+        {
+            m_Outline.enabled = true;
+        }
     }
 
     protected void AddBalls(int min, int max)
@@ -94,19 +112,20 @@ public class BasePlayer : MonoBehaviour, IPlayer
 
     public void Countdown(float percentage)
     {
-        m_Outline.SetValue(percentage);
+        if(m_Outline.enabled)
+            m_Outline.SetValue(percentage);
     }
 
     public virtual void Begin()
     {
         if(!m_Outline.enabled)
             HOAudioManager.PlayClip("Ready", 1);
-        m_Outline.enabled = true;
+        //m_Outline.enabled = true;
     }
 
     public virtual void End()
     {
-        m_Outline.enabled = false;
+        //m_Outline.enabled = false;
     }
 
     /// <summary>

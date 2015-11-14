@@ -90,10 +90,17 @@ public class OperateArea : MonoBehaviour {
 
         public void Begin()
         {
+            BaseUIController.fireSlider.Show();
+            if(DragOperation.lastPointerPosition != Vector2.zero)
+            {
+                PointerAt(DragOperation.lastPointerPosition);
+                DragOperation.lastPointerPosition = Vector2.zero;
+            }
         }
 
         public void End()
         {
+            BaseUIController.fireSlider.Hide();
         }
     }
     /// <summary>
@@ -111,6 +118,8 @@ public class OperateArea : MonoBehaviour {
         private float y;
 
         private bool droppable = true;
+
+        public static Vector2 lastPointerPosition = Vector2.zero;
 
         public DragOperation()
         {
@@ -160,6 +169,7 @@ public class OperateArea : MonoBehaviour {
             Vector3 v = cueBall.transform.position;
             v.y = y;
             cueBall.transform.position = v;
+            lastPointerPosition = position;
             GameManager.Rules.State = GlobalState.IDLE;
         }
 
@@ -168,7 +178,6 @@ public class OperateArea : MonoBehaviour {
             Pools.Cue.Hide();
             BaseUIController.hand.Show();
             BaseUIController.hand.Locate(cueBall.transform.position);
-            BaseUIController.fireSlider.gameObject.SetActive(false);
             y = cueBall.transform.position.y;
             cueBall.yConstrain = false;
             Vector3 v = cueBall.transform.position;
@@ -178,7 +187,6 @@ public class OperateArea : MonoBehaviour {
             cueBall.rigidbody.useGravity = false;
             cueBall.rigidbody.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotation;
             cueBall.collider.isTrigger = true;
-            //Pools.AllBallsKinematic();
         }
 
         public void End()
@@ -188,12 +196,10 @@ public class OperateArea : MonoBehaviour {
             v.y = y;
             cueBall.transform.position = v;
             BaseUIController.hand.Hide();
-            BaseUIController.fireSlider.gameObject.SetActive(true);
             cueBall.rigidbody.useGravity = true;
             cueBall.rigidbody.constraints = RigidbodyConstraints.None;
             constraint.enabled = false;
             cueBall.collider.isTrigger = false;
-            //Pools.AllBallsNonKinematic();
         }
 
         private bool RayCast(Vector2 p)
@@ -245,7 +251,7 @@ public class OperateArea : MonoBehaviour {
         pointerOperation = new PointerOperation();
         dragOperation = new DragOperation();
         m_DontDoAnyOperation = new DontDoAnyOperation();
-        SetOpeartion(pointerOperation);
+        //SetOpeartion(pointerOperation);
     }
 
     private void RoundBegin(int playerID)
@@ -289,8 +295,14 @@ public class OperateArea : MonoBehaviour {
 
     private void SetOpeartion(IAreaOperation operation)
     {
+
         if(m_Operation != null)
-            m_Operation.End();
+        {
+            if (m_Operation.GetType() == operation.GetType())
+                return;
+            else 
+                m_Operation.End();
+        }
         m_Operation = operation;
         m_OnDrag = m_Operation.Drag;
         m_OnClick = m_Operation.Click;

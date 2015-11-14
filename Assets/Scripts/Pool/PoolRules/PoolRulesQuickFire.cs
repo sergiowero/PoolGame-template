@@ -96,6 +96,7 @@ public class PoolRulesQuickFire : PoolRulesBase
     protected override void TurnBegin()
     {
         base.TurnBegin();
+        State = GlobalState.IDLE;
         if(m_PottedBallList.Count == 14)
         {
             Pools.ResetAllBalls(true, true);

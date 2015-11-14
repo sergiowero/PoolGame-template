@@ -18,6 +18,8 @@ public class FireSlider : MonoBehaviour {
     private Color m_MinColor;
     [SerializeField]
     private Color m_MaxColor;
+    [SerializeField]
+    private Animator m_Animator;
 
     private float m_LastValue;
 
@@ -27,6 +29,8 @@ public class FireSlider : MonoBehaviour {
     {
         m_SliderTrans = m_SliderButton.rectTransform;
         m_MaxPower = m_SliderTrans.rect.height - 10;
+        if(!m_Animator)
+            m_Animator = GetComponent<Animator>();
     }
 
 	void Start () 
@@ -71,5 +75,15 @@ public class FireSlider : MonoBehaviour {
     private void DiscreteValue(ref float value)
     {
         value = Mathf.Pow(value, 1.1f);
+    }
+
+    public void Hide()
+    {
+        m_Animator.SetTrigger("Hide");
+    }
+
+    public void Show()
+    {
+        m_Animator.SetTrigger("Show");
     }
 }

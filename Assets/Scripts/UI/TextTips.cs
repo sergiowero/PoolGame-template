@@ -29,6 +29,8 @@ public class TextTips : MonoBehaviour {
         if (stationary)
             m_Animator.Play("Stationary");
         else
-            m_Animator.Play("Movement");
+        {
+            m_Animator.Play("MoveUp");
+        }
     }
 }

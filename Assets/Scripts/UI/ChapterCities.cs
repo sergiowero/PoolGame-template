@@ -6,6 +6,7 @@ public class ChapterCities : MonoBehaviour
 {
     public Image image;
     public Text text;
+    public Text process;
     public GameObject lockMask;
     public int chapter;
 
@@ -21,6 +22,7 @@ public class ChapterCities : MonoBehaviour
 
     [SerializeField]
     private ScrollRect m_ScrollRect;
+
 
     void Awake()
     {

@@ -8,7 +8,7 @@
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Created>2006-09-16T00:00:00Z</Created>
   <LastSaved>2015-11-13T11:21:57Z</LastSaved>
-  <Version>15.00</Version>
+  <Version>12.00</Version>
  </DocumentProperties>
  <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
   <AllowPNG/>
@@ -94,37 +94,37 @@
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s78" ss:Parent="s62">
+  <Style ss:ID="s76" ss:Parent="s62">
    <Alignment ss:Vertical="Bottom"/>
    <Interior/>
    <NumberFormat/>
   </Style>
-  <Style ss:ID="s79" ss:Parent="s62">
+  <Style ss:ID="s77" ss:Parent="s62">
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s80" ss:Parent="s62">
+  <Style ss:ID="s78" ss:Parent="s62">
    <Alignment ss:Vertical="Bottom"/>
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s82">
+  <Style ss:ID="s80">
    <Alignment ss:Vertical="Center"/>
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
+  </Style>
+  <Style ss:ID="s81">
+   <Alignment ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="s82">
+   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
+   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
+   <Interior/>
   </Style>
   <Style ss:ID="s83">
-   <Alignment ss:Vertical="Center"/>
-  </Style>
-  <Style ss:ID="s84">
-   <Alignment ss:Vertical="Center" ss:WrapText="1"/>
-   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
-   <Interior/>
-  </Style>
-  <Style ss:ID="s85">
    <Alignment ss:Vertical="Center" ss:WrapText="1"/>
    <Interior/>
   </Style>
-  <Style ss:ID="s86" ss:Parent="s62">
+  <Style ss:ID="s84" ss:Parent="s62">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders/>
    <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
@@ -132,17 +132,8 @@
    <NumberFormat/>
    <Protection/>
   </Style>
-  <Style ss:ID="s87">
+  <Style ss:ID="s85">
    <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
-   <Interior/>
-  </Style>
-  <Style ss:ID="s95">
-   <Alignment ss:Vertical="Bottom"/>
-   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
-   <Interior/>
-  </Style>
-  <Style ss:ID="s96">
-   <Font ss:FontName="宋体" x:CharSet="134" ss:Size="11" ss:Color="#000000"/>
    <Interior/>
   </Style>
  </Styles>
@@ -642,82 +633,82 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">151</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">统计</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">STATS</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">统计</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">STATS</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">152</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">空杆数</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">MISS</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">空杆数</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">MISS</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">153</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">铅球进袋数</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">SHOT POT</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">铅球进袋数</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">SHOT POT</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">154</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">白球进袋数</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">CUE BALL HIT</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">白球进袋数</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">CUE BALL HIT</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">155</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">白球碰撞数</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">CUE BALL POT</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">白球碰撞数</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">CUE BALL POT</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">156</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">白球撞岸数</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">CUE BALL CUSHION</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">白球撞岸数</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">CUE BALL CUSHION</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">157</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">胜场</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">WIN</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">胜场</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">WIN</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">158</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"><Data ss:Type="String">胜率</Data></Cell>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"><Data ss:Type="String">WIN RATE</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">胜率</Data></Cell>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"><Data ss:Type="String">WIN RATE</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">159</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="String">个人资料统计界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s95"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
-    <Cell ss:StyleID="s96"/>
+    <Cell ss:Index="4" ss:StyleID="s71"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
+    <Cell ss:StyleID="s74"/>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -901,10 +892,10 @@
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s78"><Data ss:Type="Number">180</Data></Cell>
+    <Cell ss:StyleID="s76"><Data ss:Type="Number">180</Data></Cell>
     <Cell><Data ss:Type="String">闯关界面</Data></Cell>
-    <Cell ss:StyleID="s79"/>
-    <Cell ss:StyleID="s80"><Data ss:Type="String">柏林</Data></Cell>
+    <Cell ss:StyleID="s77"/>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">柏林</Data></Cell>
     <Cell ss:StyleID="s62"/>
     <Cell ss:StyleID="s62"/>
     <Cell ss:StyleID="s62"><Data ss:Type="String">BERLIN</Data></Cell>
@@ -949,7 +940,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">185</Data></Cell>
     <Cell><Data ss:Type="String">闯关界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">本迪戈</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s80"><Data ss:Type="String">本迪戈</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s62"><Data ss:Type="String">BENDIGO</Data></Cell>
@@ -967,10 +958,10 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">187</Data></Cell>
     <Cell><Data ss:Type="String">闯关界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">里加</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s80"><Data ss:Type="String">里加</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">RIGA</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">RIGA</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -985,10 +976,10 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">189</Data></Cell>
     <Cell><Data ss:Type="String">闯关界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">伦敦</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s80"><Data ss:Type="String">伦敦</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">LONDON</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">LONDON</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1003,10 +994,10 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">191</Data></Cell>
     <Cell><Data ss:Type="String">闯关提示</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s84"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">Pot more balls with less cues.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1015,7 +1006,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。&#10;小心红色的骷髅袋，它会让你厄运降临。&#10;而绿色的袋口会有惊喜！</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s86"><Data ss:Type="String">Pot more balls with less cues.&#10;Watch out the red skulls which will take doom to you. &#10;The star will get you lucky.</Data></Cell>
+    <Cell ss:StyleID="s84"><Data ss:Type="String">Pot more balls with less cues.&#10;Watch out the red skulls which will take doom to you. &#10;The star will get you lucky.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1024,7 +1015,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。&#10;灰色的铅球会改变你的击球路线</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;The Gray ball will change your direction.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;The Gray ball will change your direction.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1033,7 +1024,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">一杆清将会有意想不到的事情发生。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Something amazing will come while pot all balls with one cue.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Something amazing will come while pot all balls with one cue.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1042,7 +1033,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。巧用加塞。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Using ENGLISH.</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">Pot more balls with less cues.&#10;Using ENGLISH.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1051,7 +1042,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。小心黑色的魔鬼球，它进洞会让你失去所有。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Watch out the black ball which will make you lose everything.</Data></Cell>
+    <Cell ss:StyleID="s83"><Data ss:Type="String">Pot more balls with less cues.&#10;Watch out the black ball which will make you lose everything.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1060,16 +1051,16 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。在场的炸弹球会让你输掉游戏。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;The bomb ball will make you lose the game.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;The bomb ball will make you lose the game.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">201</Data></Cell>
     <Cell><Data ss:Type="String">闯关提示</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s84"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。破碎球阻碍一次你的击球路线。</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。破碎球阻碍一次你的击球路线。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;Crush ball will block your ball.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Crush ball will block your ball.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1078,7 +1069,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。巧用翻袋。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;Using Bank.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Using Bank.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1087,16 +1078,16 @@
     <Cell ss:Index="4" ss:StyleID="s73"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。巧用扎杆。</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;Using PRICK STROKE</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Using PRICK STROKE</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">204</Data></Cell>
     <Cell><Data ss:Type="String">闯关提示</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s84"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。黑洞球将吞食其他球，将黑洞球打入袋可获得所有其吞食的球的分数</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s82"><Data ss:Type="String">尽可能用最少的杆数将最多的球打进洞。黑洞球将吞食其他球，将黑洞球打入袋可获得所有其吞食的球的分数</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"><Data ss:Type="String">Pot more balls with less cues.&#10;Black hole will swallow everything.&#10;Pot it will get all scores in it.</Data></Cell>
+    <Cell ss:StyleID="s85"><Data ss:Type="String">Pot more balls with less cues.&#10;Black hole will swallow everything.&#10;Pot it will get all scores in it.</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1105,7 +1096,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"/>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"/>
+    <Cell ss:StyleID="s85"/>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1114,7 +1105,7 @@
     <Cell ss:Index="4" ss:StyleID="s73"/>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s87"/>
+    <Cell ss:StyleID="s85"/>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1186,8 +1177,7 @@
     <Cell ss:Index="4" ss:StyleID="s71"><Data ss:Type="String">最高回合:</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s73"><ss:Data ss:Type="String"
-      xmlns="http://www.w3.org/TR/REC-html40"><Font html:Color="#000000">Rack:</Font></ss:Data></Cell>
+    <Cell ss:StyleID="s73"><Data ss:Type="String">Rack:</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1490,7 +1480,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">370</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">初生牛犊</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">初生牛犊</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Fresher</Data></Cell>
@@ -1499,7 +1489,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">371</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成1-5后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成1-5后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 1-5.</Data></Cell>
@@ -1508,16 +1498,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">372</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">一石二鸟</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">一石二鸟</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Double Shot</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Double Shot</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">373</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成1-10后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成1-10后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 1-10.</Data></Cell>
@@ -1526,16 +1516,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">374</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">翻袋达人</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">翻袋达人</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Double Bag</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Double Bag</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">375</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成4-10后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成4-10后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 4-10.</Data></Cell>
@@ -1544,16 +1534,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">376</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">隔山打牛</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">隔山打牛</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Combination Shot</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Combination Shot</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">377</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成2-20后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成2-20后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 2-20.</Data></Cell>
@@ -1562,17 +1552,17 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">378</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">台球新星</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">台球新星</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Advanced Star</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Advanced Star</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">379</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
     <Cell><Data ss:Type="String"> </Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">完成1-20后解锁</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">完成1-20后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 1-20.</Data></Cell>
@@ -1582,16 +1572,16 @@
     <Cell ss:StyleID="s72"><Data ss:Type="Number">380</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
     <Cell><Data ss:Type="String"> </Data></Cell>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">五花八门</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">五花八门</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">5 Combo Shot</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">5 Combo Shot</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">381</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成3-20后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成3-20后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 3-20.</Data></Cell>
@@ -1600,16 +1590,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">382</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">双喜临门</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">双喜临门</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Double Dip</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Double Dip</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">383</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成3-10后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成3-10后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 3-10.</Data></Cell>
@@ -1618,16 +1608,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">384</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">超级旋球</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">超级旋球</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Arc ball</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Arc ball</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">385</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成2-10后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成2-10后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 2-10.</Data></Cell>
@@ -1636,16 +1626,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">386</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">一杆清台</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">一杆清台</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Power Combo</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Power Combo</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">387</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成4-20后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成4-20后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 4-20.</Data></Cell>
@@ -1654,16 +1644,16 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">388</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">台球专家</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">台球专家</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s83"><Data ss:Type="String">Pro Potter</Data></Cell>
+    <Cell ss:StyleID="s81"><Data ss:Type="String">Pro Potter</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">389</Data></Cell>
     <Cell><Data ss:Type="String">成就</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s83"><Data ss:Type="String">完成5-20后解锁</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s81"><Data ss:Type="String">完成5-20后解锁</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell><Data ss:Type="String">Complete mission 5-20.</Data></Cell>
@@ -1708,10 +1698,10 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">394</Data></Cell>
     <Cell><Data ss:Type="String">AI比赛界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s65"><Data ss:Type="String">你</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="s65"><Data ss:Type="String">玩家</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
-    <Cell ss:StyleID="s65"><Data ss:Type="String">YOU</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Player</Data></Cell>
     <Cell ss:StyleID="s68"/>
    </Row>
    <Row ss:AutoFitHeight="0">
@@ -1870,7 +1860,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">412</Data></Cell>
     <Cell><Data ss:Type="String">对战界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s67"/>
+    <Cell ss:Index="4" ss:StyleID="s67"><Data ss:Type="String">时间到，由对手放置白球</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
@@ -1879,7 +1869,7 @@
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s72"><Data ss:Type="Number">413</Data></Cell>
     <Cell><Data ss:Type="String">对战界面</Data></Cell>
-    <Cell ss:Index="4" ss:StyleID="s67"/>
+    <Cell ss:Index="4" ss:StyleID="s67"><Data ss:Type="String">开球局必须有至少4个球或者白球碰到岸边</Data></Cell>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
     <Cell ss:StyleID="s68"/>
@@ -1978,7 +1968,7 @@
    <FreezePanes/>
    <FrozenNoSplit/>
    <SplitHorizontal>2</SplitHorizontal>
-   <TopRowBottomPane>7</TopRowBottomPane>
+   <TopRowBottomPane>167</TopRowBottomPane>
    <SplitVertical>1</SplitVertical>
    <LeftColumnRightPane>1</LeftColumnRightPane>
    <ActivePane>0</ActivePane>
@@ -1995,8 +1985,9 @@
     </Pane>
     <Pane>
      <Number>0</Number>
-     <ActiveRow>17</ActiveRow>
+     <ActiveRow>189</ActiveRow>
      <ActiveCol>3</ActiveCol>
+     <RangeSelection>R190C4:R191C4</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

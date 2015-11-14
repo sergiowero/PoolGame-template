@@ -100,7 +100,11 @@ public class PoolRulesStandard : PoolRulesBase
         m_HittingRailBallsCount = 0;
         if(m_HandleWhiteball)
         {
-            GameManager.Rules.State = GlobalState.DRAG_WHITEBALL;
+            State = GlobalState.DRAG_WHITEBALL;
+        }
+        else
+        {
+            State = GlobalState.IDLE;
         }
         for (int i = 0, length = m_Players.Length; i < length; i++)
         {
@@ -180,25 +184,25 @@ public class PoolRulesStandard : PoolRulesBase
     protected override bool HandleFouls()
     {
         //if cue ball enter the pocket
-        if (m_WhiteBallPotted) return BaseUIController.text.Show("犯规，白球入袋，由对手放置白球");
+        if (m_WhiteBallPotted) return BaseUIController.text.Show(string.Format(HOLocalizationConfiguration.GetValue(409), CurrentPlayer.name));
         //time out
-        if (m_TimeOut) return BaseUIController.text.Show("时间到，由对手放置白球");
+        if (m_TimeOut) return BaseUIController.text.Show(HOLocalizationConfiguration.GetValue(412));
 
         if (firstRound)
         {
             //if there is no at least 4 balls hit the wall
-            if (m_HittingRailBallsCount < 4 && !m_CueBallHitRail &&m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("开球局必须有至少4个球或者白球碰到岸边");
+            if (m_HittingRailBallsCount < 4 && !m_CueBallHitRail &&m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show(HOLocalizationConfiguration.GetValue(413));
         }
         else
         {
             //if (m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0 && m_WhiteHitBallType == BallType.NONE) return BaseUIController.text.Show("白球没到打到球");
             //if cue ball desn't hit any balls after shotting
-            if (!m_WhiteHitBall) return BaseUIController.text.Show("白球没打到球");
+            if (!m_WhiteHitBall) return BaseUIController.text.Show(HOLocalizationConfiguration.GetValue(403));
             //if white ball doesn't hit the target type ball
             if ((m_WhiteHitBallType != CurrentPlayer.TargetBallType && CurrentPlayer.TargetBallType != BallType.NONE)
-                || (CurrentPlayer.TargetBallType == BallType.NONE && m_WhiteHitBallType == BallType.BLACK)) return BaseUIController.text.Show("你必须打中正确的花色球");
+                || (CurrentPlayer.TargetBallType == BallType.NONE && m_WhiteHitBallType == BallType.BLACK)) return BaseUIController.text.Show(string.Format(HOLocalizationConfiguration.GetValue(408), CurrentPlayer.name));
             //it must be at least once that ball hitted the rail after first hitted
-            if (m_WhiteHitBallType != BallType.NONE && m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show("目标球必须击中岸边至少一次");
+            if (m_WhiteHitBallType != BallType.NONE && m_HittingRailBallsCount == 0 && m_PottedBallListThisRound.Count == 0) return BaseUIController.text.Show(HOLocalizationConfiguration.GetValue(407));
         }
         return false;
     }

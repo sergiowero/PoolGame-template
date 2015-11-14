@@ -99,7 +99,7 @@ public class PoolRulesMission : PoolRulesBase
         base.TurnBegin();
         m_PunishmentCountThisRound = 0;
         m_RewardCountThisRound = 0;
-
+        State = GlobalState.IDLE;
         if (m_Turn > 1 && LevelDataIndex.CurrentLevel.SpecificPocket)
         {
             //generate punitive pocket and reward pocket
