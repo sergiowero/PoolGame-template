@@ -22,7 +22,8 @@ public class BombBall : PoolBall
     public override void Awake()
     {
         base.Awake();
-        m_TimeRemain = ConstantData.MissionBombBallDuration;
+        //m_TimeRemain = ConstantData.MissionBombBallDuration;
+        m_TimeRemain = 10;
         m_BombTickText = GetComponentInChildren<UnityEngine.UI.Text>();
         m_BombTickText.transform.SetParent(GameManager.CurrentUIRoot.transform);
         m_BombTickText.transform.SetAsFirstSibling();

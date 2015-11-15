@@ -85,6 +85,7 @@ public class HOAudioManager : MonoBehaviour
                 m_CacheReady = true;
         }
     }
+
     #endregion
 
     #region Static methods
@@ -212,7 +213,7 @@ public class HOAudioManager : MonoBehaviour
     {
         if (!ConstantData.Sound)
             return;
-        if(clipName.CompareTo(m_ClipNameCache) == 0)
+        if (clipName.CompareTo(m_ClipNameCache) == 0)
         {
             if (!m_CacheReady) return;
         }
@@ -234,8 +235,6 @@ public class HOAudioManager : MonoBehaviour
                 //HODebug.LogError("can not find audio : <color=green>" + clipName + "</color>");
                 return;
             }
-            m_ClipCache = clip;
-            m_ClipNameCache = clipName;
             while (m_ClipsPool.Count >= m_ClipsPoolCount)
             {
                 m_ClipsPool.Remove(m_ClipsPool.Keys.FirstOrDefault<string>());
@@ -243,6 +242,8 @@ public class HOAudioManager : MonoBehaviour
             m_ClipsPool.Add(clipName, clip);
         }
 
+        m_ClipCache = clip;
+        m_ClipNameCache = clipName;
         if (stopPrevousAudio) m_OneShotSource.Stop();
         m_OneShotSource.PlayOneShot(clip, volumn);
         m_CacheTime = m_PlayerCacheTimeInterval;
@@ -280,19 +281,6 @@ public class HOAudioManager : MonoBehaviour
         m_BGMPlayer.PlayBGM(bgmName, stopImmediate);
     }
     #endregion
-
-    //void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(100, 190, 150, 30), "Sound on"))
-    //    {
-    //        SoundOn();
-    //    }
-
-    //    if (GUI.Button(new Rect(100, 220, 100, 30), "Sound off"))
-    //    {
-    //        SoundOff();
-    //    }
-    //}
 
     class BGMPlayer
     {

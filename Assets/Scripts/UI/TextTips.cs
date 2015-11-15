@@ -30,7 +30,7 @@ public class TextTips : MonoBehaviour {
             m_Animator.Play("Stationary");
         else
         {
-            m_Animator.Play("MoveUp");
+            m_Animator.Play("Movement");
         }
     }
 }

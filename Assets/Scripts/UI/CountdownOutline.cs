@@ -71,10 +71,6 @@ public class CountdownOutline : MonoBehaviour
         HOAudioManager.StopLoopClip();
     }
 
-    void OnGUI()
-    {
-        GUILayout.Label(GameManager.Rules.State.ToString());
-    }
 
     public float GetValue()
     {

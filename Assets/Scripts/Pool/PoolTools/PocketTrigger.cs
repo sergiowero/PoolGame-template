@@ -11,8 +11,8 @@ public class PocketTrigger : MonoBehaviour
     private PocketIndexes m_PocketIndex;
     public PocketIndexes PocketIndex { get { return m_PocketIndex; } }
 
-    private SpriteRenderer m_Punishment;
-    private SpriteRenderer m_Reward;
+    private GameObject m_Punishment;
+    private GameObject m_Reward;
     private GameObject m_Block;
     private Transform m_RealPosition;
 
@@ -32,8 +32,8 @@ public class PocketTrigger : MonoBehaviour
 
     void Awake()
     {
-        m_Punishment = transform.FindChild("PunishmentSprite").GetComponent<SpriteRenderer>();
-        m_Reward = transform.FindChild("RewardSprite").GetComponent<SpriteRenderer>();
+        m_Punishment = transform.FindChild("PunishmentSprite").gameObject;
+        m_Reward = transform.FindChild("RewardSprite").gameObject;
         m_Block = transform.FindChild("BlockOff").gameObject;
         m_RealPosition = transform.FindChild("RealPosition");
         m_Punishment.gameObject.SetActive(false);
